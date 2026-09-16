@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Network &amp; Security Quiz</title>
+  <title>Module 1 Reviewer — Introduction to Electronics</title>
   <style>
     :root {
       --bg: #0f1419;
@@ -73,7 +73,7 @@
     .match { display: grid; gap: 10px; }
     .row {
       display: grid;
-      grid-template-columns: 1fr 160px;
+      grid-template-columns: 1fr 180px;
       gap: 10px;
       align-items: center;
     }
@@ -110,12 +110,13 @@
     .miss { margin-top: 16px; }
     .miss li { margin: 0 0 10px; color: var(--muted); font-size: 0.9rem; }
     .miss b { color: var(--text); }
+
   </style>
 </head>
 <body>
   <div class="wrap">
-    <h1>Network &amp; Security review quiz</h1>
-    <p class="sub">From your exam review PDF. Questions shuffle each round. Replay as many times as you want.</p>
+    <h1>Module 1 Reviewer — Introduction to Electronics</h1>
+    <p class="sub">From your Module 1 reviewer. Covers charge, energy, voltage, current, resistance, Ohm’s Law, power, units, and the practice problems. Shuffles every round.</p>
     <div class="bar"><i id="prog"></i></div>
     <div class="meta">
       <span id="count"></span>
@@ -125,105 +126,749 @@
   </div>
   <script>
     const BANK = [
-      { id: 5, type: "single", q: "Why is network segmentation important in security?",
-        options: ["It reduces network performance", "It limits the spread of malware", "It increases network latency", "It simplifies network management"],
-        answer: ["It limits the spread of malware"] },
-      { id: 6, type: "multi", q: "Which OSPF network types can be configured on a router? (Select two)",
-        options: ["Non-broadcast multiple access (NBMA)", "Static", "Broadcast", "Point-to-Point"],
-        answer: ["Broadcast", "Point-to-Point"] },
-      { id: 7, type: "single", q: "What is the main purpose of an Intrusion Detection System (IDS)?",
-        options: ["To prevent unauthorized access", "To encrypt sensitive data", "To manage network traffic", "To detect and alert on suspicious activities"],
-        answer: ["To detect and alert on suspicious activities"] },
-      { id: 8, type: "single", q: "During this OSPF state, no Hello packets are received.",
-        options: ["Full State", "Exchange State", "Down State", "Two-Way State", "ExStart State", "Loading State", "Init State"],
-        answer: ["Down State"] },
-      { id: 9, type: "single", q: "A network engineer needs to control traffic based not only on IP addresses but also on specific protocols and ports. Which type of ACL is required?",
-        options: ["Named Extended ACL", "Named Standard ACL", "Numbered Standard ACL", "Numbered Extended ACL"],
-        answer: ["Numbered Extended ACL"] },
-      { id: 10, type: "single", q: "What is the role of security policies in an organization?",
-        options: ["To replace hardware", "To define acceptable use of resources", "To ensure high-speed internet access", "To eliminate the need for training"],
-        answer: ["To define acceptable use of resources"] },
-      { id: 12, type: "single", q: "What is a best practice regarding OSPF and loopback interfaces?",
-        options: ["Loopback interfaces should always be included in OSPF area 0", "Loopback interfaces should be configured as passive interfaces", "Loopback interfaces should be assigned the highest IP address for the Router ID", "Loopback interfaces should not be used in OSPF configurations"],
-        answer: ["Loopback interfaces should be configured as passive interfaces"] },
-      { id: 13, type: "single", q: "What does an OSPF area contain?",
-        options: ["routers that have the same link-state information in their LSDBs", "routers whose SPF trees are identical", "routers that share the same process ID", "routers that share the same router ID"],
-        answer: ["routers that have the same link-state information in their LSDBs"] },
-      { id: 14, type: "single", q: "What is the primary purpose of a Virtual Private Network (VPN)?",
-        options: ["To create a secure connection over the internet", "To speed up internet connections", "To filter network traffic", "To block malware"],
-        answer: ["To create a secure connection over the internet"] },
-      { id: 16, type: "single", q: "Which configuration allows OSPF to form adjacencies in a non-broadcast multi-access (NBMA) network?",
-        options: ["Configuring a designated router", "Enabling passive interfaces", "Specifying neighbor addresses manually", "Using the broadcast network type"],
-        answer: ["Specifying neighbor addresses manually"] },
-      { id: 17, type: "single", q: "Which of the following statements is true regarding point-to-point OSPF networks?",
-        options: ["They establish neighbor relationships directly without a DR", "They can have multiple routers on the same subnet", "They are less efficient than multi-access networks", "They require a designated router (DR) for operation"],
-        answer: ["They establish neighbor relationships directly without a DR"] },
-      { id: 18, type: "single", q: "How can a default route be propagated in OSPF?",
-        options: ["By configuring a summary route", "By using the command default-information originate", "By setting the Router ID to zero", "By configuring static routes on each router"],
-        answer: ["By using the command default-information originate"] },
-      { id: 19, type: "single", q: "What algorithm does OSPF use to compute the shortest path tree?",
-        options: ["Dijkstra's", "Bellman-Ford", "A* Search", "Floyd-Warshall"],
-        answer: ["Dijkstra's"] },
-      { id: 20, type: "multi", q: "Which of the following can be controlled by an extended ACL? (Select two)",
-        options: ["Port number", "MAC address", "Source IP address", "Protocol type"],
-        answer: ["Port number", "Protocol type"] },
-      { id: 21, type: "single", q: "You need to restrict access to a sensitive internal server. What is the primary purpose of implementing an ACL?",
-        options: ["To enhance network speed", "To provide redundancy", "To filter traffic based on specified criteria", "To manage bandwidth"],
-        answer: ["To filter traffic based on specified criteria"] },
-      { id: 22, type: "single", q: "What is the purpose of sequence numbers in a named ACL?",
-        options: ["To indicate the direction of traffic", "To define the order of ACL statements", "To increase security", "To specify the type of traffic"],
-        answer: ["To define the order of ACL statements"] },
-      { id: 23, type: "single", q: "What is the primary goal of a phishing attack?",
-        options: ["To disrupt services", "To install malware", "To exploit software vulnerabilities", "To steal sensitive information such as passwords"],
-        answer: ["To steal sensitive information such as passwords"] },
-      { id: 24, type: "single", q: "What type of attack exploits human psychology to gain confidential information?",
-        options: ["Phishing", "Cross-site scripting", "SQL injection", "Man-in-the-middle"],
-        answer: ["Phishing"] },
-      { id: 25, type: "single", q: "In which scenario would you typically use a standard ACL?",
-        options: ["To permit or deny access to specific applications", "To allow or deny traffic from specific subnets", "To control traffic based on user roles", "To filter web traffic based on HTTP and HTTPS protocols"],
-        answer: ["To allow or deny traffic from specific subnets"] },
-      { id: 26, type: "single", q: "What is the purpose of OSPF Hello packets?",
-        options: ["To propagate routing updates", "To calculate the shortest path", "To advertise external routes", "To establish and maintain neighbor relationships"],
-        answer: ["To establish and maintain neighbor relationships"] },
-      { id: 27, type: "single", q: "Which of the following OSPF packets is used by routers to announce new information?",
-        options: ["Type 5: LSAck packet", "Type 3: LSR packet", "Type 1: Hello packet", "Type 2: DBD packet", "Type 4: LSU packet"],
-        answer: ["Type 4: LSU packet"] },
-      { id: 28, type: "single", q: "What metric does OSPF use to determine the best path to a destination?",
-        options: ["Reliability", "Hop count", "Delay", "Bandwidth"],
-        answer: ["Bandwidth"] },
-      { id: 29, type: "single", q: "If no Router ID is manually configured, how does OSPF determine the Router ID?",
-        options: ["It generates a random Router ID", "It uses the lowest IP address on any active interface", "It takes the highest IP address of a loopback interface", "It uses the highest IP address on any active interface"],
-        answer: ["It takes the highest IP address of a loopback interface"] },
-      { id: 30, type: "match", q: "Determine which protocols are Routed Protocols and which are Routing Protocols.",
-        items: ["IP (Internet Protocol)", "IPX (Internetwork Packet Exchange)", "AppleTalk", "OSPF (Open Shortest Path First)", "RIP (Routing Information Protocol)", "BGP (Border Gateway Protocol)", "EIGRP (Enhanced Interior Gateway Routing Protocol)"],
-        map: {
-          "IP (Internet Protocol)": "Routed",
-          "IPX (Internetwork Packet Exchange)": "Routed",
-          "AppleTalk": "Routed",
-          "OSPF (Open Shortest Path First)": "Routing",
-          "RIP (Routing Information Protocol)": "Routing",
-          "BGP (Border Gateway Protocol)": "Routing",
-          "EIGRP (Enhanced Interior Gateway Routing Protocol)": "Routing"
-        } },
-      { id: 31, type: "single", q: "What is the range of numbers used for numbered extended ACLs in IPv4?",
-        options: ["1-99", "300-399", "100-199", "200-299"],
-        answer: ["100-199"] },
-      { id: 32, type: "single", q: "What is the purpose of the OSPF Router ID?",
-        options: ["To uniquely identify a router within an OSPF domain", "To distinguish between OSPF neighbors", "To determine the cost of OSPF routes", "To identify the OSPF process on a router"],
-        answer: ["To uniquely identify a router within an OSPF domain"] },
-      { id: 33, type: "single", q: "What is the primary function of a firewall?",
-        options: ["To monitor network traffic", "To encrypt data", "To provide antivirus protection", "To block unauthorized access"],
-        answer: ["To block unauthorized access"] },
-      { id: 34, type: "single", q: "Which command is used to create a named extended ACL on a Cisco router?",
-        options: ["acl create", "access-list", "ip acl", "ip access-list extended"],
-        answer: ["ip access-list extended"] },
-      { id: 36, type: "single", q: "In a multi-access OSPF network, what is the role of the designated router (DR)?",
-        options: ["To maintain the OSPF database for all routers", "To reduce the number of OSPF adjacencies", "To handle all routing updates for the network segment", "To calculate the shortest path tree"],
-        answer: ["To reduce the number of OSPF adjacencies"] },
-      { id: 37, type: "multi", q: "Which of the following are types of malware? (Select two)",
-        options: ["Virus", "VPN", "Firewall", "Trojan horse"],
-        answer: ["Virus", "Trojan horse"] }
-    ];
+  {
+    "type": "single",
+    "q": "Electric charge uses which symbol and unit?",
+    "options": [
+      "q, coulomb (C)",
+      "I, ampere (A)",
+      "V, volt (V)",
+      "P, watt (W)"
+    ],
+    "explain": "Charge symbol q, unit coulombs (C).",
+    "answer": [
+      "q, coulomb (C)"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Like charges ____; unlike charges ____.",
+    "options": [
+      "repel; attract",
+      "attract; repel",
+      "both attract",
+      "both repel only if moving"
+    ],
+    "explain": "Like charges repel; unlike charges attract.",
+    "answer": [
+      "repel; attract"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "The charge of one electron is:",
+    "options": [
+      "q = −1.602 × 10⁻¹⁹ C",
+      "q = +1.602 × 10⁻¹⁹ C",
+      "q = 1 C",
+      "q = 0 C"
+    ],
+    "explain": "One electron: −1.602 × 10⁻¹⁹ C.",
+    "answer": [
+      "q = −1.602 × 10⁻¹⁹ C"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "The conservation law of charge says charge:",
+    "options": [
+      "Can neither be created nor destroyed, but can be transferred",
+      "Is created whenever a battery is connected",
+      "Exists only in metals",
+      "Is the same as power"
+    ],
+    "explain": "Charge is conserved but mobile (e.g. electrical energy → heat).",
+    "answer": [
+      "Can neither be created nor destroyed, but can be transferred"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Electrical energy/work uses which symbol and unit?",
+    "options": [
+      "w, joule (J)",
+      "q, coulomb",
+      "R, ohm",
+      "I, ampere"
+    ],
+    "explain": "Work and energy are the same idea, both in joules.",
+    "answer": [
+      "w, joule (J)"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Voltage is defined as:",
+    "options": [
+      "Change in energy per unit charge as charge moves from A to B (V = dw/dq)",
+      "Charge per second only",
+      "Power divided by resistance only",
+      "The slope of a resistor color code"
+    ],
+    "explain": "VAB = dw/dq. Voltage is always a difference between two points.",
+    "answer": [
+      "Change in energy per unit charge as charge moves from A to B (V = dw/dq)"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Voltage is always measured as:",
+    "options": [
+      "A difference between two points",
+      "An absolute amount of protons in a wire",
+      "Only AC, never DC",
+      "Only with an ammeter in series"
+    ],
+    "explain": "Voltage is a potential difference. It is signed/directional and causes current.",
+    "answer": [
+      "A difference between two points"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Which instrument measures DC and AC voltage?",
+    "options": [
+      "Voltmeter",
+      "Ammeter only",
+      "Ohmmeter only",
+      "Wattmeter only"
+    ],
+    "explain": "Voltmeter measures DC and AC voltage. Oscilloscope shows voltage vs time.",
+    "answer": [
+      "Voltmeter"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "An oscilloscope measures:",
+    "options": [
+      "Voltage changes as a function of time",
+      "Only resistance",
+      "Only charge of one electron",
+      "Only kWh on a bill"
+    ],
+    "explain": "Oscilloscope: voltage vs time.",
+    "answer": [
+      "Voltage changes as a function of time"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Current is a measure of:",
+    "options": [
+      "The flow of electric charge over time (I = dq/dt)",
+      "Energy per charge only",
+      "Opposition to electron motion only",
+      "Work divided by voltage"
+    ],
+    "explain": "IAB = dq/dt, unit ampere (A).",
+    "answer": [
+      "The flow of electric charge over time (I = dq/dt)"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Conventional current is defined as:",
+    "options": [
+      "Direction of the net flow of positive charge",
+      "The flow of electrons only",
+      "Always opposite to Ohm’s law",
+      "The same as hole current in metals only"
+    ],
+    "explain": "Electronic current (electron flow) is opposite conventional current.",
+    "answer": [
+      "Direction of the net flow of positive charge"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Electronic current is:",
+    "options": [
+      "Flow of negative charge (electrons), opposite conventional current",
+      "Flow of protons in the nucleus",
+      "Zero in every complete circuit",
+      "The same direction as conventional current by definition"
+    ],
+    "explain": "Electrons flow opposite the conventional + direction.",
+    "answer": [
+      "Flow of negative charge (electrons), opposite conventional current"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Current is caused by:",
+    "options": [
+      "The motion of electrons",
+      "Stationary neutrons",
+      "Only insulators",
+      "Only kWh meters"
+    ],
+    "explain": "Current is directional along a path/wire and follows Ohm’s law. Measure it with an ammeter.",
+    "answer": [
+      "The motion of electrons"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "A larger current means:",
+    "options": [
+      "A faster rate of charge flow",
+      "A smaller voltage always",
+      "Zero resistance",
+      "No electrons moving"
+    ],
+    "explain": "Current also changes when circuit voltage changes. Opposition is resistance.",
+    "answer": [
+      "A faster rate of charge flow"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Resistance is:",
+    "options": [
+      "A measure of how hard it is for electrons to move in a circuit",
+      "The flow of charge per second",
+      "Energy per coulomb",
+      "Always zero in copper"
+    ],
+    "explain": "Symbol R, unit ohm (Ω).",
+    "answer": [
+      "A measure of how hard it is for electrons to move in a circuit"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "A resistor is a passive device with:",
+    "options": [
+      "A linear voltage–current (V–I) relationship",
+      "Infinite current at 0 V",
+      "No effect on current",
+      "Only a magnetic field and no resistance"
+    ],
+    "explain": "Used to limit/control current and to affect gain, offset, and frequency response.",
+    "answer": [
+      "A linear voltage–current (V–I) relationship"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "A fixed resistor:",
+    "options": [
+      "Has resistance that stays the same",
+      "Can be changed by a knob",
+      "Has zero ohms",
+      "Stores charge like a battery"
+    ],
+    "explain": "Variable resistors can be changed.",
+    "answer": [
+      "Has resistance that stays the same"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "On a current (y) vs voltage (x) graph, a steeper slope means:",
+    "options": [
+      "Lower resistance (example: copper vs nichrome)",
+      "Higher resistance",
+      "Zero current at all voltages",
+      "A shorted voltmeter"
+    ],
+    "explain": "Steeper I–V slope → lower R. At the same V, copper allows more current than nichrome.",
+    "answer": [
+      "Lower resistance (example: copper vs nichrome)"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "In an electric kettle, resistance in the heating element:",
+    "options": [
+      "Converts electrical energy to heat",
+      "Stores voltage in coulombs",
+      "Creates a PN junction",
+      "Removes all current"
+    ],
+    "explain": "Current through the element meets resistance → heat → boils water.",
+    "answer": [
+      "Converts electrical energy to heat"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Ohm’s Law (discovered by Georg Ohm, 1827) states current is:",
+    "options": [
+      "Directly proportional to the voltage applied across most materials",
+      "Inversely proportional to voltage always",
+      "Independent of resistance",
+      "Equal to power squared"
+    ],
+    "explain": "V = I × R.",
+    "answer": [
+      "Directly proportional to the voltage applied across most materials"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Which is the voltage form of Ohm’s Law?",
+    "options": [
+      "V = I × R",
+      "I = V × R",
+      "R = I / V",
+      "P = I / V"
+    ],
+    "explain": "Cover the quantity on the Ohm’s Law triangle: V on top, I and R on the bottom.",
+    "answer": [
+      "V = I × R"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Which formula solves for current?",
+    "options": [
+      "I = V / R",
+      "I = V × R",
+      "I = R / V",
+      "I = P × R"
+    ],
+    "explain": "I = V/R.",
+    "answer": [
+      "I = V / R"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Which formula solves for resistance?",
+    "options": [
+      "R = V / I",
+      "R = I / V",
+      "R = V × I",
+      "R = P / V² only and never V/I"
+    ],
+    "explain": "R = V/I.",
+    "answer": [
+      "R = V / I"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Power is the time rate of doing work. Which formula is used in the reviewer?",
+    "options": [
+      "P = V × I",
+      "P = V / I",
+      "P = I / V",
+      "P = R × q"
+    ],
+    "explain": "Watts = joules/second = volts × amps.",
+    "answer": [
+      "P = V × I"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Batteries provide fairly constant voltage and are often rated in:",
+    "options": [
+      "Amp-hours (A·h)",
+      "Coulombs per ohm only",
+      "Holes per second",
+      "Only kilowatt-hours of resistance"
+    ],
+    "explain": "Example: AA alkaline — 2 A·h at 1.5 V.",
+    "answer": [
+      "Amp-hours (A·h)"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "The kilowatt-hour (kWh) is:",
+    "options": [
+      "The standard billing unit for large amounts of electrical energy",
+      "The same as one watt",
+      "A unit of resistance",
+      "A unit of charge only"
+    ],
+    "explain": "Energy (kWh) = Power (kW) × Time (hours).",
+    "answer": [
+      "The standard billing unit for large amounts of electrical energy"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "An air conditioner at 240 V and 20 A. What is the power?",
+    "options": [
+      "4,800 W (4.8 kW)",
+      "240 W",
+      "20 W",
+      "4.8 W"
+    ],
+    "explain": "P = V×I = 240×20 = 4,800 W = 4.8 kW.",
+    "answer": [
+      "4,800 W (4.8 kW)"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "That 4.8 kW air conditioner runs 12 hours/day. Energy per day?",
+    "options": [
+      "57.6 kWh",
+      "4.8 kWh",
+      "12 kWh",
+      "240 kWh"
+    ],
+    "explain": "4.8 kW × 12 h = 57.6 kWh.",
+    "answer": [
+      "57.6 kWh"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "At Php 25/kWh, cost per day for 57.6 kWh is:",
+    "options": [
+      "Php 1,440",
+      "Php 25",
+      "Php 57.60",
+      "Php 4,800"
+    ],
+    "explain": "57.6 × 25 = Php 1,440 per day.",
+    "answer": [
+      "Php 1,440"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Unit of charge:",
+    "options": [
+      "coulomb (C)",
+      "volt (V)",
+      "ohm (Ω)",
+      "watt (W)"
+    ],
+    "explain": "Charge → C; energy → J; voltage → V; current → A; resistance → Ω; power → W.",
+    "answer": [
+      "coulomb (C)"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Tera (T) means:",
+    "options": [
+      "× 10¹²",
+      "× 10³",
+      "× 10⁻¹²",
+      "× 10⁶"
+    ],
+    "explain": "Tera 10¹², Giga 10⁹, Mega 10⁶, kilo 10³, milli 10⁻³, micro 10⁻⁶, nano 10⁻⁹, pico 10⁻¹².",
+    "answer": [
+      "× 10¹²"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Milli (m) means:",
+    "options": [
+      "× 10⁻³",
+      "× 10³",
+      "× 10⁶",
+      "× 10⁻⁶"
+    ],
+    "explain": "milli = 10⁻³. micro (µ) = 10⁻⁶.",
+    "answer": [
+      "× 10⁻³"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "25 µA equals:",
+    "options": [
+      "0.000025 A",
+      "0.025 A",
+      "25 A",
+      "0.000025 mA"
+    ],
+    "explain": "25 × 10⁻⁶ A = 0.000025 A.",
+    "answer": [
+      "0.000025 A"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "3.2 mA equals:",
+    "options": [
+      "0.0032 A",
+      "3.2 A",
+      "0.32 A",
+      "32 A"
+    ],
+    "explain": "3.2 × 10⁻³ A = 0.0032 A.",
+    "answer": [
+      "0.0032 A"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "1.5 kV equals:",
+    "options": [
+      "1,500 V",
+      "0.0015 V",
+      "1.5 V",
+      "15 V"
+    ],
+    "explain": "kilo = 10³ → 1,500 volts.",
+    "answer": [
+      "1,500 V"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "20 MW equals:",
+    "options": [
+      "20,000,000 W",
+      "20 W",
+      "0.020 W",
+      "20,000 W"
+    ],
+    "explain": "Mega = 10⁶.",
+    "answer": [
+      "20,000,000 W"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Ohm’s Law practice: 12 V across 6 Ω. Current?",
+    "options": [
+      "2 A",
+      "72 A",
+      "0.5 A",
+      "18 A"
+    ],
+    "explain": "I = V/R = 12/6 = 2 A.",
+    "answer": [
+      "2 A"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "25 V and 5 A. Resistance?",
+    "options": [
+      "5 Ω",
+      "125 Ω",
+      "0.2 Ω",
+      "30 Ω"
+    ],
+    "explain": "R = V/I = 25/5 = 5 Ω.",
+    "answer": [
+      "5 Ω"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "1.5 V and 4 A. Resistance?",
+    "options": [
+      "0.375 Ω",
+      "6 Ω",
+      "2.5 Ω",
+      "0.5 Ω"
+    ],
+    "explain": "R = 1.5/4 = 0.375 Ω.",
+    "answer": [
+      "0.375 Ω"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "2 A through 60 Ω. Voltage?",
+    "options": [
+      "120 V",
+      "30 V",
+      "62 V",
+      "0.033 V"
+    ],
+    "explain": "V = IR = 2×60 = 120 V.",
+    "answer": [
+      "120 V"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "220 V and 0.1 A. Resistance?",
+    "options": [
+      "2,200 Ω (2.2 kΩ)",
+      "22 Ω",
+      "220 Ω",
+      "0.00045 Ω"
+    ],
+    "explain": "R = 220/0.1 = 2,200 Ω = 2.2 kΩ.",
+    "answer": [
+      "2,200 Ω (2.2 kΩ)"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Circuit: 20 V source and 4 Ω resistor. Current?",
+    "options": [
+      "5 A",
+      "80 A",
+      "16 A",
+      "0.2 A"
+    ],
+    "explain": "I = 20/4 = 5 A.",
+    "answer": [
+      "5 A"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "A source drives 1 A through 12 Ω. Voltage?",
+    "options": [
+      "12 V",
+      "13 V",
+      "0.083 V",
+      "1 V"
+    ],
+    "explain": "V = 1×12 = 12 V.",
+    "answer": [
+      "12 V"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "6 V source drives 3 A. Resistance?",
+    "options": [
+      "2 Ω",
+      "18 Ω",
+      "9 Ω",
+      "0.5 Ω"
+    ],
+    "explain": "R = 6/3 = 2 Ω.",
+    "answer": [
+      "2 Ω"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "A supply delivers 75 W at 5 A. Output voltage?",
+    "options": [
+      "15 V",
+      "375 V",
+      "80 V",
+      "0.067 V"
+    ],
+    "explain": "P = VI → V = P/I = 75/5 = 15 V.",
+    "answer": [
+      "15 V"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Cost to light a 300 W bulb for 30 days at Php 12.50/kWh (24 h/day)?",
+    "options": [
+      "Php 2,700",
+      "Php 300",
+      "Php 12.50",
+      "Php 216"
+    ],
+    "explain": "0.3 kW × 24 × 30 = 216 kWh; 216 × 12.50 = Php 2,700.",
+    "answer": [
+      "Php 2,700"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "An open circuit versus a short circuit: which is correct?",
+    "options": [
+      "Open: path is broken so current cannot flow. Short: unintended low-resistance path, current can be very large.",
+      "Open always has infinite current. Short always has zero current.",
+      "They are the same.",
+      "A short means the switch is off."
+    ],
+    "explain": "Open = broken path, no current. Short = almost 0 Ω path, dangerously large current.",
+    "answer": [
+      "Open: path is broken so current cannot flow. Short: unintended low-resistance path, current can be very large."
+    ]
+  },
+  {
+    "type": "match",
+    "q": "Match each quantity to its unit.",
+    "hint": "Use the reference sheet.",
+    "items": [
+      "Charge",
+      "Energy / work",
+      "Voltage",
+      "Current",
+      "Resistance",
+      "Power"
+    ],
+    "choices": [
+      {
+        "v": "C",
+        "l": "coulomb (C)"
+      },
+      {
+        "v": "J",
+        "l": "joule (J)"
+      },
+      {
+        "v": "V",
+        "l": "volt (V)"
+      },
+      {
+        "v": "A",
+        "l": "ampere (A)"
+      },
+      {
+        "v": "O",
+        "l": "ohm (Ω)"
+      },
+      {
+        "v": "W",
+        "l": "watt (W)"
+      }
+    ],
+    "map": {
+      "Charge": "C",
+      "Energy / work": "J",
+      "Voltage": "V",
+      "Current": "A",
+      "Resistance": "O",
+      "Power": "W"
+    },
+    "explain": "q→C, w→J, V→V, I→A, R→Ω, P→W."
+  },
+  {
+    "type": "match",
+    "q": "Match each quantity to its key formula.",
+    "hint": "Ohm’s law and definitions.",
+    "items": [
+      "Voltage from energy",
+      "Current from charge",
+      "Ohm’s law for V",
+      "Power"
+    ],
+    "choices": [
+      {
+        "v": "dw",
+        "l": "V = dw/dq"
+      },
+      {
+        "v": "dq",
+        "l": "I = dq/dt"
+      },
+      {
+        "v": "ir",
+        "l": "V = I × R"
+      },
+      {
+        "v": "vi",
+        "l": "P = V × I"
+      }
+    ],
+    "map": {
+      "Voltage from energy": "dw",
+      "Current from charge": "dq",
+      "Ohm’s law for V": "ir",
+      "Power": "vi"
+    },
+    "explain": "V = dw/dq = IR. I = dq/dt = V/R. P = VI."
+  }
+];
 
     const shuffle = (arr) => [...arr].sort(() => Math.random() - 0.5);
     const same = (a, b) => a.length === b.length && a.every((x) => b.includes(x));
@@ -253,20 +898,20 @@
       if (i >= deck.length) return results();
       const q = deck[i];
       prog.style.width = ((i / deck.length) * 100) + "%";
-      count.textContent = "Question " + (i + 1) + " of " + deck.length + "  ·  #" + q.id;
+      count.textContent = "Question " + (i + 1) + " of " + deck.length;
       scoreline.textContent = "Score " + correct;
       locked = false; picked = new Set();
 
       if (q.type === "match") {
+        const opts = (q.choices || []).map((c) => `<option value="${c.v}">${c.l}</option>`).join("");
         panel.innerHTML = `<p class="q">${q.q}</p>
-          <p class="hint">Pick Routed or Routing for each protocol.</p>
+          <p class="hint">${q.hint || "Classify each item."}</p>
           <div class="match">${q.items.map((item, idx) => `
             <div class="row">
               <span>${item}</span>
               <select data-item="${idx}">
                 <option value="">Choose…</option>
-                <option value="Routed">Routed protocol</option>
-                <option value="Routing">Routing protocol</option>
+                ${opts}
               </select>
             </div>`).join("")}</div>
           <div class="actions"><button class="btn" id="check">Check</button></div>
@@ -275,9 +920,9 @@
         return;
       }
 
-      const need = q.type === "multi" ? 2 : 1;
+      const need = q.need || (q.type === "multi" ? q.answer.length : 1);
       panel.innerHTML = `<p class="q">${q.q}</p>
-        ${q.type === "multi" ? `<p class="hint">Select two answers, then check.</p>` : ""}
+        ${q.type === "multi" ? `<p class="hint">${q.hint || ("Select " + need + ", then check.")}</p>` : ""}
         <div id="opts">${q.options.map((opt) => `<button class="opt" data-v="${encodeURIComponent(opt)}">${opt}</button>`).join("")}</div>
         <div class="actions">
           ${q.type === "multi" ? `<button class="btn" id="check" disabled>Check</button>` : ""}
@@ -320,7 +965,7 @@
         if (!good) ok = false;
         s.style.borderColor = good ? "var(--good)" : "var(--bad)";
       });
-      after(ok, q, "Correct grouping: IP, IPX, AppleTalk = Routed. OSPF, RIP, BGP, EIGRP = Routing.");
+      after(ok, q, q.explain || "Review the classifications.");
     }
 
     function finish(q) {
@@ -334,7 +979,7 @@
         if (q.answer.includes(v)) b.classList.add("ok");
         else if (picked.has(v)) b.classList.add("no");
       });
-      after(ok, q, "Correct: " + q.answer.join(" · "));
+      after(ok, q, q.explain || ("Correct: " + q.answer.join(" · ")));
     }
 
     function after(ok, q, msg) {
@@ -373,6 +1018,7 @@
     }
 
     start(BANK);
+
   </script>
 </body>
 </html>
