@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Network &amp; Security Quiz</title>
+  <title>Module 2 Reviewer — Semiconductor Physics</title>
   <style>
     :root {
       --bg: #0f1419;
@@ -73,7 +73,7 @@
     .match { display: grid; gap: 10px; }
     .row {
       display: grid;
-      grid-template-columns: 1fr 160px;
+      grid-template-columns: 1fr 180px;
       gap: 10px;
       align-items: center;
     }
@@ -110,12 +110,13 @@
     .miss { margin-top: 16px; }
     .miss li { margin: 0 0 10px; color: var(--muted); font-size: 0.9rem; }
     .miss b { color: var(--text); }
+
   </style>
 </head>
 <body>
   <div class="wrap">
-    <h1>Network &amp; Security review quiz</h1>
-    <p class="sub">From your exam review PDF. Questions shuffle each round. Replay as many times as you want.</p>
+    <h1>Module 2 Reviewer — Semiconductor Physics</h1>
+    <p class="sub">From your Module 2 reviewer. Covers atoms, conductors/insulators/semiconductors, energy bands, covalent bonds, conduction, doping, and the PN junction. Shuffles every round.</p>
     <div class="bar"><i id="prog"></i></div>
     <div class="meta">
       <span id="count"></span>
@@ -125,105 +126,946 @@
   </div>
   <script>
     const BANK = [
-      { id: 5, type: "single", q: "Why is network segmentation important in security?",
-        options: ["It reduces network performance", "It limits the spread of malware", "It increases network latency", "It simplifies network management"],
-        answer: ["It limits the spread of malware"] },
-      { id: 6, type: "multi", q: "Which OSPF network types can be configured on a router? (Select two)",
-        options: ["Non-broadcast multiple access (NBMA)", "Static", "Broadcast", "Point-to-Point"],
-        answer: ["Broadcast", "Point-to-Point"] },
-      { id: 7, type: "single", q: "What is the main purpose of an Intrusion Detection System (IDS)?",
-        options: ["To prevent unauthorized access", "To encrypt sensitive data", "To manage network traffic", "To detect and alert on suspicious activities"],
-        answer: ["To detect and alert on suspicious activities"] },
-      { id: 8, type: "single", q: "During this OSPF state, no Hello packets are received.",
-        options: ["Full State", "Exchange State", "Down State", "Two-Way State", "ExStart State", "Loading State", "Init State"],
-        answer: ["Down State"] },
-      { id: 9, type: "single", q: "A network engineer needs to control traffic based not only on IP addresses but also on specific protocols and ports. Which type of ACL is required?",
-        options: ["Named Extended ACL", "Named Standard ACL", "Numbered Standard ACL", "Numbered Extended ACL"],
-        answer: ["Numbered Extended ACL"] },
-      { id: 10, type: "single", q: "What is the role of security policies in an organization?",
-        options: ["To replace hardware", "To define acceptable use of resources", "To ensure high-speed internet access", "To eliminate the need for training"],
-        answer: ["To define acceptable use of resources"] },
-      { id: 12, type: "single", q: "What is a best practice regarding OSPF and loopback interfaces?",
-        options: ["Loopback interfaces should always be included in OSPF area 0", "Loopback interfaces should be configured as passive interfaces", "Loopback interfaces should be assigned the highest IP address for the Router ID", "Loopback interfaces should not be used in OSPF configurations"],
-        answer: ["Loopback interfaces should be configured as passive interfaces"] },
-      { id: 13, type: "single", q: "What does an OSPF area contain?",
-        options: ["routers that have the same link-state information in their LSDBs", "routers whose SPF trees are identical", "routers that share the same process ID", "routers that share the same router ID"],
-        answer: ["routers that have the same link-state information in their LSDBs"] },
-      { id: 14, type: "single", q: "What is the primary purpose of a Virtual Private Network (VPN)?",
-        options: ["To create a secure connection over the internet", "To speed up internet connections", "To filter network traffic", "To block malware"],
-        answer: ["To create a secure connection over the internet"] },
-      { id: 16, type: "single", q: "Which configuration allows OSPF to form adjacencies in a non-broadcast multi-access (NBMA) network?",
-        options: ["Configuring a designated router", "Enabling passive interfaces", "Specifying neighbor addresses manually", "Using the broadcast network type"],
-        answer: ["Specifying neighbor addresses manually"] },
-      { id: 17, type: "single", q: "Which of the following statements is true regarding point-to-point OSPF networks?",
-        options: ["They establish neighbor relationships directly without a DR", "They can have multiple routers on the same subnet", "They are less efficient than multi-access networks", "They require a designated router (DR) for operation"],
-        answer: ["They establish neighbor relationships directly without a DR"] },
-      { id: 18, type: "single", q: "How can a default route be propagated in OSPF?",
-        options: ["By configuring a summary route", "By using the command default-information originate", "By setting the Router ID to zero", "By configuring static routes on each router"],
-        answer: ["By using the command default-information originate"] },
-      { id: 19, type: "single", q: "What algorithm does OSPF use to compute the shortest path tree?",
-        options: ["Dijkstra's", "Bellman-Ford", "A* Search", "Floyd-Warshall"],
-        answer: ["Dijkstra's"] },
-      { id: 20, type: "multi", q: "Which of the following can be controlled by an extended ACL? (Select two)",
-        options: ["Port number", "MAC address", "Source IP address", "Protocol type"],
-        answer: ["Port number", "Protocol type"] },
-      { id: 21, type: "single", q: "You need to restrict access to a sensitive internal server. What is the primary purpose of implementing an ACL?",
-        options: ["To enhance network speed", "To provide redundancy", "To filter traffic based on specified criteria", "To manage bandwidth"],
-        answer: ["To filter traffic based on specified criteria"] },
-      { id: 22, type: "single", q: "What is the purpose of sequence numbers in a named ACL?",
-        options: ["To indicate the direction of traffic", "To define the order of ACL statements", "To increase security", "To specify the type of traffic"],
-        answer: ["To define the order of ACL statements"] },
-      { id: 23, type: "single", q: "What is the primary goal of a phishing attack?",
-        options: ["To disrupt services", "To install malware", "To exploit software vulnerabilities", "To steal sensitive information such as passwords"],
-        answer: ["To steal sensitive information such as passwords"] },
-      { id: 24, type: "single", q: "What type of attack exploits human psychology to gain confidential information?",
-        options: ["Phishing", "Cross-site scripting", "SQL injection", "Man-in-the-middle"],
-        answer: ["Phishing"] },
-      { id: 25, type: "single", q: "In which scenario would you typically use a standard ACL?",
-        options: ["To permit or deny access to specific applications", "To allow or deny traffic from specific subnets", "To control traffic based on user roles", "To filter web traffic based on HTTP and HTTPS protocols"],
-        answer: ["To allow or deny traffic from specific subnets"] },
-      { id: 26, type: "single", q: "What is the purpose of OSPF Hello packets?",
-        options: ["To propagate routing updates", "To calculate the shortest path", "To advertise external routes", "To establish and maintain neighbor relationships"],
-        answer: ["To establish and maintain neighbor relationships"] },
-      { id: 27, type: "single", q: "Which of the following OSPF packets is used by routers to announce new information?",
-        options: ["Type 5: LSAck packet", "Type 3: LSR packet", "Type 1: Hello packet", "Type 2: DBD packet", "Type 4: LSU packet"],
-        answer: ["Type 4: LSU packet"] },
-      { id: 28, type: "single", q: "What metric does OSPF use to determine the best path to a destination?",
-        options: ["Reliability", "Hop count", "Delay", "Bandwidth"],
-        answer: ["Bandwidth"] },
-      { id: 29, type: "single", q: "If no Router ID is manually configured, how does OSPF determine the Router ID?",
-        options: ["It generates a random Router ID", "It uses the lowest IP address on any active interface", "It takes the highest IP address of a loopback interface", "It uses the highest IP address on any active interface"],
-        answer: ["It takes the highest IP address of a loopback interface"] },
-      { id: 30, type: "match", q: "Determine which protocols are Routed Protocols and which are Routing Protocols.",
-        items: ["IP (Internet Protocol)", "IPX (Internetwork Packet Exchange)", "AppleTalk", "OSPF (Open Shortest Path First)", "RIP (Routing Information Protocol)", "BGP (Border Gateway Protocol)", "EIGRP (Enhanced Interior Gateway Routing Protocol)"],
-        map: {
-          "IP (Internet Protocol)": "Routed",
-          "IPX (Internetwork Packet Exchange)": "Routed",
-          "AppleTalk": "Routed",
-          "OSPF (Open Shortest Path First)": "Routing",
-          "RIP (Routing Information Protocol)": "Routing",
-          "BGP (Border Gateway Protocol)": "Routing",
-          "EIGRP (Enhanced Interior Gateway Routing Protocol)": "Routing"
-        } },
-      { id: 31, type: "single", q: "What is the range of numbers used for numbered extended ACLs in IPv4?",
-        options: ["1-99", "300-399", "100-199", "200-299"],
-        answer: ["100-199"] },
-      { id: 32, type: "single", q: "What is the purpose of the OSPF Router ID?",
-        options: ["To uniquely identify a router within an OSPF domain", "To distinguish between OSPF neighbors", "To determine the cost of OSPF routes", "To identify the OSPF process on a router"],
-        answer: ["To uniquely identify a router within an OSPF domain"] },
-      { id: 33, type: "single", q: "What is the primary function of a firewall?",
-        options: ["To monitor network traffic", "To encrypt data", "To provide antivirus protection", "To block unauthorized access"],
-        answer: ["To block unauthorized access"] },
-      { id: 34, type: "single", q: "Which command is used to create a named extended ACL on a Cisco router?",
-        options: ["acl create", "access-list", "ip acl", "ip access-list extended"],
-        answer: ["ip access-list extended"] },
-      { id: 36, type: "single", q: "In a multi-access OSPF network, what is the role of the designated router (DR)?",
-        options: ["To maintain the OSPF database for all routers", "To reduce the number of OSPF adjacencies", "To handle all routing updates for the network segment", "To calculate the shortest path tree"],
-        answer: ["To reduce the number of OSPF adjacencies"] },
-      { id: 37, type: "multi", q: "Which of the following are types of malware? (Select two)",
-        options: ["Virus", "VPN", "Firewall", "Trojan horse"],
-        answer: ["Virus", "Trojan horse"] }
-    ];
+  {
+    "type": "single",
+    "q": "What is an atom?",
+    "options": [
+      "The smallest unit of matter that has the properties of an element",
+      "A particle with no charge found only in conductors",
+      "A free electron in the conduction band",
+      "A vacancy left behind in the valence band"
+    ],
+    "explain": "An atom is the smallest unit of matter that still has the properties of an element.",
+    "answer": [
+      "The smallest unit of matter that has the properties of an element"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Which particle is positive and found in the nucleus?",
+    "options": [
+      "Proton",
+      "Neutron",
+      "Electron",
+      "Hole"
+    ],
+    "explain": "Protons are positive (+) and live in the nucleus.",
+    "answer": [
+      "Proton"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Which particle is electrically neutral and found in the nucleus?",
+    "options": [
+      "Neutron",
+      "Proton",
+      "Electron",
+      "Photon"
+    ],
+    "explain": "Neutrons have charge 0 and are in the nucleus.",
+    "answer": [
+      "Neutron"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Where are electrons found in an atom?",
+    "options": [
+      "Orbiting in shells around the nucleus",
+      "Only inside the nucleus",
+      "Only in the valence band of metals",
+      "Fixed in the depletion zone"
+    ],
+    "explain": "Electrons are negative and orbit in shells around the nucleus.",
+    "answer": [
+      "Orbiting in shells around the nucleus"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "A carbon atom has atomic number 6. What does that imply?",
+    "options": [
+      "6 protons and 6 electrons (with 6 neutrons in a typical nucleus)",
+      "6 valence electrons and no protons",
+      "Only 6 neutrons and no electrons",
+      "It must be a semiconductor"
+    ],
+    "explain": "Atomic number 6 means 6 protons; a typical carbon atom also has 6 neutrons and 6 orbiting electrons.",
+    "answer": [
+      "6 protons and 6 electrons (with 6 neutrons in a typical nucleus)"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "What is the valence shell?",
+    "options": [
+      "The outermost electron shell",
+      "The nucleus",
+      "The conduction band only",
+      "The depletion zone"
+    ],
+    "explain": "The outermost shell is the valence shell; its electrons are valence electrons.",
+    "answer": [
+      "The outermost electron shell"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Which electrons have the most energy and are easiest to dislodge?",
+    "options": [
+      "Electrons farthest from the nucleus",
+      "Electrons closest to the nucleus",
+      "Neutrons in the nucleus",
+      "Protons in inner shells"
+    ],
+    "explain": "Electrons farthest from the nucleus have the most energy and are easiest to remove.",
+    "answer": [
+      "Electrons farthest from the nucleus"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "A conductor is a material that:",
+    "options": [
+      "Allows current to pass through it easily",
+      "Blocks all current except at breakdown voltage",
+      "Has conductivity only after doping",
+      "Has zero free electrons at room temperature"
+    ],
+    "explain": "Conductors allow current easily because valence electrons can become free.",
+    "answer": [
+      "Allows current to pass through it easily"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Which of the following is the most conductive element?",
+    "options": [
+      "Silver",
+      "Copper",
+      "Silicon",
+      "Iron"
+    ],
+    "explain": "Silver is the most conductive, then copper, gold, and aluminum. Silver is less used in wiring because of cost.",
+    "answer": [
+      "Silver"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Which metal is listed as the best conductor among common wiring metals, but is often skipped because of cost?",
+    "options": [
+      "Silver",
+      "Aluminum",
+      "Silicon",
+      "Germanium"
+    ],
+    "explain": "Silver is best electrically; copper and aluminum are used more because they cost less.",
+    "answer": [
+      "Silver"
+    ]
+  },
+  {
+    "type": "multi",
+    "q": "Which are listed as best conductive materials? (Select three)",
+    "options": [
+      "Gold (Au)",
+      "Silver (Ag)",
+      "Copper (Cu)",
+      "Rubber"
+    ],
+    "explain": "The reviewer lists gold, silver, copper, and aluminum as best conductive materials. Rubber is an insulator.",
+    "answer": [
+      "Gold (Au)",
+      "Silver (Ag)",
+      "Copper (Cu)"
+    ],
+    "need": 3
+  },
+  {
+    "type": "single",
+    "q": "An insulator:",
+    "options": [
+      "Blocks the flow of current",
+      "Has overlapping energy bands",
+      "Is always a single-element metal",
+      "Has many free electrons at room temperature"
+    ],
+    "explain": "Insulators block current and have very few free electrons.",
+    "answer": [
+      "Blocks the flow of current"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Most insulators are:",
+    "options": [
+      "Compounds rather than single-element materials",
+      "Pure metals with 1 valence electron",
+      "Always superconductors",
+      "Always semiconductors"
+    ],
+    "explain": "Most insulators are compounds, not single-element materials.",
+    "answer": [
+      "Compounds rather than single-element materials"
+    ]
+  },
+  {
+    "type": "multi",
+    "q": "Which are insulator examples from the reviewer? (Select two)",
+    "options": [
+      "Rubber",
+      "Glass",
+      "Copper",
+      "Silicon"
+    ],
+    "explain": "Examples include rubber, glass, oil, diamond, and dry wood.",
+    "answer": [
+      "Rubber",
+      "Glass"
+    ],
+    "need": 2
+  },
+  {
+    "type": "single",
+    "q": "A semiconductor has electrical properties:",
+    "options": [
+      "Between a conductor and an insulator",
+      "Identical to a superconductor",
+      "Always better than copper",
+      "Always a perfect insulator at room temperature"
+    ],
+    "explain": "It is not a good conductor nor a good insulator on its own — hence “semi”-conductor.",
+    "answer": [
+      "Between a conductor and an insulator"
+    ]
+  },
+  {
+    "type": "multi",
+    "q": "Which are common semiconductor materials in the reviewer? (Select two)",
+    "options": [
+      "Silicon (Si)",
+      "Germanium (Ge)",
+      "Silver (Ag)",
+      "Rubber"
+    ],
+    "explain": "Si (14), Ge (32), and also GaAs as a compound semiconductor.",
+    "answer": [
+      "Silicon (Si)",
+      "Germanium (Ge)"
+    ],
+    "need": 2
+  },
+  {
+    "type": "single",
+    "q": "Gallium arsenide (GaAs) is classified as:",
+    "options": [
+      "A compound semiconductor material",
+      "An elemental insulator",
+      "A pentavalent dopant",
+      "A superconductor"
+    ],
+    "explain": "GaAs is a compound semiconductor, unlike elemental Si and Ge.",
+    "answer": [
+      "A compound semiconductor material"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "How many valence electrons do silicon and germanium each have?",
+    "options": [
+      "4",
+      "3",
+      "5",
+      "8"
+    ],
+    "explain": "Both have 4 valence electrons, so each forms 4 covalent bonds.",
+    "answer": [
+      "4"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Why is silicon preferred over germanium for devices?",
+    "options": [
+      "Silicon’s valence electrons are in the 3rd shell and held more tightly, so devices are more temperature-stable",
+      "Germanium has no valence electrons",
+      "Silicon is a metal conductor",
+      "Germanium cannot form covalent bonds"
+    ],
+    "explain": "Ge valence electrons sit in the 4th shell; Si’s 3rd-shell valence electrons are held more tightly and are more temperature-stable.",
+    "answer": [
+      "Silicon’s valence electrons are in the 3rd shell and held more tightly, so devices are more temperature-stable"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Why do conductors like copper conduct more easily than silicon?",
+    "options": [
+      "Copper’s valence electrons are in a farther, higher-energy shell, so they escape into the conduction band more easily",
+      "Silicon has more free electrons than copper at room temperature",
+      "Copper has a very wide band gap",
+      "Silicon’s bands overlap like a metal"
+    ],
+    "explain": "Copper valence electrons have more energy; many are already free at room temperature.",
+    "answer": [
+      "Copper’s valence electrons are in a farther, higher-energy shell, so they escape into the conduction band more easily"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "The valence band holds:",
+    "options": [
+      "Valence electrons",
+      "Only holes in insulators",
+      "Only donor atoms",
+      "The nucleus"
+    ],
+    "explain": "Valence band = valence electrons. Conduction band = where electrons must be to move freely and create current.",
+    "answer": [
+      "Valence electrons"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Electrons must be in which band to move freely and create current?",
+    "options": [
+      "Conduction band",
+      "Valence band only",
+      "Neutron band",
+      "Depletion band"
+    ],
+    "explain": "Free current-carrying electrons occupy the conduction band.",
+    "answer": [
+      "Conduction band"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "An insulator’s energy band gap is:",
+    "options": [
+      "Very wide — valence electrons cannot jump except under extremely high (breakdown) voltage",
+      "Zero because the bands overlap",
+      "Narrow, so many electrons jump at room temperature",
+      "Negative"
+    ],
+    "explain": "Insulators have a very wide gap.",
+    "answer": [
+      "Very wide — valence electrons cannot jump except under extremely high (breakdown) voltage"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "A semiconductor’s band gap is:",
+    "options": [
+      "Narrow — some valence electrons can jump into the conduction band",
+      "Nonexistent because bands overlap",
+      "So wide that no electron can ever jump",
+      "The same as a superconductor"
+    ],
+    "explain": "Narrow gap lets some electrons become free.",
+    "answer": [
+      "Narrow — some valence electrons can jump into the conduction band"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "A conductor’s energy bands:",
+    "options": [
+      "Overlap (no gap), so there are always many free electrons",
+      "Have a very wide forbidden gap",
+      "Exist only after doping",
+      "Are empty at all temperatures"
+    ],
+    "explain": "In conductors the bands overlap; lots of free electrons are always available.",
+    "answer": [
+      "Overlap (no gap), so there are always many free electrons"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "A covalent bond is:",
+    "options": [
+      "The sharing of electron pairs between atoms",
+      "The transfer of a proton between nuclei",
+      "A metallic bond with zero valence electrons",
+      "Attraction between two holes"
+    ],
+    "explain": "Covalent bonding is sharing electron pairs.",
+    "answer": [
+      "The sharing of electron pairs between atoms"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "In a silicon crystal, each Si atom shares one valence electron with how many neighbors?",
+    "options": [
+      "4",
+      "3",
+      "5",
+      "8"
+    ],
+    "explain": "Each Si shares with 4 surrounding neighbors, so each atom effectively has 8 valence electrons.",
+    "answer": [
+      "4"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Sharing in the silicon lattice lets each atom effectively have how many electrons in its valence shell?",
+    "options": [
+      "8",
+      "4",
+      "3",
+      "14"
+    ],
+    "explain": "Stable octet: 8 electrons in the valence shell, forming a crystal lattice.",
+    "answer": [
+      "8"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "An intrinsic semiconductor is:",
+    "options": [
+      "A pure semiconductor with no added impurities",
+      "Silicon doped with boron",
+      "Always N-type",
+      "A conductor with overlapping bands"
+    ],
+    "explain": "Intrinsic = pure, no doping. Doping makes it extrinsic.",
+    "answer": [
+      "A pure semiconductor with no added impurities"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "In an intrinsic semiconductor at room temperature:",
+    "options": [
+      "Number of free electrons = number of holes",
+      "There are only holes, no electrons",
+      "There are only donor electrons",
+      "Current cannot exist at any temperature"
+    ],
+    "explain": "Thermally generated electrons and holes are equal in number.",
+    "answer": [
+      "Number of free electrons = number of holes"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "At absolute 0 K in an intrinsic semiconductor:",
+    "options": [
+      "There are no electrons in the conduction band, so no current can flow",
+      "Bands overlap like a metal",
+      "All electrons are free",
+      "The depletion zone fills with copper"
+    ],
+    "explain": "No thermal energy to jump the gap → empty conduction band.",
+    "answer": [
+      "There are no electrons in the conduction band, so no current can flow"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "As temperature rises in a semiconductor:",
+    "options": [
+      "Some valence electrons gain energy, jump to the conduction band, and become free electrons",
+      "The band gap becomes infinite",
+      "All covalent bonds permanently freeze",
+      "Holes disappear forever"
+    ],
+    "explain": "Heat creates electron-hole pairs.",
+    "answer": [
+      "Some valence electrons gain energy, jump to the conduction band, and become free electrons"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "A hole is:",
+    "options": [
+      "A vacancy left in the valence band when an electron jumps to the conduction band",
+      "A pentavalent donor atom",
+      "A free proton",
+      "A neutron in the nucleus"
+    ],
+    "explain": "The hole is a vacancy, not a real particle, but it can appear to move.",
+    "answer": [
+      "A vacancy left in the valence band when an electron jumps to the conduction band"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "An electron-hole pair is:",
+    "options": [
+      "One electron raised to the conduction band plus the hole left behind",
+      "Two donor atoms bonded together",
+      "A proton and a neutron",
+      "A PN junction"
+    ],
+    "explain": "Every electron that goes to the conduction band leaves one hole.",
+    "answer": [
+      "One electron raised to the conduction band plus the hole left behind"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Recombination occurs when:",
+    "options": [
+      "A conduction-band electron loses energy and falls back into a hole in the valence band",
+      "A donor atom accepts a third electron",
+      "Two protons fuse",
+      "The depletion zone becomes a conductor"
+    ],
+    "explain": "Recombination is the reverse of pair generation.",
+    "answer": [
+      "A conduction-band electron loses energy and falls back into a hole in the valence band"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Free electrons are also called:",
+    "options": [
+      "Conduction electrons",
+      "Valence protons",
+      "Acceptor holes",
+      "Neutrons"
+    ],
+    "explain": "Free electrons = conduction electrons.",
+    "answer": [
+      "Conduction electrons"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Electron current is produced by:",
+    "options": [
+      "Movement of thermally generated free electrons toward the positive terminal",
+      "Protons leaving the nucleus",
+      "Only acceptor atoms in P-type material",
+      "Lightning rods"
+    ],
+    "explain": "Applied voltage attracts free conduction-band electrons toward +.",
+    "answer": [
+      "Movement of thermally generated free electrons toward the positive terminal"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Hole current happens because:",
+    "options": [
+      "A valence electron moves into a nearby hole, so the hole appears to move",
+      "Holes are actual particles that orbit the nucleus",
+      "Neutrons drift to the negative terminal",
+      "The conduction band is empty"
+    ],
+    "explain": "The hole isn’t a moving particle; successive valence electrons fill vacancies, so the hole appears to move.",
+    "answer": [
+      "A valence electron moves into a nearby hole, so the hole appears to move"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Doping is:",
+    "options": [
+      "Controlled addition of impurities to a pure semiconductor, creating an extrinsic semiconductor",
+      "Removing all valence electrons",
+      "Cooling silicon to 0 K",
+      "Overlapping the energy bands of an insulator"
+    ],
+    "explain": "Doping increases current carriers — electrons or holes.",
+    "answer": [
+      "Controlled addition of impurities to a pure semiconductor, creating an extrinsic semiconductor"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "N-type semiconductor is formed by adding:",
+    "options": [
+      "Pentavalent impurity atoms (5 valence electrons)",
+      "Trivalent impurity atoms (3 valence electrons)",
+      "Insulator compounds only",
+      "Extra protons to the nucleus"
+    ],
+    "explain": "Pentavalent dopants increase conduction-band electrons.",
+    "answer": [
+      "Pentavalent impurity atoms (5 valence electrons)"
+    ]
+  },
+  {
+    "type": "multi",
+    "q": "Which are common pentavalent (donor) dopants? (Select two)",
+    "options": [
+      "Arsenic (As)",
+      "Phosphorus (P)",
+      "Boron (B)",
+      "Indium (In)"
+    ],
+    "explain": "Pentavalent: As, P, Bi, Sb. Trivalent: B, In, Ga.",
+    "answer": [
+      "Arsenic (As)",
+      "Phosphorus (P)"
+    ],
+    "need": 2
+  },
+  {
+    "type": "single",
+    "q": "A pentavalent atom that gives up an extra electron is called a:",
+    "options": [
+      "Donor atom",
+      "Acceptor atom",
+      "Hole",
+      "Insulator"
+    ],
+    "explain": "Donors donate the extra (5th) electron.",
+    "answer": [
+      "Donor atom"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "P-type semiconductor is formed by adding:",
+    "options": [
+      "Trivalent impurity atoms (3 valence electrons)",
+      "Pentavalent impurity atoms",
+      "Silver atoms",
+      "Free neutrons"
+    ],
+    "explain": "Trivalent dopants increase the number of holes.",
+    "answer": [
+      "Trivalent impurity atoms (3 valence electrons)"
+    ]
+  },
+  {
+    "type": "multi",
+    "q": "Which are common trivalent (acceptor) dopants? (Select two)",
+    "options": [
+      "Boron (B)",
+      "Gallium (Ga)",
+      "Antimony (Sb)",
+      "Phosphorus (P)"
+    ],
+    "explain": "Trivalent: boron, indium, gallium. Sb and P are pentavalent.",
+    "answer": [
+      "Boron (B)",
+      "Gallium (Ga)"
+    ],
+    "need": 2
+  },
+  {
+    "type": "single",
+    "q": "A trivalent atom that accepts an electron to complete its bonds is called an:",
+    "options": [
+      "Acceptor atom",
+      "Donor atom",
+      "Intrinsic atom",
+      "Conduction proton"
+    ],
+    "explain": "Acceptors take an electron and leave a hole.",
+    "answer": [
+      "Acceptor atom"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "In N-type material, the majority carriers are:",
+    "options": [
+      "Electrons",
+      "Holes",
+      "Protons",
+      "Neutrons"
+    ],
+    "explain": "N-type: majority electrons, minority holes.",
+    "answer": [
+      "Electrons"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "In P-type material, the majority carriers are:",
+    "options": [
+      "Holes",
+      "Electrons",
+      "Photons",
+      "Copper ions"
+    ],
+    "explain": "P-type: majority holes, minority electrons.",
+    "answer": [
+      "Holes"
+    ]
+  },
+  {
+    "type": "match",
+    "q": "Classify majority vs minority carriers.",
+    "hint": "For each type, pick majority or the matching minority note. Use the labels as given.",
+    "items": [
+      "N-type majority",
+      "N-type minority",
+      "P-type majority",
+      "P-type minority"
+    ],
+    "choices": [
+      {
+        "v": "electrons",
+        "l": "Electrons"
+      },
+      {
+        "v": "holes",
+        "l": "Holes"
+      }
+    ],
+    "map": {
+      "N-type majority": "electrons",
+      "N-type minority": "holes",
+      "P-type majority": "holes",
+      "P-type minority": "electrons"
+    },
+    "explain": "N-type: majority electrons, minority holes. P-type: majority holes, minority electrons."
+  },
+  {
+    "type": "single",
+    "q": "A PN junction is formed when:",
+    "options": [
+      "One crystal is doped N-type on one side and P-type on the other",
+      "Two insulators are glued together",
+      "Copper is alloyed with rubber",
+      "Bands of a metal overlap"
+    ],
+    "explain": "The PN junction is the interface where p-type and n-type meet — a building block of diodes and transistors.",
+    "answer": [
+      "One crystal is doped N-type on one side and P-type on the other"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "At a PN junction, free electrons from N and holes from P recombine and form:",
+    "options": [
+      "A depletion zone with no free charge carriers (a non-conductive barrier)",
+      "A superconductor path",
+      "A metallic conductor",
+      "An intrinsic vacuum in the nucleus"
+    ],
+    "explain": "The depletion zone has no free carriers and acts as a non-conductive barrier.",
+    "answer": [
+      "A depletion zone with no free charge carriers (a non-conductive barrier)"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Why are metals preferred for electrical wires?",
+    "options": [
+      "Valence electrons are loosely bound and easily become free, so current flows with very little resistance",
+      "They have a very wide band gap",
+      "They have no free electrons",
+      "They are always superconductors at room temperature"
+    ],
+    "explain": "Copper and aluminum have loosely bound valence electrons.",
+    "answer": [
+      "Valence electrons are loosely bound and easily become free, so current flows with very little resistance"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "A material that has a resistance of zero is known as a:",
+    "options": [
+      "Superconductor",
+      "Semiconductor",
+      "Insulator",
+      "Hole conductor"
+    ],
+    "explain": "Superconductors offer zero electrical resistance, typically at extremely low temperatures.",
+    "answer": [
+      "Superconductor"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "What is the purpose of a lightning rod?",
+    "options": [
+      "Provide a low-resistance path for lightning current into the ground to protect the structure",
+      "Store holes in a depletion zone",
+      "Dope the air N-type",
+      "Increase the band gap of wood"
+    ],
+    "explain": "A conductive rod gives lightning a safe path to ground.",
+    "answer": [
+      "Provide a low-resistance path for lightning current into the ground to protect the structure"
+    ]
+  },
+  {
+    "type": "multi",
+    "q": "Which factors affect the resistivity/resistance of a conductor? (Select all four that the reviewer lists)",
+    "options": [
+      "Type of material",
+      "Length of the conductor",
+      "Cross-sectional area",
+      "Temperature"
+    ],
+    "explain": "Material, length (longer = more R), cross-section (thicker = less R), and temperature (resistivity of most conductors increases with temperature).",
+    "answer": [
+      "Type of material",
+      "Length of the conductor",
+      "Cross-sectional area",
+      "Temperature"
+    ],
+    "need": 4
+  },
+  {
+    "type": "single",
+    "q": "If a conductor is made longer, resistance:",
+    "options": [
+      "Increases",
+      "Decreases to zero",
+      "Is unrelated to length",
+      "Becomes negative"
+    ],
+    "explain": "Longer = more resistance.",
+    "answer": [
+      "Increases"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "If a conductor is made thicker (larger cross-sectional area), resistance:",
+    "options": [
+      "Decreases",
+      "Increases",
+      "Becomes infinite",
+      "Depends only on color"
+    ],
+    "explain": "Thicker = less resistance.",
+    "answer": [
+      "Decreases"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "For most conductors, resistivity as temperature increases:",
+    "options": [
+      "Increases",
+      "Drops to zero immediately",
+      "Becomes a hole current only",
+      "Is forbidden by band theory"
+    ],
+    "explain": "Resistivity of most conductors increases with temperature.",
+    "answer": [
+      "Increases"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Memory: pentavalent dopant (5 valence e−) leads to:",
+    "options": [
+      "N-type, donor atom, majority carriers are electrons",
+      "P-type, acceptor atom, majority carriers are holes",
+      "An insulator with a wide gap",
+      "A superconductor"
+    ],
+    "explain": "5 valence e− → N-type → donor → majority electrons.",
+    "answer": [
+      "N-type, donor atom, majority carriers are electrons"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Memory: trivalent dopant (3 valence e−) leads to:",
+    "options": [
+      "P-type, acceptor atom, majority carriers are holes",
+      "N-type, donor atom, majority carriers are electrons",
+      "A metal with overlapping bands",
+      "Zero resistance"
+    ],
+    "explain": "3 valence e− → P-type → acceptor → majority holes.",
+    "answer": [
+      "P-type, acceptor atom, majority carriers are holes"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "The PN junction is the foundation of:",
+    "options": [
+      "Diodes and transistors",
+      "Only lightning rods",
+      "Only superconductors",
+      "Only rubber insulators"
+    ],
+    "explain": "Its depletion zone is key to how those devices work.",
+    "answer": [
+      "Diodes and transistors"
+    ]
+  },
+  {
+    "type": "match",
+    "q": "Classify each dopant as pentavalent/donor or trivalent/acceptor.",
+    "hint": "Pentavalent = 5 valence electrons (N-type donor). Trivalent = 3 (P-type acceptor).",
+    "items": [
+      "Arsenic (As)",
+      "Phosphorus (P)",
+      "Antimony (Sb)",
+      "Boron (B)",
+      "Indium (In)",
+      "Gallium (Ga)",
+      "Bismuth (Bi)"
+    ],
+    "choices": [
+      {
+        "v": "penta",
+        "l": "Pentavalent / donor"
+      },
+      {
+        "v": "tri",
+        "l": "Trivalent / acceptor"
+      }
+    ],
+    "map": {
+      "Arsenic (As)": "penta",
+      "Phosphorus (P)": "penta",
+      "Antimony (Sb)": "penta",
+      "Bismuth (Bi)": "penta",
+      "Boron (B)": "tri",
+      "Indium (In)": "tri",
+      "Gallium (Ga)": "tri"
+    },
+    "explain": "As, P, Bi, Sb = pentavalent donors. B, In, Ga = trivalent acceptors."
+  },
+  {
+    "type": "match",
+    "q": "Classify each material.",
+    "hint": "Think free electrons and band gap.",
+    "items": [
+      "Silver",
+      "Copper",
+      "Rubber",
+      "Glass",
+      "Silicon",
+      "Germanium"
+    ],
+    "choices": [
+      {
+        "v": "cond",
+        "l": "Conductor"
+      },
+      {
+        "v": "ins",
+        "l": "Insulator"
+      },
+      {
+        "v": "semi",
+        "l": "Semiconductor"
+      }
+    ],
+    "map": {
+      "Silver": "cond",
+      "Copper": "cond",
+      "Rubber": "ins",
+      "Glass": "ins",
+      "Silicon": "semi",
+      "Germanium": "semi"
+    },
+    "explain": "Ag/Cu = conductors. Rubber/glass = insulators. Si/Ge = semiconductors."
+  }
+];
 
     const shuffle = (arr) => [...arr].sort(() => Math.random() - 0.5);
     const same = (a, b) => a.length === b.length && a.every((x) => b.includes(x));
@@ -253,20 +1095,20 @@
       if (i >= deck.length) return results();
       const q = deck[i];
       prog.style.width = ((i / deck.length) * 100) + "%";
-      count.textContent = "Question " + (i + 1) + " of " + deck.length + "  ·  #" + q.id;
+      count.textContent = "Question " + (i + 1) + " of " + deck.length;
       scoreline.textContent = "Score " + correct;
       locked = false; picked = new Set();
 
       if (q.type === "match") {
+        const opts = (q.choices || []).map((c) => `<option value="${c.v}">${c.l}</option>`).join("");
         panel.innerHTML = `<p class="q">${q.q}</p>
-          <p class="hint">Pick Routed or Routing for each protocol.</p>
+          <p class="hint">${q.hint || "Classify each item."}</p>
           <div class="match">${q.items.map((item, idx) => `
             <div class="row">
               <span>${item}</span>
               <select data-item="${idx}">
                 <option value="">Choose…</option>
-                <option value="Routed">Routed protocol</option>
-                <option value="Routing">Routing protocol</option>
+                ${opts}
               </select>
             </div>`).join("")}</div>
           <div class="actions"><button class="btn" id="check">Check</button></div>
@@ -275,9 +1117,9 @@
         return;
       }
 
-      const need = q.type === "multi" ? 2 : 1;
+      const need = q.need || (q.type === "multi" ? q.answer.length : 1);
       panel.innerHTML = `<p class="q">${q.q}</p>
-        ${q.type === "multi" ? `<p class="hint">Select two answers, then check.</p>` : ""}
+        ${q.type === "multi" ? `<p class="hint">${q.hint || ("Select " + need + ", then check.")}</p>` : ""}
         <div id="opts">${q.options.map((opt) => `<button class="opt" data-v="${encodeURIComponent(opt)}">${opt}</button>`).join("")}</div>
         <div class="actions">
           ${q.type === "multi" ? `<button class="btn" id="check" disabled>Check</button>` : ""}
@@ -320,7 +1162,7 @@
         if (!good) ok = false;
         s.style.borderColor = good ? "var(--good)" : "var(--bad)";
       });
-      after(ok, q, "Correct grouping: IP, IPX, AppleTalk = Routed. OSPF, RIP, BGP, EIGRP = Routing.");
+      after(ok, q, q.explain || "Review the classifications.");
     }
 
     function finish(q) {
@@ -334,7 +1176,7 @@
         if (q.answer.includes(v)) b.classList.add("ok");
         else if (picked.has(v)) b.classList.add("no");
       });
-      after(ok, q, "Correct: " + q.answer.join(" · "));
+      after(ok, q, q.explain || ("Correct: " + q.answer.join(" · ")));
     }
 
     function after(ok, q, msg) {
@@ -373,6 +1215,7 @@
     }
 
     start(BANK);
+
   </script>
 </body>
 </html>
