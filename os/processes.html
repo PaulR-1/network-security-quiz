@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OS Processes reviewer</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --card: #1a2332;
+      --line: #2a3a4f;
+      --text: #e8eef6;
+      --muted: #8fa3b8;
+      --accent: #3d8bfd;
+      --good: #2fbf71;
+      --bad: #e85d5d;
+      --pick: #24324a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .wrap { max-width: 720px; margin: 0 auto; padding: 28px 20px 64px; }
+    h1 { font-size: 1.35rem; margin: 0 0 6px; font-weight: 650; }
+    .sub { color: var(--muted); margin: 0 0 22px; font-size: 0.95rem; }
+    .bar {
+      height: 6px;
+      background: var(--line);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+    .bar > i {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: var(--accent);
+      transition: width .2s ease;
+    }
+    .meta { display: flex; justify-content: space-between; color: var(--muted); font-size: 0.85rem; margin-bottom: 14px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 20px;
+    }
+    .q { font-size: 1.08rem; line-height: 1.45; margin: 0 0 16px; }
+    .hint { color: var(--muted); font-size: 0.82rem; margin: -8px 0 14px; }
+    .opt {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      width: 100%;
+      text-align: left;
+      background: var(--pick);
+      border: 1px solid var(--line);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 11px 12px;
+      margin: 0 0 8px;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+    .opt:hover { border-color: var(--accent); }
+    .opt.sel { border-color: var(--accent); background: #1d3358; }
+    .opt.ok { border-color: var(--good); background: #163528; }
+    .opt.no { border-color: var(--bad); background: #3a1e24; }
+    .opt:disabled { cursor: default; }
+    .match { display: grid; gap: 10px; }
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 180px;
+      gap: 10px;
+      align-items: center;
+    }
+    .row span { font-size: 0.95rem; }
+    select {
+      width: 100%;
+      background: var(--pick);
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px;
+    }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+    button.btn {
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+    }
+    button.btn.ghost {
+      background: transparent;
+      border: 1px solid var(--line);
+      color: var(--text);
+    }
+    button.btn:disabled { opacity: .45; cursor: default; }
+    .fb { margin-top: 12px; font-size: 0.92rem; }
+    .fb.ok { color: var(--good); }
+    .fb.no { color: #ff8b8b; }
+    .score { font-size: 2.2rem; font-weight: 700; margin: 8px 0; }
+    .miss { margin-top: 16px; }
+    .miss li { margin: 0 0 10px; color: var(--muted); font-size: 0.9rem; }
+    .miss b { color: var(--text); }
+
+    a.exit {
+      display: inline-block;
+      margin: 0 0 16px;
+      color: var(--muted);
+      text-decoration: none;
+      border: 1px solid var(--line);
+      padding: 7px 12px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+    }
+    a.exit:hover { color: var(--text); border-color: var(--accent); }
+    a.btn { text-decoration: none; display: inline-block; }
+    .dir { display: grid; gap: 12px; }
+    a.mod {
+      display: block;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 18px 20px;
+      color: var(--text);
+      text-decoration: none;
+    }
+    a.mod:hover { border-color: var(--accent); }
+    a.mod .n { color: var(--accent); font-size: 0.8rem; font-weight: 650; letter-spacing: .04em; }
+    a.mod h2 { margin: 6px 0 6px; font-size: 1.12rem; font-weight: 650; }
+    a.mod p { margin: 0; color: var(--muted); font-size: 0.92rem; line-height: 1.4; }
+
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="exit" href="index.html">Exit module</a>
+    <h1>OS Processes reviewer</h1>
+    <p class="sub">From 3. OS Processes. Shuffle, replay, or exit back to the directory.</p>
+    <div class="bar"><i id="prog"></i></div>
+    <div class="meta">
+      <span id="count"></span>
+      <span id="scoreline"></span>
+    </div>
+    <div class="card" id="panel"></div>
+  </div>
+  <script>
+    const BANK = [
+  {
+    "type": "single",
+    "q": "A process is:",
+    "options": [
+      "A program in execution",
+      "A program that only exists as a file on disk and is never loaded",
+      "Always a device driver",
+      "The same as a compiled library with no state"
+    ],
+    "answer": [
+      "A program in execution"
+    ],
+    "explain": "A program on secondary storage is passive; once loaded and executing, it is a process."
+  },
+  {
+    "type": "single",
+    "q": "Program vs process:",
+    "options": [
+      "Program is passive and stored on disk; process is active, in memory, and has execution state",
+      "Process is always on disk; program is always in RAM",
+      "They are identical terms",
+      "A program has a PCB; a process never does"
+    ],
+    "answer": [
+      "Program is passive and stored on disk; process is active, in memory, and has execution state"
+    ],
+    "explain": "One program can produce multiple processes (User A/B/C opening the same app)."
+  },
+  {
+    "type": "single",
+    "q": "The text section of a process contains:",
+    "options": [
+      "The program code / instructions",
+      "Only dynamically allocated objects",
+      "Only the list of open files",
+      "The job queue of the whole system"
+    ],
+    "answer": [
+      "The program code / instructions"
+    ],
+    "explain": "It answers: what instructions should the process execute?"
+  },
+  {
+    "type": "single",
+    "q": "The program counter (PC) identifies:",
+    "options": [
+      "The location of the next instruction to execute",
+      "The last byte of the heap only",
+      "The parent's PID only",
+      "Disk cylinder number"
+    ],
+    "answer": [
+      "The location of the next instruction to execute"
+    ],
+    "explain": "The PC tells the CPU where execution should continue."
+  },
+  {
+    "type": "single",
+    "q": "CPU registers for a process may hold:",
+    "options": [
+      "Temporary values, addresses, intermediate results, and control information",
+      "Only the entire HDD image",
+      "Only cloud logs",
+      "Nothing during Running state"
+    ],
+    "answer": [
+      "Temporary values, addresses, intermediate results, and control information"
+    ],
+    "explain": "They are needed for the current execution."
+  },
+  {
+    "type": "single",
+    "q": "The stack typically contains:",
+    "options": [
+      "Function parameters, return addresses, and local variables",
+      "Only global variables",
+      "Only the page table of every process",
+      "The ready queue"
+    ],
+    "answer": [
+      "Function parameters, return addresses, and local variables"
+    ],
+    "explain": "Needed so nested calls can return correctly. Example: calculateTotal(price, quantity)."
+  },
+  {
+    "type": "single",
+    "q": "The data section contains:",
+    "options": [
+      "Global variables used by the program",
+      "Only the next instruction address",
+      "Only kernel modules",
+      "Only I/O wait queues"
+    ],
+    "answer": [
+      "Global variables used by the program"
+    ],
+    "explain": "Example: global counter = 0."
+  },
+  {
+    "type": "single",
+    "q": "The heap contains:",
+    "options": [
+      "Memory dynamically allocated during execution (request, use, release)",
+      "Only the compiled text of the program",
+      "The BIOS",
+      "The long-term job pool exclusively"
+    ],
+    "answer": [
+      "Memory dynamically allocated during execution (request, use, release)"
+    ],
+    "explain": "Programs can ask for extra memory while running."
+  },
+  {
+    "type": "single",
+    "q": "NEW process state means:",
+    "options": [
+      "The process is being created",
+      "The process is using the CPU",
+      "The process finished and released resources",
+      "The process waits for disk I/O"
+    ],
+    "answer": [
+      "The process is being created"
+    ],
+    "explain": "Example: double-click Chrome → OS creates process → NEW."
+  },
+  {
+    "type": "single",
+    "q": "READY means:",
+    "options": [
+      "The process is prepared to run and waiting to be assigned to a CPU",
+      "Instructions are executing on a core right now",
+      "The process has terminated",
+      "The process does not exist yet"
+    ],
+    "answer": [
+      "The process is prepared to run and waiting to be assigned to a CPU"
+    ],
+    "explain": "Many processes can be READY; a core runs the one the scheduler selects."
+  },
+  {
+    "type": "single",
+    "q": "RUNNING means:",
+    "options": [
+      "The process's instructions are currently being executed by the CPU",
+      "The process is only on disk as an EXE",
+      "Waiting for a network packet with no CPU",
+      "Being created"
+    ],
+    "answer": [
+      "The process's instructions are currently being executed by the CPU"
+    ],
+    "explain": "Only the process assigned to that core is RUNNING on it."
+  },
+  {
+    "type": "single",
+    "q": "WAITING / BLOCKED means:",
+    "options": [
+      "The process waits for an event (often I/O); when it completes it typically goes READY",
+      "The CPU is executing its instructions",
+      "It has been deleted from the PCB table forever",
+      "It is still NEW"
+    ],
+    "answer": [
+      "The process waits for an event (often I/O); when it completes it typically goes READY"
+    ],
+    "explain": "Meanwhile the CPU can run another ready process."
+  },
+  {
+    "type": "single",
+    "q": "TERMINATED means:",
+    "options": [
+      "The process finished execution and the OS can deallocate its resources",
+      "It is waiting in the ready queue",
+      "It is being created",
+      "It holds the CPU"
+    ],
+    "answer": [
+      "The process finished execution and the OS can deallocate its resources"
+    ],
+    "explain": "Closing the browser is an example."
+  },
+  {
+    "type": "single",
+    "q": "A PCB (Process Control Block) is:",
+    "options": [
+      "A data structure the OS maintains for each process — the process's record/information file",
+      "The physical CPU chip",
+      "A type of SSD",
+      "A CLI command equal to mkdir"
+    ],
+    "answer": [
+      "A data structure the OS maintains for each process — the process's record/information file"
+    ],
+    "explain": "Created when a program becomes a process."
+  },
+  {
+    "type": "single",
+    "q": "PCB process state tells the OS:",
+    "options": [
+      "What the process is currently doing (New, Ready, Running, Waiting, Terminated)",
+      "The brand of the monitor",
+      "The SaaS pricing tier",
+      "The compiler version only"
+    ],
+    "answer": [
+      "What the process is currently doing (New, Ready, Running, Waiting, Terminated)"
+    ],
+    "explain": "If Process A waits for the CPU, state is Ready."
+  },
+  {
+    "type": "single",
+    "q": "The PC in the PCB is especially important when:",
+    "options": [
+      "The CPU switches from one process to another",
+      "A file is renamed on disk with no processes",
+      "The machine is powered off and never boots",
+      "Only printing"
+    ],
+    "answer": [
+      "The CPU switches from one process to another"
+    ],
+    "explain": "It stores the next instruction address so execution can resume later."
+  },
+  {
+    "type": "single",
+    "q": "CPU scheduling information in the PCB can include:",
+    "options": [
+      "Priority, queue information, time quantum, and other scheduling parameters",
+      "Only the wallpaper path",
+      "Only DLL names",
+      "Only IaaS region"
+    ],
+    "answer": [
+      "Priority, queue information, time quantum, and other scheduling parameters"
+    ],
+    "explain": "Scheduler uses this to decide who runs next (e.g., priority 5 vs 10)."
+  },
+  {
+    "type": "single",
+    "q": "Memory-management info in the PCB can include:",
+    "options": [
+      "Page tables, memory limits, allocation and protection information",
+      "Only the user's password hash",
+      "Printer DPI",
+      "Wi-Fi SSID only"
+    ],
+    "answer": [
+      "Page tables, memory limits, allocation and protection information"
+    ],
+    "explain": "So the OS knows which memory belongs to which process."
+  },
+  {
+    "type": "single",
+    "q": "Accounting information in the PCB tracks:",
+    "options": [
+      "Resources used (CPU time, IDs, time limits, resource usage)",
+      "Only the text of Wikipedia",
+      "GPU shader source",
+      "SAN zoning"
+    ],
+    "answer": [
+      "Resources used (CPU time, IDs, time limits, resource usage)"
+    ],
+    "explain": "Example: Process A used 2.5 seconds of CPU."
+  },
+  {
+    "type": "single",
+    "q": "I/O status information in the PCB includes:",
+    "options": [
+      "Files in use, allocated devices, open files, pending I/O",
+      "Only the heap size of the kernel",
+      "Cloud IaaS SKUs",
+      "The layered OS diagram"
+    ],
+    "answer": [
+      "Files in use, allocated devices, open files, pending I/O"
+    ],
+    "explain": "E.g., a process reading from disk."
+  },
+  {
+    "type": "single",
+    "q": "During a context switch the OS:",
+    "options": [
+      "Saves the running process's information in its PCB, then loads the next process's PCB",
+      "Deletes both processes",
+      "Turns off RAM",
+      "Skips the scheduler forever"
+    ],
+    "answer": [
+      "Saves the running process's information in its PCB, then loads the next process's PCB"
+    ],
+    "explain": "A → Running → save A → load B → B Running."
+  },
+  {
+    "type": "single",
+    "q": "A thread is:",
+    "options": [
+      "A unit of execution within a process",
+      "Always a separate program on disk with its own full address space and no sharing",
+      "The same as a clustered node",
+      "A type of system call number"
+    ],
+    "answer": [
+      "A unit of execution within a process"
+    ],
+    "explain": "Multiple threads let different parts of a program work concurrently."
+  },
+  {
+    "type": "single",
+    "q": "Compared with processes, threads are generally:",
+    "options": [
+      "Lighter, share many resources in the same process, and can share data more easily",
+      "Heavier and always more isolated than processes",
+      "Unable to run inside a browser",
+      "Required to use IPC even inside one process"
+    ],
+    "answer": [
+      "Lighter, share many resources in the same process, and can share data more easily"
+    ],
+    "explain": "Process switch is heavier; threads in one process share the address space."
+  },
+  {
+    "type": "single",
+    "q": "A web browser might use threads for:",
+    "options": [
+      "Network activity, UI, page processing, and background tasks at once",
+      "Only a single serial path that must freeze the UI during downloads",
+      "Only the BIOS POST",
+      "Only the long-term scheduler"
+    ],
+    "answer": [
+      "Network activity, UI, page processing, and background tasks at once"
+    ],
+    "explain": "If one thread waits, another can keep the UI responsive."
+  },
+  {
+    "type": "single",
+    "q": "The process scheduler's job is to decide:",
+    "options": [
+      "Which process should use the CPU next",
+      "Which color theme Windows uses",
+      "The SaaS vendor",
+      "HDD RPM only"
+    ],
+    "answer": [
+      "Which process should use the CPU next"
+    ],
+    "explain": "Goals: maximize CPU utilization, switch quickly, manage queues."
+  },
+  {
+    "type": "single",
+    "q": "The job queue contains:",
+    "options": [
+      "The system's processes — the larger pool the OS needs to manage",
+      "Only processes waiting on the printer",
+      "Only terminated PCBs",
+      "Only kernel modules"
+    ],
+    "answer": [
+      "The system's processes — the larger pool the OS needs to manage"
+    ],
+    "explain": "Think of it as all processes in the system."
+  },
+  {
+    "type": "single",
+    "q": "The ready queue contains processes that:",
+    "options": [
+      "Are in main memory, ready to execute, and waiting for CPU allocation",
+      "Are still only on disk and not loaded",
+      "Are blocked on disk I/O",
+      "Have already terminated"
+    ],
+    "answer": [
+      "Are in main memory, ready to execute, and waiting for CPU allocation"
+    ],
+    "explain": "The short-term scheduler picks from here."
+  },
+  {
+    "type": "single",
+    "q": "A device / wait queue holds processes that:",
+    "options": [
+      "Wait because an I/O device or event is unavailable (disk, keyboard, network)",
+      "Are currently running on the CPU",
+      "Have no PCB",
+      "Are always NEW"
+    ],
+    "answer": [
+      "Wait because an I/O device or event is unavailable (disk, keyboard, network)"
+    ],
+    "explain": "Processes move among queues during execution."
+  },
+  {
+    "type": "single",
+    "q": "The long-term (job) scheduler:",
+    "options": [
+      "Selects processes, loads them into memory, and regulates the degree of multiprogramming — who gets admitted",
+      "Only picks the next ready process for a CPU core every few milliseconds",
+      "Only swaps one process to disk",
+      "Only assigns PIDs after termination"
+    ],
+    "answer": [
+      "Selects processes, loads them into memory, and regulates the degree of multiprogramming — who gets admitted"
+    ],
+    "explain": "Simple idea: who gets admitted into the system?"
+  },
+  {
+    "type": "single",
+    "q": "The medium-term scheduler is associated with:",
+    "options": [
+      "Swapping — who should temporarily leave or return to active memory",
+      "Only creating the first process at boot",
+      "Only GUI themes",
+      "Only compiling C"
+    ],
+    "answer": [
+      "Swapping — who should temporarily leave or return to active memory"
+    ],
+    "explain": "It manages suspend/resume of processes in/out of memory."
+  },
+  {
+    "type": "single",
+    "q": "The short-term (CPU) scheduler:",
+    "options": [
+      "Selects a ready process and allocates CPU time — who gets the CPU next",
+      "Only admits jobs from disk once per hour",
+      "Never runs frequently",
+      "Only handles printers"
+    ],
+    "answer": [
+      "Selects a ready process and allocates CPU time — who gets the CPU next"
+    ],
+    "explain": "It must be efficient because it runs very often."
+  },
+  {
+    "type": "single",
+    "q": "A context switch happens when:",
+    "options": [
+      "The CPU changes from one process to another",
+      "A file is copied on disk with no processes",
+      "The user only changes wallpaper",
+      "DNS TTL expires"
+    ],
+    "answer": [
+      "The CPU changes from one process to another"
+    ],
+    "explain": "Context = PC, registers, process state, and other PCB info."
+  },
+  {
+    "type": "single",
+    "q": "Context-switch overhead means:",
+    "options": [
+      "During the switch the CPU does management work, not useful application execution",
+      "The CPU is faster at apps while switching",
+      "There is never any time cost",
+      "RAM is deleted"
+    ],
+    "answer": [
+      "During the switch the CPU does management work, not useful application execution"
+    ],
+    "explain": "Time depends on hardware, registers, OS/PCB complexity. Some hardware has multiple register sets."
+  },
+  {
+    "type": "single",
+    "q": "A child process is:",
+    "options": [
+      "A new process created by a parent process, forming a process tree",
+      "Always the kernel itself",
+      "A thread that cannot have a PCB",
+      "A wait queue"
+    ],
+    "answer": [
+      "A new process created by a parent process, forming a process tree"
+    ],
+    "explain": "The OS also supports termination, suspend/block, resume, scheduling, and communication."
+  },
+  {
+    "type": "single",
+    "q": "A PID is used to:",
+    "options": [
+      "Identify and manage a process (e.g., 1001 Browser, 1002 Music Player)",
+      "Name a cloud region",
+      "Set the disk volume label only",
+      "Count CPU cores in SMP"
+    ],
+    "answer": [
+      "Identify and manage a process (e.g., 1001 Browser, 1002 Music Player)"
+    ],
+    "explain": "The OS uses identifiers when managing processes."
+  },
+  {
+    "type": "single",
+    "q": "Resource sharing between parent and child can be:",
+    "options": [
+      "Share all resources, share a subset, or share no resources",
+      "Only share the GPU, never anything else",
+      "Always share nothing, with no other options",
+      "Always identical to thread sharing"
+    ],
+    "answer": [
+      "Share all resources, share a subset, or share no resources"
+    ],
+    "explain": "Execution options: run concurrently, or parent waits."
+  },
+  {
+    "type": "match",
+    "q": "Match each process state.",
+    "items": [
+      "Being created",
+      "Waiting for CPU",
+      "Instructions executing on a core",
+      "Waiting for I/O or an event",
+      "Finished"
+    ],
+    "choices": [
+      {
+        "v": "new",
+        "l": "New"
+      },
+      {
+        "v": "ready",
+        "l": "Ready"
+      },
+      {
+        "v": "run",
+        "l": "Running"
+      },
+      {
+        "v": "wait",
+        "l": "Waiting/Blocked"
+      },
+      {
+        "v": "term",
+        "l": "Terminated"
+      }
+    ],
+    "map": {
+      "Being created": "new",
+      "Waiting for CPU": "ready",
+      "Instructions executing on a core": "run",
+      "Waiting for I/O or an event": "wait",
+      "Finished": "term"
+    },
+    "explain": "New → Ready → Running; Running may go Waiting then Ready again; or Terminated.",
+    "hint": "Classify each item."
+  },
+  {
+    "type": "match",
+    "q": "Match scheduler to the one-line idea.",
+    "items": [
+      "Long-term / job scheduler",
+      "Medium-term scheduler",
+      "Short-term / CPU scheduler"
+    ],
+    "choices": [
+      {
+        "v": "admit",
+        "l": "Who gets admitted into memory?"
+      },
+      {
+        "v": "swap",
+        "l": "Who should leave or return (swap)?"
+      },
+      {
+        "v": "cpu",
+        "l": "Who gets the CPU next?"
+      }
+    ],
+    "map": {
+      "Long-term / job scheduler": "admit",
+      "Medium-term scheduler": "swap",
+      "Short-term / CPU scheduler": "cpu"
+    },
+    "explain": "Admit / swap / CPU.",
+    "hint": "Classify each item."
+  }
+];
+
+    const shuffle = (arr) => [...arr].sort(() => Math.random() - 0.5);
+    const same = (a, b) => a.length === b.length && a.every((x) => b.includes(x));
+
+    let deck = [];
+    let i = 0;
+    let correct = 0;
+    let locked = false;
+    let missed = [];
+    let picked = new Set();
+
+    const panel = document.getElementById("panel");
+    const prog = document.getElementById("prog");
+    const count = document.getElementById("count");
+    const scoreline = document.getElementById("scoreline");
+
+    function start(pool) {
+      deck = shuffle(pool.map((q) => {
+        if (q.type === "match") return { ...q, items: shuffle(q.items) };
+        return { ...q, options: shuffle(q.options) };
+      }));
+      i = 0; correct = 0; missed = []; locked = false; picked = new Set();
+      render();
+    }
+
+    function render() {
+      if (i >= deck.length) return results();
+      const q = deck[i];
+      prog.style.width = ((i / deck.length) * 100) + "%";
+      count.textContent = "Question " + (i + 1) + " of " + deck.length;
+      scoreline.textContent = "Score " + correct;
+      locked = false; picked = new Set();
+
+      if (q.type === "match") {
+        const opts = (q.choices || []).map((c) => `<option value="${c.v}">${c.l}</option>`).join("");
+        panel.innerHTML = `<p class="q">${q.q}</p>
+          <p class="hint">${q.hint || "Classify each item."}</p>
+          <div class="match">${q.items.map((item, idx) => `
+            <div class="row">
+              <span>${item}</span>
+              <select data-item="${idx}">
+                <option value="">Choose…</option>
+                ${opts}
+              </select>
+            </div>`).join("")}</div>
+          <div class="actions"><button class="btn" id="check">Check</button></div>
+          <div class="fb" id="fb"></div>`;
+        document.getElementById("check").onclick = checkMatch;
+        return;
+      }
+
+      const need = q.need || (q.type === "multi" ? q.answer.length : 1);
+      panel.innerHTML = `<p class="q">${q.q}</p>
+        ${q.type === "multi" ? `<p class="hint">${q.hint || ("Select " + need + ", then check.")}</p>` : ""}
+        <div id="opts">${q.options.map((opt) => `<button class="opt" data-v="${encodeURIComponent(opt)}">${opt}</button>`).join("")}</div>
+        <div class="actions">
+          ${q.type === "multi" ? `<button class="btn" id="check" disabled>Check</button>` : ""}
+        </div>
+        <div class="fb" id="fb"></div>`;
+
+      panel.querySelectorAll(".opt").forEach((btn) => {
+        btn.onclick = () => {
+          if (locked) return;
+          const v = decodeURIComponent(btn.dataset.v);
+          if (q.type === "single") {
+            picked = new Set([v]);
+            finish(q);
+          } else {
+            if (picked.has(v)) picked.delete(v); else {
+              if (picked.size >= need) return;
+              picked.add(v);
+            }
+            panel.querySelectorAll(".opt").forEach((b) => {
+              b.classList.toggle("sel", picked.has(decodeURIComponent(b.dataset.v)));
+            });
+            document.getElementById("check").disabled = picked.size !== need;
+          }
+        };
+      });
+      const check = document.getElementById("check");
+      if (check) check.onclick = () => finish(q);
+    }
+
+    function checkMatch() {
+      if (locked) return;
+      const q = deck[i];
+      const selects = [...panel.querySelectorAll("select")];
+      if (selects.some((s) => !s.value)) return;
+      locked = true;
+      let ok = true;
+      selects.forEach((s, idx) => {
+        const item = q.items[idx];
+        const good = s.value === q.map[item];
+        if (!good) ok = false;
+        s.style.borderColor = good ? "var(--good)" : "var(--bad)";
+      });
+      after(ok, q, q.explain || "Review the classifications.");
+    }
+
+    function finish(q) {
+      if (locked) return;
+      locked = true;
+      const chosen = [...picked];
+      const ok = same(chosen, q.answer);
+      panel.querySelectorAll(".opt").forEach((b) => {
+        const v = decodeURIComponent(b.dataset.v);
+        b.disabled = true;
+        if (q.answer.includes(v)) b.classList.add("ok");
+        else if (picked.has(v)) b.classList.add("no");
+      });
+      after(ok, q, q.explain || ("Correct: " + q.answer.join(" · ")));
+    }
+
+    function after(ok, q, msg) {
+      if (ok) correct++; else missed.push({ q: q.q, msg });
+      const fb = document.getElementById("fb");
+      fb.className = "fb " + (ok ? "ok" : "no");
+      fb.textContent = ok ? "Correct. " + msg : "Not quite. " + msg;
+      scoreline.textContent = "Score " + correct;
+      const actions = panel.querySelector(".actions");      actions.innerHTML = `<button class="btn" id="next">${i + 1 === deck.length ? "See results" : "Next"}</button>`;
+      document.getElementById("next").onclick = () => { i++; render(); };
+    }
+
+    function results() {
+      prog.style.width = "100%";
+      count.textContent = "Round complete";
+      scoreline.textContent = "";
+      const pct = Math.round((correct / deck.length) * 100);
+      panel.innerHTML = `
+        <p class="q">You scored</p>
+        <div class="score">${correct} / ${deck.length}</div>
+        <p class="sub" style="margin:0">${pct}% · ${missed.length ? missed.length + " to review" : "Clean round."}</p>
+        ${missed.length ? `<ul class="miss">${missed.map((m) => `<li><b>${m.q}</b><br>${m.msg}</li>`).join("")}</ul>` : ""}        <div class="actions">
+          <a class="btn ghost" href="index.html">Exit module</a>
+          <button class="btn" id="again">Play again (shuffle)</button>
+          ${missed.length ? `<button class="btn ghost" id="missed">Replay missed only</button>` : ""}
+        </div>`;
+      document.getElementById("again").onclick = () => start(BANK);
+      const missBtn = document.getElementById("missed");
+      if (missBtn) {
+        missBtn.onclick = () => {
+          const ids = new Set(missed.map((m) => m.q));
+          start(BANK.filter((q) => ids.has(q.q)));
+        };
+      }
+    }
+
+    start(BANK);
+
+  </script>
+</body>
+</html>
