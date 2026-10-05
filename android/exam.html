@@ -137,6 +137,9 @@
     a.mod .n { color: var(--accent); font-size: 0.8rem; font-weight: 650; letter-spacing: .04em; }
     a.mod h2 { margin: 6px 0 6px; font-size: 1.12rem; font-weight: 650; }
     a.mod p { margin: 0; color: var(--muted); font-size: 0.92rem; line-height: 1.4; }
+    .why-h { font-size: 0.8rem; color: var(--muted); margin: 12px 0 4px; font-weight: 650; letter-spacing: .03em; }
+    .why { margin: 0; padding-left: 18px; }
+    .why li { margin: 0 0 6px; font-size: 0.9rem; line-height: 1.4; color: var(--text); }
 
   </style>
 </head>
@@ -166,7 +169,13 @@
     "answer": [
       "val price = 25.5f"
     ],
-    "explain": "From the answer key: a decimal literal such as 25.5 defaults to Double. Append f or F for Float (25.5f). 25 is an Int. \"25.5\" is a String."
+    "explain": "From the answer key: a decimal literal such as 25.5 defaults to Double. Append f or F for Float (25.5f). 25 is an Int. \"25.5\" is a String.",
+    "why": {
+      "val price = 25.5f": "From the answer key: a decimal literal such as 25.5 defaults to Double. Append f or F for Float (25.5f). 25 is an Int. \"25.5\" is a String.",
+      "val price = 25": "25 has no decimal point, so it is an Int.",
+      "val price = \"25.5\"": "Quotes make \"25.5\" a String, not a number.",
+      "val price = 25.5": "25.5 has a decimal point and no f suffix, so Kotlin treats it as a Double."
+    }
   },
   {
     "type": "single",
@@ -180,7 +189,13 @@
     "answer": [
       "EditText should first be converted to String before using .toInt()"
     ],
-    "explain": "From the answer key: EditText.text returns an Editable, not a String. Call .toString() first: edtNum1.text.toString().toIntOrNull()."
+    "explain": "From the answer key: EditText.text returns an Editable, not a String. Call .toString() first: edtNum1.text.toString().toIntOrNull().",
+    "why": {
+      "EditText should first be converted to String before using .toInt()": "From the answer key: EditText.text returns an Editable, not a String. Call .toString() first: edtNum1.text.toString().toIntOrNull().",
+      "edtNum1 and edtNum2 should use var": "val is fine here. The bug is the type of EditText.text, not val versus var.",
+      "tvResult.text should not use .toString()": "The answer key says .toString() is required on the Editable before parsing. Removing it is the opposite of the fix.",
+      "total should be declared before retrieving the values from the EditText fields": "The order of declaring total is not the problem. The text must be converted to String before toInt()."
+    }
   },
   {
     "type": "single",
@@ -194,7 +209,13 @@
     "answer": [
       "val"
     ],
-    "explain": "The PDF answer key lists val as a read-only (immutable) reference. var can be reassigned. const val is a compile-time constant. The option list for this item was cut off at a page break; val is the keyword the key defines as unchangeable after initialization."
+    "explain": "The PDF answer key lists val as a read-only (immutable) reference. var can be reassigned. const val is a compile-time constant.",
+    "why": {
+      "val": "The PDF answer key lists val as a read-only (immutable) reference. var can be reassigned. const val is a compile-time constant.",
+      "var": "var is mutable, so it can be changed after initialization.",
+      "const val": "const val is a compile-time constant, which is stricter and not the keyword the key gives for a normal read-only value.",
+      "Double": "Double is a numeric type, not the keyword that prevents reassignment."
+    }
   },
   {
     "type": "single",
@@ -208,7 +229,13 @@
     "answer": [
       "Logcat"
     ],
-    "explain": "From the answer key: Logcat is the logging window in Android Studio. It shows system logs, stack traces, and messages from the Log class such as Log.d(), Log.i(), and Log.e()."
+    "explain": "From the answer key: Logcat is the logging window in Android Studio. It shows system logs, stack traces, and messages from the Log class such as Log.d(), Log.i(), and Log.e().",
+    "why": {
+      "Logcat": "From the answer key: Logcat is the logging window in Android Studio. It shows system logs, stack traces, and messages from the Log class such as Log.d(), Log.i(), and Log.e().",
+      "GradleLog": "GradleLog is not the Android Studio window named in the answer key.",
+      "EmulatorLog": "EmulatorLog is not the logging tool the key names.",
+      "LogMessage": "LogMessage is not a window. Messages are written with Log and read in Logcat."
+    }
   },
   {
     "type": "single",
@@ -222,7 +249,13 @@
     "answer": [
       "onStart()"
     ],
-    "explain": "From the answer key: onStart() runs when the Activity becomes visible, before foreground focus. onResume() is next, when it is fully interactive."
+    "explain": "From the answer key: onStart() runs when the Activity becomes visible, before foreground focus. onResume() is next, when it is fully interactive.",
+    "why": {
+      "onStart()": "From the answer key: onStart() runs when the Activity becomes visible, before foreground focus. onResume() is next, when it is fully interactive.",
+      "onCreate()": "onCreate() is not visible and not interactive. It only creates the activity and sets up the layout.",
+      "onStop()": "onStop() is not visible and not interactive because the activity is hidden.",
+      "onResume()": "onResume() is already visible and interactive. The user can touch it. That is one step after merely visible."
+    }
   },
   {
     "type": "single",
@@ -236,7 +269,13 @@
     "answer": [
       "Not visible and not interactive — the Activity is created; set up layouts and static initialization"
     ],
-    "explain": "That is the answer key row for onCreate()."
+    "explain": "That is the answer key row for onCreate().",
+    "why": {
+      "Not visible and not interactive — the Activity is created; set up layouts and static initialization": "That is the answer key row for onCreate().",
+      "Visible and interactive": "Visible and interactive is onResume().",
+      "Partially visible and losing focus": "Partially visible and losing focus is onPause().",
+      "Visible but not interactive": "Visible but not interactive is onStart(), after creation."
+    }
   },
   {
     "type": "single",
@@ -250,7 +289,13 @@
     "answer": [
       "Visible and interactive — the Activity is in the foreground and ready for touch and focus"
     ],
-    "explain": "That is the answer key row for onResume()."
+    "explain": "That is the answer key row for onResume().",
+    "why": {
+      "Visible and interactive — the Activity is in the foreground and ready for touch and focus": "That is the answer key row for onResume().",
+      "Not visible and not interactive": "Not visible and not interactive fits onCreate() or onStop(), not the foreground.",
+      "Visible but not interactive": "Visible but not interactive is onStart(), before the activity gains focus.",
+      "Not visible because the Activity is hidden": "Hidden is onStop(). onResume() is in front and ready for touch."
+    }
   },
   {
     "type": "single",
@@ -264,7 +309,13 @@
     "answer": [
       "Partially visible and losing focus — another activity is coming into focus, so pause light tasks"
     ],
-    "explain": "That is the answer key row for onPause()."
+    "explain": "That is the answer key row for onPause().",
+    "why": {
+      "Partially visible and losing focus — another activity is coming into focus, so pause light tasks": "That is the answer key row for onPause().",
+      "Not visible; the Activity is being created": "Being created and not visible is onCreate().",
+      "Visible and fully interactive": "Fully interactive is onResume(), which is the state being left.",
+      "Not visible; release non-essential resources because the Activity is hidden": "Hidden, with non-essential resources released, is onStop()."
+    }
   },
   {
     "type": "single",
@@ -278,7 +329,13 @@
     "answer": [
       "Not visible and not interactive — the Activity is hidden; release non-essential resources"
     ],
-    "explain": "That is the answer key row for onStop()."
+    "explain": "That is the answer key row for onStop().",
+    "why": {
+      "Not visible and not interactive — the Activity is hidden; release non-essential resources": "That is the answer key row for onStop().",
+      "Visible and interactive": "Visible and interactive is onResume().",
+      "Visible but not interactive": "Visible but not interactive is onStart().",
+      "Partially visible and losing focus": "Partially visible and losing focus is onPause(), just before the activity is fully hidden."
+    }
   },
   {
     "type": "single",
@@ -292,7 +349,13 @@
     "answer": [
       "Mutable — it can be reassigned"
     ],
-    "explain": "val is read-only. var is mutable. const val is a compile-time constant."
+    "explain": "val is read-only. var is mutable. const val is a compile-time constant.",
+    "why": {
+      "Mutable — it can be reassigned": "val is read-only. var is mutable. const val is a compile-time constant.",
+      "Read-only immutable reference": "Read-only is val, not var.",
+      "Compile-time constant": "A compile-time constant is const val.",
+      "A Float suffix": "A Float suffix is f or F on a number, not a variable keyword."
+    }
   },
   {
     "type": "single",
@@ -306,7 +369,13 @@
     "answer": [
       "A compile-time constant"
     ],
-    "explain": "const val is the compile-time constant form."
+    "explain": "const val is the compile-time constant form.",
+    "why": {
+      "A compile-time constant": "const val is the compile-time constant form.",
+      "A value that can be reassigned": "A value that can be reassigned is var.",
+      "A Double literal": "A Double literal is a decimal such as 25.5 with no f suffix.",
+      "A Logcat filter": "Logcat is the log window, not a Kotlin declaration."
+    }
   },
   {
     "type": "single",
@@ -320,7 +389,13 @@
     "answer": [
       "25.5"
     ],
-    "explain": "The answer key: 25.5f or 25.5F is Float, 25.5 is Double, 25L is Long."
+    "explain": "The answer key: 25.5f or 25.5F is Float, 25.5 is Double, 25L is Long.",
+    "why": {
+      "25.5": "The answer key: 25.5f or 25.5F is Float, 25.5 is Double, 25L is Long.",
+      "25.5f": "The f suffix forces a Float.",
+      "25.5F": "The F suffix also forces a Float.",
+      "25L": "The L suffix makes a Long, not a Double."
+    }
   },
   {
     "type": "single",
@@ -334,7 +409,13 @@
     "answer": [
       "25L"
     ],
-    "explain": "The answer key lists 25L as Long."
+    "explain": "The answer key lists 25L as Long.",
+    "why": {
+      "25L": "The answer key lists 25L as Long.",
+      "25.5f": "25.5f is a Float.",
+      "25.5": "25.5 is a Double by default.",
+      "25.5F": "25.5F is also a Float."
+    }
   }
 ];
 
@@ -391,7 +472,7 @@
       const need = q.need || (q.type === "multi" ? q.answer.length : 1);
       panel.innerHTML = `<p class="q">${q.q}</p>
         ${q.type === "multi" ? `<p class="hint">${q.hint || ("Select " + need + ", then check.")}</p>` : ""}
-        <div id="opts">${q.options.map((opt) => `<button class="opt" data-v="${encodeURIComponent(opt)}">${opt}</button>`).join("")}</div>
+        <div id="opts">${q.options.map((opt) => `<button class="opt" data-v="${encodeURIComponent(opt)}">${esc(opt)}</button>`).join("")}</div>
         <div class="actions">
           ${q.type === "multi" ? `<button class="btn" id="check" disabled>Check</button>` : ""}
         </div>
@@ -450,11 +531,34 @@
       after(ok, q, q.explain || ("Correct: " + q.answer.join(" · ")));
     }
 
+    const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+
+    function reasonBlock(q) {
+      if (q.type === "match") {
+        const labels = {};
+        (q.choices || []).forEach((c) => { labels[c.v] = c.l; });
+        const lines = (q.items || []).map((item) => `<li><b>${esc(item)}</b> — ${esc(labels[q.map[item]] || q.map[item])}</li>`).join("");
+        return `<p class="why-h">WHY THIS IS RIGHT</p><ul class="why">${lines}</ul><p>${esc(q.explain || "")}</p>`;
+      }
+      const why = q.why || {};
+      const right = (q.answer || []).map((a) => `<li><b>${esc(a)}</b> — ${esc(why[a] || q.explain || "")}</li>`).join("");
+      const wrong = (q.options || []).filter((o) => !(q.answer || []).includes(o)).map((o) => `<li><b>${esc(o)}</b> — ${esc(why[o] || "")}</li>`).join("");
+      return `<p class="why-h">WHY THIS IS RIGHT</p><ul class="why">${right}</ul>` +
+        (wrong ? `<p class="why-h">WHY THE OTHERS ARE WRONG</p><ul class="why">${wrong}</ul>` : "");
+    }
+
     function after(ok, q, msg) {
       if (ok) correct++; else missed.push({ q: q.q, msg });
       const fb = document.getElementById("fb");
       fb.className = "fb " + (ok ? "ok" : "no");
-      fb.textContent = ok ? "Correct. " + msg : "Not quite. " + msg;
+      fb.textContent = ok ? "Correct." : "Not quite.";
+      let box = document.getElementById("reasons");
+      if (!box) {
+        box = document.createElement("div");
+        box.id = "reasons";
+        fb.after(box);
+      }
+      box.innerHTML = reasonBlock(q);
       scoreline.textContent = "Score " + correct;
       const actions = panel.querySelector(".actions");
       actions.innerHTML = `<button class="btn" id="next">${i + 1 === deck.length ? "See results" : "Next"}</button>`;

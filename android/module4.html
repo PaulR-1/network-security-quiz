@@ -137,6 +137,9 @@
     a.mod .n { color: var(--accent); font-size: 0.8rem; font-weight: 650; letter-spacing: .04em; }
     a.mod h2 { margin: 6px 0 6px; font-size: 1.12rem; font-weight: 650; }
     a.mod p { margin: 0; color: var(--muted); font-size: 0.92rem; line-height: 1.4; }
+    .why-h { font-size: 0.8rem; color: var(--muted); margin: 12px 0 4px; font-weight: 650; letter-spacing: .03em; }
+    .why { margin: 0; padding-left: 18px; }
+    .why li { margin: 0 0 6px; font-size: 0.9rem; line-height: 1.4; color: var(--text); }
 
   </style>
 </head>
@@ -166,7 +169,13 @@
     "answer": [
       "The series of states an activity or fragment goes through from creation to destruction"
     ],
-    "explain": "Each phase has a job, from setting up the interface to cleanup."
+    "explain": "Each phase has a job, from setting up the interface to cleanup.",
+    "why": {
+      "The series of states an activity or fragment goes through from creation to destruction": "Each phase has a job, from setting up the interface to cleanup.",
+      "A list of Kotlin data types": "Data types are a Kotlin topic, not the lifecycle.",
+      "The Gradle build order only": "Gradle builds the project; it is not the activity lifecycle.",
+      "A way to declare val and var": "val and var declare variables. They do not describe activity states."
+    }
   },
   {
     "type": "single",
@@ -180,7 +189,13 @@
     "answer": [
       "Calling functions contained in the Activity class, even when those functions are not visible in our Kotlin code"
     ],
-    "explain": "Android calls the Activity functions at the right time."
+    "explain": "Android calls the Activity functions at the right time.",
+    "why": {
+      "Calling functions contained in the Activity class, even when those functions are not visible in our Kotlin code": "Android calls the Activity functions at the right time.",
+      "Only running code we wrote inside main()": "Android apps do not start from a main() you call yourself.",
+      "Waiting until we manually call every lifecycle method": "Android calls these methods. You do not have to invoke each one by hand.",
+      "Reading the XML layout and skipping Kotlin": "The layout is only the UI. Android still calls the Activity methods."
+    }
   },
   {
     "type": "single",
@@ -194,7 +209,13 @@
     "answer": [
       "When Android calls onCreate, it should use our version because we have code we want to run"
     ],
-    "explain": "override fun onCreate(...) replaces the base behavior with ours."
+    "explain": "override fun onCreate(...) replaces the base behavior with ours.",
+    "why": {
+      "When Android calls onCreate, it should use our version because we have code we want to run": "override fun onCreate(...) replaces the base behavior with ours.",
+      "onCreate is deleted from the Activity class": "override does not delete the function. It replaces the body Android will run.",
+      "The function is never called again": "Android still calls onCreate. Override is how our code runs when it does.",
+      "Android skips our code and uses only the empty base method": "The point of override is that Android runs our version, not only the empty base method."
+    }
   },
   {
     "type": "single",
@@ -208,7 +229,13 @@
     "answer": [
       "An interruption (such as a phone call) can hide the app, and unsaved data like a reminder can be lost if we do not handle the lifecycle"
     ],
-    "explain": "These functions control the life and death of our code."
+    "explain": "These functions control the life and death of our code.",
+    "why": {
+      "An interruption (such as a phone call) can hide the app, and unsaved data like a reminder can be lost if we do not handle the lifecycle": "These functions control the life and death of our code.",
+      "Lifecycle methods only change the app icon": "The icon is not what these callbacks manage.",
+      "They exist only for logging and never affect data": "Logging is optional. The callbacks exist so we can save and restore real user data.",
+      "Android automatically saves every keystroke with no code": "Nothing is saved unless we write that code, usually in onPause and onResume."
+    }
   },
   {
     "type": "multi",
@@ -226,7 +253,14 @@
       "Being destroyed"
     ],
     "need": 3,
-    "explain": "The phases are: being created, starting, resuming, running, pausing, stopping, being destroyed."
+    "explain": "The phases are: being created, starting, resuming, running, pausing, stopping, being destroyed.",
+    "why": {
+      "Being created": "The lifecycle starts when the activity is being created.",
+      "Running": "Running is one of the listed phases, after resuming.",
+      "Being destroyed": "Being destroyed is the last phase.",
+      "Compiling": "Compiling is a build step, not a lifecycle phase.",
+      "Linking": "Linking combines code for a build. It is not an activity phase."
+    }
   },
   {
     "type": "single",
@@ -240,7 +274,13 @@
     "answer": [
       "The Activity is being created — initialization and setup, including the UI via setContentView, graphics, and sound"
     ],
-    "explain": "This is where we get the app ready."
+    "explain": "This is where we get the app ready.",
+    "why": {
+      "The Activity is being created — initialization and setup, including the UI via setContentView, graphics, and sound": "This is where we get the app ready.",
+      "The Activity is finally destroyed": "Destruction is onDestroy, the last callback, not the setup callback.",
+      "The Activity is pausing and should release animations": "Pausing tasks and animations belongs in onPause.",
+      "The Activity is visible but not yet interactive": "Visible but not interactive is onStart."
+    }
   },
   {
     "type": "single",
@@ -254,7 +294,13 @@
     "answer": [
       "R.layout.activity_main"
     ],
-    "explain": "The demo loads activity_main during creation."
+    "explain": "The demo loads activity_main during creation.",
+    "why": {
+      "R.layout.activity_main": "The demo loads activity_main during creation.",
+      "R.id.btnSubmit": "R.id.btnSubmit is a view id for findViewById, not the layout passed to setContentView.",
+      "SecondActivity::class.java": "SecondActivity::class.java is an explicit Intent destination, not a layout.",
+      "Log.i only, with no layout": "The demo does log, but it also calls setContentView with the layout."
+    }
   },
   {
     "type": "single",
@@ -268,7 +314,13 @@
     "answer": [
       "The activity is in the starting phase: becoming visible to the user, but not yet interactive"
     ],
-    "explain": "Visible, but the user cannot interact yet."
+    "explain": "Visible, but the user cannot interact yet.",
+    "why": {
+      "The activity is in the starting phase: becoming visible to the user, but not yet interactive": "Visible, but the user cannot interact yet.",
+      "The activity is destroyed": "Destroyed is onDestroy.",
+      "The activity is fully interactive in the foreground": "Fully interactive is onResume, which comes after onStart.",
+      "The activity is only being created and the UI is not set up": "Creation and first UI setup happen in onCreate, before onStart."
+    }
   },
   {
     "type": "single",
@@ -282,7 +334,13 @@
     "answer": [
       "The Activity is resuming after it was previously paused"
     ],
-    "explain": "A typical case is returning after a phone call or another app."
+    "explain": "A typical case is returning after a phone call or another app.",
+    "why": {
+      "The Activity is resuming after it was previously paused": "A typical case is returning after a phone call or another app.",
+      "The Activity is being created for the first time only": "First creation is onCreate. onResume also runs again after a pause.",
+      "The Activity is in onDestroy": "onDestroy is the end. There is no resume from that same instance.",
+      "The process is compiling": "Compiling is a build step, not a lifecycle entry."
+    }
   },
   {
     "type": "single",
@@ -296,7 +354,13 @@
     "answer": [
       "Reload previously saved user data, such as an important note, after the app was interrupted"
     ],
-    "explain": "Restore what was saved when the app was paused."
+    "explain": "Restore what was saved when the app was paused.",
+    "why": {
+      "Reload previously saved user data, such as an important note, after the app was interrupted": "Restore what was saved when the app was paused.",
+      "Call setContentView for the first time": "setContentView belongs in onCreate, when the UI is first prepared.",
+      "Permanently delete the Activity": "Deleting the activity is onDestroy, not a resume.",
+      "Declare a Float literal": "A Float literal is a Kotlin type, unrelated to restoring a note."
+    }
   },
   {
     "type": "single",
@@ -310,7 +374,13 @@
     "answer": [
       "Save unsaved data, pause ongoing tasks, stop animations, and release resources that are not needed while the user is not interacting"
     ],
-    "explain": "Data saved here can be reloaded when the Activity resumes."
+    "explain": "Data saved here can be reloaded when the Activity resumes.",
+    "why": {
+      "Save unsaved data, pause ongoing tasks, stop animations, and release resources that are not needed while the user is not interacting": "Data saved here can be reloaded when the Activity resumes.",
+      "Inflate the layout for the first time": "The layout is set up in onCreate, not when pausing.",
+      "Destroy the process with no chance to save": "onPause is specifically the chance to save before the user leaves. Destruction comes later.",
+      "Start the Activity from another app": "Starting another activity is an Intent, not the pause callback."
+    }
   },
   {
     "type": "single",
@@ -324,7 +394,13 @@
     "answer": [
       "Undo work from onCreate, such as releasing system resources or writing information to a database"
     ],
-    "explain": "If we reach onStop, the Activity is probably going to be destroyed soon."
+    "explain": "If we reach onStop, the Activity is probably going to be destroyed soon.",
+    "why": {
+      "Undo work from onCreate, such as releasing system resources or writing information to a database": "If we reach onStop, the Activity is probably going to be destroyed soon.",
+      "Show the UI for the first time": "First UI setup is onCreate.",
+      "Make the Activity interactive": "Becoming interactive is onResume.",
+      "Declare findViewById variables": "findViewById connects Kotlin to XML views. It is not the stopping phase."
+    }
   },
   {
     "type": "single",
@@ -338,7 +414,13 @@
     "answer": [
       "The Activity is finally being destroyed; this is the last chance to dismantle the app, and the next launch starts the lifecycle from the beginning"
     ],
-    "explain": "There is no turning back at this phase."
+    "explain": "There is no turning back at this phase.",
+    "why": {
+      "The Activity is finally being destroyed; this is the last chance to dismantle the app, and the next launch starts the lifecycle from the beginning": "There is no turning back at this phase.",
+      "The Activity is pausing and can still resume immediately in the same instance": "Pausing is onPause. A paused activity can still resume. Destroyed cannot.",
+      "The Activity is becoming visible": "Becoming visible is onStart.",
+      "The Activity is running and interactive": "Running and interactive is the resumed foreground state, not destruction."
+    }
   },
   {
     "type": "single",
@@ -352,7 +434,13 @@
     "answer": [
       "Log.i(\"info\", \"In onCreate\") and the same pattern for onStart, onResume, onPause, onStop, and onDestroy"
     ],
-    "explain": "Each override logs that it was entered."
+    "explain": "Each override logs that it was entered.",
+    "why": {
+      "Log.i(\"info\", \"In onCreate\") and the same pattern for onStart, onResume, onPause, onStop, and onDestroy": "Each override logs that it was entered.",
+      "println only, with no Log class": "The demo uses Android's Log class, not println.",
+      "Toast messages instead of logs": "No Toast is shown in the demo.",
+      "System.out in onCreate only": "Every callback logs, not only onCreate, and it uses Log.i rather than System.out."
+    }
   },
   {
     "type": "single",
@@ -366,7 +454,13 @@
     "answer": [
       "Calling the superclass version, such as super.onCreate(savedInstanceState) or super.onStart()"
     ],
-    "explain": "The overrides still call through to AppCompatActivity."
+    "explain": "The overrides still call through to AppCompatActivity.",
+    "why": {
+      "Calling the superclass version, such as super.onCreate(savedInstanceState) or super.onStart()": "The overrides still call through to AppCompatActivity.",
+      "Skipping super so Android never sees the callback": "Skipping super drops the base Activity work. The demo calls super first.",
+      "Calling onDestroy first": "onDestroy is not the first call inside the other callbacks.",
+      "Starting a new Activity": "The demo does not start another Activity from these methods."
+    }
   },
   {
     "type": "single",
@@ -380,7 +474,13 @@
     "answer": [
       "AppCompatActivity"
     ],
-    "explain": "class MainActivity : AppCompatActivity()"
+    "explain": "class MainActivity : AppCompatActivity()",
+    "why": {
+      "AppCompatActivity": "class MainActivity : AppCompatActivity()",
+      "Fragment only": "The demo class is an Activity, not only a Fragment.",
+      "Intent": "Intent is how you open another component. It is not the superclass.",
+      "TextView": "TextView is a widget you look up with findViewById, not the Activity superclass."
+    }
   },
   {
     "type": "single",
@@ -394,7 +494,13 @@
     "answer": [
       "Go through the lifecycle phases from the beginning"
     ],
-    "explain": "A destroyed Activity is not resumed; a new one is created."
+    "explain": "A destroyed Activity is not resumed; a new one is created.",
+    "why": {
+      "Go through the lifecycle phases from the beginning": "A destroyed Activity is not resumed; a new one is created.",
+      "Resume directly in onResume of the destroyed instance": "There is no turning back from onDestroy. The old instance does not resume.",
+      "Skip onCreate forever": "The next use starts at the beginning, which includes onCreate.",
+      "Stay in the running phase": "Running is a later phase. A new launch does not stay there."
+    }
   },
   {
     "type": "match",
@@ -499,7 +605,7 @@
       const need = q.need || (q.type === "multi" ? q.answer.length : 1);
       panel.innerHTML = `<p class="q">${q.q}</p>
         ${q.type === "multi" ? `<p class="hint">${q.hint || ("Select " + need + ", then check.")}</p>` : ""}
-        <div id="opts">${q.options.map((opt) => `<button class="opt" data-v="${encodeURIComponent(opt)}">${opt}</button>`).join("")}</div>
+        <div id="opts">${q.options.map((opt) => `<button class="opt" data-v="${encodeURIComponent(opt)}">${esc(opt)}</button>`).join("")}</div>
         <div class="actions">
           ${q.type === "multi" ? `<button class="btn" id="check" disabled>Check</button>` : ""}
         </div>
@@ -558,11 +664,34 @@
       after(ok, q, q.explain || ("Correct: " + q.answer.join(" · ")));
     }
 
+    const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+
+    function reasonBlock(q) {
+      if (q.type === "match") {
+        const labels = {};
+        (q.choices || []).forEach((c) => { labels[c.v] = c.l; });
+        const lines = (q.items || []).map((item) => `<li><b>${esc(item)}</b> — ${esc(labels[q.map[item]] || q.map[item])}</li>`).join("");
+        return `<p class="why-h">WHY THIS IS RIGHT</p><ul class="why">${lines}</ul><p>${esc(q.explain || "")}</p>`;
+      }
+      const why = q.why || {};
+      const right = (q.answer || []).map((a) => `<li><b>${esc(a)}</b> — ${esc(why[a] || q.explain || "")}</li>`).join("");
+      const wrong = (q.options || []).filter((o) => !(q.answer || []).includes(o)).map((o) => `<li><b>${esc(o)}</b> — ${esc(why[o] || "")}</li>`).join("");
+      return `<p class="why-h">WHY THIS IS RIGHT</p><ul class="why">${right}</ul>` +
+        (wrong ? `<p class="why-h">WHY THE OTHERS ARE WRONG</p><ul class="why">${wrong}</ul>` : "");
+    }
+
     function after(ok, q, msg) {
       if (ok) correct++; else missed.push({ q: q.q, msg });
       const fb = document.getElementById("fb");
       fb.className = "fb " + (ok ? "ok" : "no");
-      fb.textContent = ok ? "Correct. " + msg : "Not quite. " + msg;
+      fb.textContent = ok ? "Correct." : "Not quite.";
+      let box = document.getElementById("reasons");
+      if (!box) {
+        box = document.createElement("div");
+        box.id = "reasons";
+        fb.after(box);
+      }
+      box.innerHTML = reasonBlock(q);
       scoreline.textContent = "Score " + correct;
       const actions = panel.querySelector(".actions");
       actions.innerHTML = `<button class="btn" id="next">${i + 1 === deck.length ? "See results" : "Next"}</button>`;
