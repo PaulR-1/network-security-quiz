@@ -3,376 +3,53 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Network &amp; Security Quiz</title>
+  <title>Reviewers</title>
   <style>
-    :root {
-      --bg: #0f1419;
-      --card: #1a2332;
-      --line: #2a3a4f;
-      --text: #e8eef6;
-      --muted: #8fa3b8;
-      --accent: #3d8bfd;
-      --good: #2fbf71;
-      --bad: #e85d5d;
-      --pick: #24324a;
-    }
+    :root { --bg:#0f1419; --card:#1a2332; --line:#2a3a4f; --text:#e8eef6; --muted:#8fa3b8; --accent:#3d8bfd; }
     * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: "Segoe UI", system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-    }
-    .wrap { max-width: 720px; margin: 0 auto; padding: 28px 20px 64px; }
-    h1 { font-size: 1.35rem; margin: 0 0 6px; font-weight: 650; }
-    .sub { color: var(--muted); margin: 0 0 22px; font-size: 0.95rem; }
-    .bar {
-      height: 6px;
-      background: var(--line);
-      border-radius: 99px;
-      overflow: hidden;
-      margin-bottom: 18px;
-    }
-    .bar > i {
-      display: block;
-      height: 100%;
-      width: 0;
-      background: var(--accent);
-      transition: width .2s ease;
-    }
-    .meta { display: flex; justify-content: space-between; color: var(--muted); font-size: 0.85rem; margin-bottom: 14px; }
-    .card {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 20px;
-    }
-    .q { font-size: 1.08rem; line-height: 1.45; margin: 0 0 16px; }
-    .hint { color: var(--muted); font-size: 0.82rem; margin: -8px 0 14px; }
-    .opt {
-      display: flex;
-      gap: 10px;
-      align-items: flex-start;
-      width: 100%;
-      text-align: left;
-      background: var(--pick);
-      border: 1px solid var(--line);
-      color: var(--text);
-      border-radius: 10px;
-      padding: 11px 12px;
-      margin: 0 0 8px;
-      cursor: pointer;
-      font-size: 0.95rem;
-    }
-    .opt:hover { border-color: var(--accent); }
-    .opt.sel { border-color: var(--accent); background: #1d3358; }
-    .opt.ok { border-color: var(--good); background: #163528; }
-    .opt.no { border-color: var(--bad); background: #3a1e24; }
-    .opt:disabled { cursor: default; }
-    .match { display: grid; gap: 10px; }
-    .row {
-      display: grid;
-      grid-template-columns: 1fr 160px;
-      gap: 10px;
-      align-items: center;
-    }
-    .row span { font-size: 0.95rem; }
-    select {
-      width: 100%;
-      background: var(--pick);
-      color: var(--text);
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 8px;
-    }
-    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
-    button.btn {
-      border: 0;
-      border-radius: 10px;
-      padding: 10px 16px;
-      font-size: 0.95rem;
-      cursor: pointer;
-      background: var(--accent);
-      color: #fff;
-      font-weight: 600;
-    }
-    button.btn.ghost {
-      background: transparent;
-      border: 1px solid var(--line);
-      color: var(--text);
-    }
-    button.btn:disabled { opacity: .45; cursor: default; }
-    .fb { margin-top: 12px; font-size: 0.92rem; }
-    .fb.ok { color: var(--good); }
-    .fb.no { color: #ff8b8b; }
-    .score { font-size: 2.2rem; font-weight: 700; margin: 8px 0; }
-    .miss { margin-top: 16px; }
-    .miss li { margin: 0 0 10px; color: var(--muted); font-size: 0.9rem; }
-    .miss b { color: var(--text); }
+    body { margin:0; min-height:100vh; font-family:"Segoe UI",system-ui,sans-serif; background:var(--bg); color:var(--text); }
+    .wrap { max-width:720px; margin:0 auto; padding:28px 20px 64px; }
+    h1 { font-size:1.35rem; margin:0 0 6px; font-weight:650; }
+    .sub { color:var(--muted); margin:0 0 22px; font-size:0.95rem; }
+    .dir { display:grid; gap:12px; }
+    a.mod { display:block; background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px 20px; color:var(--text); text-decoration:none; }
+    a.mod:hover { border-color:var(--accent); }
+    a.mod .n { color:var(--accent); font-size:0.8rem; font-weight:650; letter-spacing:.04em; }
+    a.mod h2 { margin:6px 0 6px; font-size:1.12rem; font-weight:650; }
+    a.mod p { margin:0; color:var(--muted); font-size:0.92rem; line-height:1.4; }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <h1>Network &amp; Security review quiz</h1>
-    <p class="sub">From your exam review PDF. Questions shuffle each round. Replay as many times as you want.</p>
-    <div class="bar"><i id="prog"></i></div>
-    <div class="meta">
-      <span id="count"></span>
-      <span id="scoreline"></span>
+    <h1>Reviewers</h1>
+    <p class="sub">Pick a set. Each quiz shuffles every round. The Android set also explains why the right answer is right and why the others are wrong.</p>
+    <div class="dir">
+      <a class="mod" href="network/index.html">
+        <div class="n">EXAM</div>
+        <h2>Network and security</h2>
+        <p>OSPF, ACLs, and security questions from the exam review.</p>
+      </a>
+      <a class="mod" href="electronics/index.html">
+        <div class="n">MODULE 1</div>
+        <h2>Introduction to electronics</h2>
+        <p>Charge, voltage, current, resistance, Ohm's law, power, and the practice problems.</p>
+      </a>
+      <a class="mod" href="semiconductor/index.html">
+        <div class="n">MODULE 2</div>
+        <h2>Semiconductor physics</h2>
+        <p>Atoms, conductors, doping, and the PN junction.</p>
+      </a>
+      <a class="mod" href="os/index.html">
+        <div class="n">OPERATING SYSTEMS</div>
+        <h2>OS reviewers</h2>
+        <p>Introduction, services, and processes. Each module has its own quiz.</p>
+      </a>
+      <a class="mod" href="android/index.html">
+        <div class="n">ANDROID AND KOTLIN</div>
+        <h2>Modules 4 and 5, plus the exam</h2>
+        <p>Lifecycle, variables and logic, and the quiz-solutions exam. Answers include why each choice is right or wrong.</p>
+      </a>
     </div>
-    <div class="card" id="panel"></div>
   </div>
-  <script>
-    const BANK = [
-      { id: 5, type: "single", q: "Why is network segmentation important in security?",
-        options: ["It reduces network performance", "It limits the spread of malware", "It increases network latency", "It simplifies network management"],
-        answer: ["It limits the spread of malware"] },
-      { id: 6, type: "multi", q: "Which OSPF network types can be configured on a router? (Select two)",
-        options: ["Non-broadcast multiple access (NBMA)", "Static", "Broadcast", "Point-to-Point"],
-        answer: ["Broadcast", "Point-to-Point"] },
-      { id: 7, type: "single", q: "What is the main purpose of an Intrusion Detection System (IDS)?",
-        options: ["To prevent unauthorized access", "To encrypt sensitive data", "To manage network traffic", "To detect and alert on suspicious activities"],
-        answer: ["To detect and alert on suspicious activities"] },
-      { id: 8, type: "single", q: "During this OSPF state, no Hello packets are received.",
-        options: ["Full State", "Exchange State", "Down State", "Two-Way State", "ExStart State", "Loading State", "Init State"],
-        answer: ["Down State"] },
-      { id: 9, type: "single", q: "A network engineer needs to control traffic based not only on IP addresses but also on specific protocols and ports. Which type of ACL is required?",
-        options: ["Named Extended ACL", "Named Standard ACL", "Numbered Standard ACL", "Numbered Extended ACL"],
-        answer: ["Numbered Extended ACL"] },
-      { id: 10, type: "single", q: "What is the role of security policies in an organization?",
-        options: ["To replace hardware", "To define acceptable use of resources", "To ensure high-speed internet access", "To eliminate the need for training"],
-        answer: ["To define acceptable use of resources"] },
-      { id: 12, type: "single", q: "What is a best practice regarding OSPF and loopback interfaces?",
-        options: ["Loopback interfaces should always be included in OSPF area 0", "Loopback interfaces should be configured as passive interfaces", "Loopback interfaces should be assigned the highest IP address for the Router ID", "Loopback interfaces should not be used in OSPF configurations"],
-        answer: ["Loopback interfaces should be configured as passive interfaces"] },
-      { id: 13, type: "single", q: "What does an OSPF area contain?",
-        options: ["routers that have the same link-state information in their LSDBs", "routers whose SPF trees are identical", "routers that share the same process ID", "routers that share the same router ID"],
-        answer: ["routers that have the same link-state information in their LSDBs"] },
-      { id: 14, type: "single", q: "What is the primary purpose of a Virtual Private Network (VPN)?",
-        options: ["To create a secure connection over the internet", "To speed up internet connections", "To filter network traffic", "To block malware"],
-        answer: ["To create a secure connection over the internet"] },
-      { id: 16, type: "single", q: "Which configuration allows OSPF to form adjacencies in a non-broadcast multi-access (NBMA) network?",
-        options: ["Configuring a designated router", "Enabling passive interfaces", "Specifying neighbor addresses manually", "Using the broadcast network type"],
-        answer: ["Specifying neighbor addresses manually"] },
-      { id: 17, type: "single", q: "Which of the following statements is true regarding point-to-point OSPF networks?",
-        options: ["They establish neighbor relationships directly without a DR", "They can have multiple routers on the same subnet", "They are less efficient than multi-access networks", "They require a designated router (DR) for operation"],
-        answer: ["They establish neighbor relationships directly without a DR"] },
-      { id: 18, type: "single", q: "How can a default route be propagated in OSPF?",
-        options: ["By configuring a summary route", "By using the command default-information originate", "By setting the Router ID to zero", "By configuring static routes on each router"],
-        answer: ["By using the command default-information originate"] },
-      { id: 19, type: "single", q: "What algorithm does OSPF use to compute the shortest path tree?",
-        options: ["Dijkstra's", "Bellman-Ford", "A* Search", "Floyd-Warshall"],
-        answer: ["Dijkstra's"] },
-      { id: 20, type: "multi", q: "Which of the following can be controlled by an extended ACL? (Select two)",
-        options: ["Port number", "MAC address", "Source IP address", "Protocol type"],
-        answer: ["Port number", "Protocol type"] },
-      { id: 21, type: "single", q: "You need to restrict access to a sensitive internal server. What is the primary purpose of implementing an ACL?",
-        options: ["To enhance network speed", "To provide redundancy", "To filter traffic based on specified criteria", "To manage bandwidth"],
-        answer: ["To filter traffic based on specified criteria"] },
-      { id: 22, type: "single", q: "What is the purpose of sequence numbers in a named ACL?",
-        options: ["To indicate the direction of traffic", "To define the order of ACL statements", "To increase security", "To specify the type of traffic"],
-        answer: ["To define the order of ACL statements"] },
-      { id: 23, type: "single", q: "What is the primary goal of a phishing attack?",
-        options: ["To disrupt services", "To install malware", "To exploit software vulnerabilities", "To steal sensitive information such as passwords"],
-        answer: ["To steal sensitive information such as passwords"] },
-      { id: 24, type: "single", q: "What type of attack exploits human psychology to gain confidential information?",
-        options: ["Phishing", "Cross-site scripting", "SQL injection", "Man-in-the-middle"],
-        answer: ["Phishing"] },
-      { id: 25, type: "single", q: "In which scenario would you typically use a standard ACL?",
-        options: ["To permit or deny access to specific applications", "To allow or deny traffic from specific subnets", "To control traffic based on user roles", "To filter web traffic based on HTTP and HTTPS protocols"],
-        answer: ["To allow or deny traffic from specific subnets"] },
-      { id: 26, type: "single", q: "What is the purpose of OSPF Hello packets?",
-        options: ["To propagate routing updates", "To calculate the shortest path", "To advertise external routes", "To establish and maintain neighbor relationships"],
-        answer: ["To establish and maintain neighbor relationships"] },
-      { id: 27, type: "single", q: "Which of the following OSPF packets is used by routers to announce new information?",
-        options: ["Type 5: LSAck packet", "Type 3: LSR packet", "Type 1: Hello packet", "Type 2: DBD packet", "Type 4: LSU packet"],
-        answer: ["Type 4: LSU packet"] },
-      { id: 28, type: "single", q: "What metric does OSPF use to determine the best path to a destination?",
-        options: ["Reliability", "Hop count", "Delay", "Bandwidth"],
-        answer: ["Bandwidth"] },
-      { id: 29, type: "single", q: "If no Router ID is manually configured, how does OSPF determine the Router ID?",
-        options: ["It generates a random Router ID", "It uses the lowest IP address on any active interface", "It takes the highest IP address of a loopback interface", "It uses the highest IP address on any active interface"],
-        answer: ["It takes the highest IP address of a loopback interface"] },
-      { id: 30, type: "match", q: "Determine which protocols are Routed Protocols and which are Routing Protocols.",
-        items: ["IP (Internet Protocol)", "IPX (Internetwork Packet Exchange)", "AppleTalk", "OSPF (Open Shortest Path First)", "RIP (Routing Information Protocol)", "BGP (Border Gateway Protocol)", "EIGRP (Enhanced Interior Gateway Routing Protocol)"],
-        map: {
-          "IP (Internet Protocol)": "Routed",
-          "IPX (Internetwork Packet Exchange)": "Routed",
-          "AppleTalk": "Routed",
-          "OSPF (Open Shortest Path First)": "Routing",
-          "RIP (Routing Information Protocol)": "Routing",
-          "BGP (Border Gateway Protocol)": "Routing",
-          "EIGRP (Enhanced Interior Gateway Routing Protocol)": "Routing"
-        } },
-      { id: 31, type: "single", q: "What is the range of numbers used for numbered extended ACLs in IPv4?",
-        options: ["1-99", "300-399", "100-199", "200-299"],
-        answer: ["100-199"] },
-      { id: 32, type: "single", q: "What is the purpose of the OSPF Router ID?",
-        options: ["To uniquely identify a router within an OSPF domain", "To distinguish between OSPF neighbors", "To determine the cost of OSPF routes", "To identify the OSPF process on a router"],
-        answer: ["To uniquely identify a router within an OSPF domain"] },
-      { id: 33, type: "single", q: "What is the primary function of a firewall?",
-        options: ["To monitor network traffic", "To encrypt data", "To provide antivirus protection", "To block unauthorized access"],
-        answer: ["To block unauthorized access"] },
-      { id: 34, type: "single", q: "Which command is used to create a named extended ACL on a Cisco router?",
-        options: ["acl create", "access-list", "ip acl", "ip access-list extended"],
-        answer: ["ip access-list extended"] },
-      { id: 36, type: "single", q: "In a multi-access OSPF network, what is the role of the designated router (DR)?",
-        options: ["To maintain the OSPF database for all routers", "To reduce the number of OSPF adjacencies", "To handle all routing updates for the network segment", "To calculate the shortest path tree"],
-        answer: ["To reduce the number of OSPF adjacencies"] },
-      { id: 37, type: "multi", q: "Which of the following are types of malware? (Select two)",
-        options: ["Virus", "VPN", "Firewall", "Trojan horse"],
-        answer: ["Virus", "Trojan horse"] }
-    ];
-
-    const shuffle = (arr) => [...arr].sort(() => Math.random() - 0.5);
-    const same = (a, b) => a.length === b.length && a.every((x) => b.includes(x));
-
-    let deck = [];
-    let i = 0;
-    let correct = 0;
-    let locked = false;
-    let missed = [];
-    let picked = new Set();
-
-    const panel = document.getElementById("panel");
-    const prog = document.getElementById("prog");
-    const count = document.getElementById("count");
-    const scoreline = document.getElementById("scoreline");
-
-    function start(pool) {
-      deck = shuffle(pool.map((q) => {
-        if (q.type === "match") return { ...q, items: shuffle(q.items) };
-        return { ...q, options: shuffle(q.options) };
-      }));
-      i = 0; correct = 0; missed = []; locked = false; picked = new Set();
-      render();
-    }
-
-    function render() {
-      if (i >= deck.length) return results();
-      const q = deck[i];
-      prog.style.width = ((i / deck.length) * 100) + "%";
-      count.textContent = "Question " + (i + 1) + " of " + deck.length + "  ·  #" + q.id;
-      scoreline.textContent = "Score " + correct;
-      locked = false; picked = new Set();
-
-      if (q.type === "match") {
-        panel.innerHTML = `<p class="q">${q.q}</p>
-          <p class="hint">Pick Routed or Routing for each protocol.</p>
-          <div class="match">${q.items.map((item, idx) => `
-            <div class="row">
-              <span>${item}</span>
-              <select data-item="${idx}">
-                <option value="">Choose…</option>
-                <option value="Routed">Routed protocol</option>
-                <option value="Routing">Routing protocol</option>
-              </select>
-            </div>`).join("")}</div>
-          <div class="actions"><button class="btn" id="check">Check</button></div>
-          <div class="fb" id="fb"></div>`;
-        document.getElementById("check").onclick = checkMatch;
-        return;
-      }
-
-      const need = q.type === "multi" ? 2 : 1;
-      panel.innerHTML = `<p class="q">${q.q}</p>
-        ${q.type === "multi" ? `<p class="hint">Select two answers, then check.</p>` : ""}
-        <div id="opts">${q.options.map((opt) => `<button class="opt" data-v="${encodeURIComponent(opt)}">${opt}</button>`).join("")}</div>
-        <div class="actions">
-          ${q.type === "multi" ? `<button class="btn" id="check" disabled>Check</button>` : ""}
-        </div>
-        <div class="fb" id="fb"></div>`;
-
-      panel.querySelectorAll(".opt").forEach((btn) => {
-        btn.onclick = () => {
-          if (locked) return;
-          const v = decodeURIComponent(btn.dataset.v);
-          if (q.type === "single") {
-            picked = new Set([v]);
-            finish(q);
-          } else {
-            if (picked.has(v)) picked.delete(v); else {
-              if (picked.size >= need) return;
-              picked.add(v);
-            }
-            panel.querySelectorAll(".opt").forEach((b) => {
-              b.classList.toggle("sel", picked.has(decodeURIComponent(b.dataset.v)));
-            });
-            document.getElementById("check").disabled = picked.size !== need;
-          }
-        };
-      });
-      const check = document.getElementById("check");
-      if (check) check.onclick = () => finish(q);
-    }
-
-    function checkMatch() {
-      if (locked) return;
-      const q = deck[i];
-      const selects = [...panel.querySelectorAll("select")];
-      if (selects.some((s) => !s.value)) return;
-      locked = true;
-      let ok = true;
-      selects.forEach((s, idx) => {
-        const item = q.items[idx];
-        const good = s.value === q.map[item];
-        if (!good) ok = false;
-        s.style.borderColor = good ? "var(--good)" : "var(--bad)";
-      });
-      after(ok, q, "Correct grouping: IP, IPX, AppleTalk = Routed. OSPF, RIP, BGP, EIGRP = Routing.");
-    }
-
-    function finish(q) {
-      if (locked) return;
-      locked = true;
-      const chosen = [...picked];
-      const ok = same(chosen, q.answer);
-      panel.querySelectorAll(".opt").forEach((b) => {
-        const v = decodeURIComponent(b.dataset.v);
-        b.disabled = true;
-        if (q.answer.includes(v)) b.classList.add("ok");
-        else if (picked.has(v)) b.classList.add("no");
-      });
-      after(ok, q, "Correct: " + q.answer.join(" · "));
-    }
-
-    function after(ok, q, msg) {
-      if (ok) correct++; else missed.push({ q: q.q, msg });
-      const fb = document.getElementById("fb");
-      fb.className = "fb " + (ok ? "ok" : "no");
-      fb.textContent = ok ? "Correct. " + msg : "Not quite. " + msg;
-      scoreline.textContent = "Score " + correct;
-      const actions = panel.querySelector(".actions");
-      actions.innerHTML = `<button class="btn" id="next">${i + 1 === deck.length ? "See results" : "Next"}</button>`;
-      document.getElementById("next").onclick = () => { i++; render(); };
-    }
-
-    function results() {
-      prog.style.width = "100%";
-      count.textContent = "Round complete";
-      scoreline.textContent = "";
-      const pct = Math.round((correct / deck.length) * 100);
-      panel.innerHTML = `
-        <p class="q">You scored</p>
-        <div class="score">${correct} / ${deck.length}</div>
-        <p class="sub" style="margin:0">${pct}% · ${missed.length ? missed.length + " to review" : "Clean round."}</p>
-        ${missed.length ? `<ul class="miss">${missed.map((m) => `<li><b>${m.q}</b><br>${m.msg}</li>`).join("")}</ul>` : ""}
-        <div class="actions">
-          <button class="btn" id="again">Play again (shuffle)</button>
-          ${missed.length ? `<button class="btn ghost" id="missed">Replay missed only</button>` : ""}
-        </div>`;
-      document.getElementById("again").onclick = () => start(BANK);
-      const missBtn = document.getElementById("missed");
-      if (missBtn) {
-        missBtn.onclick = () => {
-          const ids = new Set(missed.map((m) => m.q));
-          start(BANK.filter((q) => ids.has(q.q)));
-        };
-      }
-    }
-
-    start(BANK);
-  </script>
 </body>
 </html>

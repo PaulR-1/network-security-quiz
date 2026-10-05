@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Module 2 Reviewer — Semiconductor Physics</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --card: #1a2332;
+      --line: #2a3a4f;
+      --text: #e8eef6;
+      --muted: #8fa3b8;
+      --accent: #3d8bfd;
+      --good: #2fbf71;
+      --bad: #e85d5d;
+      --pick: #24324a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .wrap { max-width: 720px; margin: 0 auto; padding: 28px 20px 64px; }
+    h1 { font-size: 1.35rem; margin: 0 0 6px; font-weight: 650; }
+    .sub { color: var(--muted); margin: 0 0 22px; font-size: 0.95rem; }
+    .bar {
+      height: 6px;
+      background: var(--line);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+    .bar > i {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: var(--accent);
+      transition: width .2s ease;
+    }
+    .meta { display: flex; justify-content: space-between; color: var(--muted); font-size: 0.85rem; margin-bottom: 14px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 20px;
+    }
+    .q { font-size: 1.08rem; line-height: 1.45; margin: 0 0 16px; }
+    .hint { color: var(--muted); font-size: 0.82rem; margin: -8px 0 14px; }
+    .opt {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      width: 100%;
+      text-align: left;
+      background: var(--pick);
+      border: 1px solid var(--line);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 11px 12px;
+      margin: 0 0 8px;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+    .opt:hover { border-color: var(--accent); }
+    .opt.sel { border-color: var(--accent); background: #1d3358; }
+    .opt.ok { border-color: var(--good); background: #163528; }
+    .opt.no { border-color: var(--bad); background: #3a1e24; }
+    .opt:disabled { cursor: default; }
+    .match { display: grid; gap: 10px; }
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 180px;
+      gap: 10px;
+      align-items: center;
+    }
+    .row span { font-size: 0.95rem; }
+    select {
+      width: 100%;
+      background: var(--pick);
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px;
+    }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+    button.btn {
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+    }
+    button.btn.ghost {
+      background: transparent;
+      border: 1px solid var(--line);
+      color: var(--text);
+    }
+    button.btn:disabled { opacity: .45; cursor: default; }
+    .fb { margin-top: 12px; font-size: 0.92rem; }
+    .fb.ok { color: var(--good); }
+    .fb.no { color: #ff8b8b; }
+    .score { font-size: 2.2rem; font-weight: 700; margin: 8px 0; }
+    .miss { margin-top: 16px; }
+    .miss li { margin: 0 0 10px; color: var(--muted); font-size: 0.9rem; }
+    .miss b { color: var(--text); }
+
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a href="../index.html" style="display:inline-block;margin:0 0 16px;color:#8fa3b8;text-decoration:none;border:1px solid #2a3a4f;padding:7px 12px;border-radius:8px;font-size:0.85rem;">All reviewers</a>
+    <h1>Module 2 Reviewer — Semiconductor Physics</h1>
+    <p class="sub">From your Module 2 reviewer. Covers atoms, conductors/insulators/semiconductors, energy bands, covalent bonds, conduction, doping, and the PN junction. Shuffles every round.</p>
+    <div class="bar"><i id="prog"></i></div>
+    <div class="meta">
+      <span id="count"></span>
+      <span id="scoreline"></span>
+    </div>
+    <div class="card" id="panel"></div>
+  </div>
+  <script>
+    const BANK = [
+  {
+    "type": "single",
+    "q": "What is an atom?",
+    "options": [
+      "The smallest unit of matter that has the properties of an element",
+      "A particle with no charge found only in conductors",
+      "A free electron in the conduction band",
+      "A vacancy left behind in the valence band"
+    ],
+    "explain": "An atom is the smallest unit of matter that still has the properties of an element.",
+    "answer": [
+      "The smallest unit of matter that has the properties of an element"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Which particle is positive and found in the nucleus?",
+    "options": [
+      "Proton",
+      "Neutron",
+      "Electron",
+      "Hole"
+    ],
+    "explain": "Protons are positive (+) and live in the nucleus.",
+    "answer": [
+      "Proton"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Which particle is electrically neutral and found in the nucleus?",
+    "options": [
+      "Neutron",
+      "Proton",
+      "Electron",
+      "Photon"
+    ],
+    "explain": "Neutrons have charge 0 and are in the nucleus.",
+    "answer": [
+      "Neutron"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Where are electrons found in an atom?",
+    "options": [
+      "Orbiting in shells around the nucleus",
+      "Only inside the nucleus",
+      "Only in the valence band of metals",
+      "Fixed in the depletion zone"
+    ],
+    "explain": "Electrons are negative and orbit in shells around the nucleus.",
+    "answer": [
+      "Orbiting in shells around the nucleus"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "A carbon atom has atomic number 6. What does that imply?",
+    "options": [
+      "6 protons and 6 electrons (with 6 neutrons in a typical nucleus)",
+      "6 valence electrons and no protons",
+      "Only 6 neutrons and no electrons",
+      "It must be a semiconductor"
+    ],
+    "explain": "Atomic number 6 means 6 protons; a typical carbon atom also has 6 neutrons and 6 orbiting electrons.",
+    "answer": [
+      "6 protons and 6 electrons (with 6 neutrons in a typical nucleus)"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "What is the valence shell?",
+    "options": [
+      "The outermost electron shell",
+      "The nucleus",
+      "The conduction band only",
+      "The depletion zone"
+    ],
+    "explain": "The outermost shell is the valence shell; its electrons are valence electrons.",
+    "answer": [
+      "The outermost electron shell"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Which electrons have the most energy and are easiest to dislodge?",
+    "options": [
+      "Electrons farthest from the nucleus",
+      "Electrons closest to the nucleus",
+      "Neutrons in the nucleus",
+      "Protons in inner shells"
+    ],
+    "explain": "Electrons farthest from the nucleus have the most energy and are easiest to remove.",
+    "answer": [
+      "Electrons farthest from the nucleus"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "A conductor is a material that:",
+    "options": [
+      "Allows current to pass through it easily",
+      "Blocks all current except at breakdown voltage",
+      "Has conductivity only after doping",
+      "Has zero free electrons at room temperature"
+    ],
+    "explain": "Conductors allow current easily because valence electrons can become free.",
+    "answer": [
+      "Allows current to pass through it easily"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Which of the following is the most conductive element?",
+    "options": [
+      "Silver",
+      "Copper",
+      "Silicon",
+      "Iron"
+    ],
+    "explain": "Silver is the most conductive, then copper, gold, and aluminum. Silver is less used in wiring because of cost.",
+    "answer": [
+      "Silver"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Which metal is listed as the best conductor among common wiring metals, but is often skipped because of cost?",
+    "options": [
+      "Silver",
+      "Aluminum",
+      "Silicon",
+      "Germanium"
+    ],
+    "explain": "Silver is best electrically; copper and aluminum are used more because they cost less.",
+    "answer": [
+      "Silver"
+    ]
+  },
+  {
+    "type": "multi",
+    "q": "Which are listed as best conductive materials? (Select three)",
+    "options": [
+      "Gold (Au)",
+      "Silver (Ag)",
+      "Copper (Cu)",
+      "Rubber"
+    ],
+    "explain": "The reviewer lists gold, silver, copper, and aluminum as best conductive materials. Rubber is an insulator.",
+    "answer": [
+      "Gold (Au)",
+      "Silver (Ag)",
+      "Copper (Cu)"
+    ],
+    "need": 3
+  },
+  {
+    "type": "single",
+    "q": "An insulator:",
+    "options": [
+      "Blocks the flow of current",
+      "Has overlapping energy bands",
+      "Is always a single-element metal",
+      "Has many free electrons at room temperature"
+    ],
+    "explain": "Insulators block current and have very few free electrons.",
+    "answer": [
+      "Blocks the flow of current"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Most insulators are:",
+    "options": [
+      "Compounds rather than single-element materials",
+      "Pure metals with 1 valence electron",
+      "Always superconductors",
+      "Always semiconductors"
+    ],
+    "explain": "Most insulators are compounds, not single-element materials.",
+    "answer": [
+      "Compounds rather than single-element materials"
+    ]
+  },
+  {
+    "type": "multi",
+    "q": "Which are insulator examples from the reviewer? (Select two)",
+    "options": [
+      "Rubber",
+      "Glass",
+      "Copper",
+      "Silicon"
+    ],
+    "explain": "Examples include rubber, glass, oil, diamond, and dry wood.",
+    "answer": [
+      "Rubber",
+      "Glass"
+    ],
+    "need": 2
+  },
+  {
+    "type": "single",
+    "q": "A semiconductor has electrical properties:",
+    "options": [
+      "Between a conductor and an insulator",
+      "Identical to a superconductor",
+      "Always better than copper",
+      "Always a perfect insulator at room temperature"
+    ],
+    "explain": "It is not a good conductor nor a good insulator on its own — hence “semi”-conductor.",
+    "answer": [
+      "Between a conductor and an insulator"
+    ]
+  },
+  {
+    "type": "multi",
+    "q": "Which are common semiconductor materials in the reviewer? (Select two)",
+    "options": [
+      "Silicon (Si)",
+      "Germanium (Ge)",
+      "Silver (Ag)",
+      "Rubber"
+    ],
+    "explain": "Si (14), Ge (32), and also GaAs as a compound semiconductor.",
+    "answer": [
+      "Silicon (Si)",
+      "Germanium (Ge)"
+    ],
+    "need": 2
+  },
+  {
+    "type": "single",
+    "q": "Gallium arsenide (GaAs) is classified as:",
+    "options": [
+      "A compound semiconductor material",
+      "An elemental insulator",
+      "A pentavalent dopant",
+      "A superconductor"
+    ],
+    "explain": "GaAs is a compound semiconductor, unlike elemental Si and Ge.",
+    "answer": [
+      "A compound semiconductor material"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "How many valence electrons do silicon and germanium each have?",
+    "options": [
+      "4",
+      "3",
+      "5",
+      "8"
+    ],
+    "explain": "Both have 4 valence electrons, so each forms 4 covalent bonds.",
+    "answer": [
+      "4"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Why is silicon preferred over germanium for devices?",
+    "options": [
+      "Silicon’s valence electrons are in the 3rd shell and held more tightly, so devices are more temperature-stable",
+      "Germanium has no valence electrons",
+      "Silicon is a metal conductor",
+      "Germanium cannot form covalent bonds"
+    ],
+    "explain": "Ge valence electrons sit in the 4th shell; Si’s 3rd-shell valence electrons are held more tightly and are more temperature-stable.",
+    "answer": [
+      "Silicon’s valence electrons are in the 3rd shell and held more tightly, so devices are more temperature-stable"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Why do conductors like copper conduct more easily than silicon?",
+    "options": [
+      "Copper’s valence electrons are in a farther, higher-energy shell, so they escape into the conduction band more easily",
+      "Silicon has more free electrons than copper at room temperature",
+      "Copper has a very wide band gap",
+      "Silicon’s bands overlap like a metal"
+    ],
+    "explain": "Copper valence electrons have more energy; many are already free at room temperature.",
+    "answer": [
+      "Copper’s valence electrons are in a farther, higher-energy shell, so they escape into the conduction band more easily"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "The valence band holds:",
+    "options": [
+      "Valence electrons",
+      "Only holes in insulators",
+      "Only donor atoms",
+      "The nucleus"
+    ],
+    "explain": "Valence band = valence electrons. Conduction band = where electrons must be to move freely and create current.",
+    "answer": [
+      "Valence electrons"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Electrons must be in which band to move freely and create current?",
+    "options": [
+      "Conduction band",
+      "Valence band only",
+      "Neutron band",
+      "Depletion band"
+    ],
+    "explain": "Free current-carrying electrons occupy the conduction band.",
+    "answer": [
+      "Conduction band"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "An insulator’s energy band gap is:",
+    "options": [
+      "Very wide — valence electrons cannot jump except under extremely high (breakdown) voltage",
+      "Zero because the bands overlap",
+      "Narrow, so many electrons jump at room temperature",
+      "Negative"
+    ],
+    "explain": "Insulators have a very wide gap.",
+    "answer": [
+      "Very wide — valence electrons cannot jump except under extremely high (breakdown) voltage"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "A semiconductor’s band gap is:",
+    "options": [
+      "Narrow — some valence electrons can jump into the conduction band",
+      "Nonexistent because bands overlap",
+      "So wide that no electron can ever jump",
+      "The same as a superconductor"
+    ],
+    "explain": "Narrow gap lets some electrons become free.",
+    "answer": [
+      "Narrow — some valence electrons can jump into the conduction band"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "A conductor’s energy bands:",
+    "options": [
+      "Overlap (no gap), so there are always many free electrons",
+      "Have a very wide forbidden gap",
+      "Exist only after doping",
+      "Are empty at all temperatures"
+    ],
+    "explain": "In conductors the bands overlap; lots of free electrons are always available.",
+    "answer": [
+      "Overlap (no gap), so there are always many free electrons"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "A covalent bond is:",
+    "options": [
+      "The sharing of electron pairs between atoms",
+      "The transfer of a proton between nuclei",
+      "A metallic bond with zero valence electrons",
+      "Attraction between two holes"
+    ],
+    "explain": "Covalent bonding is sharing electron pairs.",
+    "answer": [
+      "The sharing of electron pairs between atoms"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "In a silicon crystal, each Si atom shares one valence electron with how many neighbors?",
+    "options": [
+      "4",
+      "3",
+      "5",
+      "8"
+    ],
+    "explain": "Each Si shares with 4 surrounding neighbors, so each atom effectively has 8 valence electrons.",
+    "answer": [
+      "4"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Sharing in the silicon lattice lets each atom effectively have how many electrons in its valence shell?",
+    "options": [
+      "8",
+      "4",
+      "3",
+      "14"
+    ],
+    "explain": "Stable octet: 8 electrons in the valence shell, forming a crystal lattice.",
+    "answer": [
+      "8"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "An intrinsic semiconductor is:",
+    "options": [
+      "A pure semiconductor with no added impurities",
+      "Silicon doped with boron",
+      "Always N-type",
+      "A conductor with overlapping bands"
+    ],
+    "explain": "Intrinsic = pure, no doping. Doping makes it extrinsic.",
+    "answer": [
+      "A pure semiconductor with no added impurities"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "In an intrinsic semiconductor at room temperature:",
+    "options": [
+      "Number of free electrons = number of holes",
+      "There are only holes, no electrons",
+      "There are only donor electrons",
+      "Current cannot exist at any temperature"
+    ],
+    "explain": "Thermally generated electrons and holes are equal in number.",
+    "answer": [
+      "Number of free electrons = number of holes"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "At absolute 0 K in an intrinsic semiconductor:",
+    "options": [
+      "There are no electrons in the conduction band, so no current can flow",
+      "Bands overlap like a metal",
+      "All electrons are free",
+      "The depletion zone fills with copper"
+    ],
+    "explain": "No thermal energy to jump the gap → empty conduction band.",
+    "answer": [
+      "There are no electrons in the conduction band, so no current can flow"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "As temperature rises in a semiconductor:",
+    "options": [
+      "Some valence electrons gain energy, jump to the conduction band, and become free electrons",
+      "The band gap becomes infinite",
+      "All covalent bonds permanently freeze",
+      "Holes disappear forever"
+    ],
+    "explain": "Heat creates electron-hole pairs.",
+    "answer": [
+      "Some valence electrons gain energy, jump to the conduction band, and become free electrons"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "A hole is:",
+    "options": [
+      "A vacancy left in the valence band when an electron jumps to the conduction band",
+      "A pentavalent donor atom",
+      "A free proton",
+      "A neutron in the nucleus"
+    ],
+    "explain": "The hole is a vacancy, not a real particle, but it can appear to move.",
+    "answer": [
+      "A vacancy left in the valence band when an electron jumps to the conduction band"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "An electron-hole pair is:",
+    "options": [
+      "One electron raised to the conduction band plus the hole left behind",
+      "Two donor atoms bonded together",
+      "A proton and a neutron",
+      "A PN junction"
+    ],
+    "explain": "Every electron that goes to the conduction band leaves one hole.",
+    "answer": [
+      "One electron raised to the conduction band plus the hole left behind"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Recombination occurs when:",
+    "options": [
+      "A conduction-band electron loses energy and falls back into a hole in the valence band",
+      "A donor atom accepts a third electron",
+      "Two protons fuse",
+      "The depletion zone becomes a conductor"
+    ],
+    "explain": "Recombination is the reverse of pair generation.",
+    "answer": [
+      "A conduction-band electron loses energy and falls back into a hole in the valence band"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Free electrons are also called:",
+    "options": [
+      "Conduction electrons",
+      "Valence protons",
+      "Acceptor holes",
+      "Neutrons"
+    ],
+    "explain": "Free electrons = conduction electrons.",
+    "answer": [
+      "Conduction electrons"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Electron current is produced by:",
+    "options": [
+      "Movement of thermally generated free electrons toward the positive terminal",
+      "Protons leaving the nucleus",
+      "Only acceptor atoms in P-type material",
+      "Lightning rods"
+    ],
+    "explain": "Applied voltage attracts free conduction-band electrons toward +.",
+    "answer": [
+      "Movement of thermally generated free electrons toward the positive terminal"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Hole current happens because:",
+    "options": [
+      "A valence electron moves into a nearby hole, so the hole appears to move",
+      "Holes are actual particles that orbit the nucleus",
+      "Neutrons drift to the negative terminal",
+      "The conduction band is empty"
+    ],
+    "explain": "The hole isn’t a moving particle; successive valence electrons fill vacancies, so the hole appears to move.",
+    "answer": [
+      "A valence electron moves into a nearby hole, so the hole appears to move"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Doping is:",
+    "options": [
+      "Controlled addition of impurities to a pure semiconductor, creating an extrinsic semiconductor",
+      "Removing all valence electrons",
+      "Cooling silicon to 0 K",
+      "Overlapping the energy bands of an insulator"
+    ],
+    "explain": "Doping increases current carriers — electrons or holes.",
+    "answer": [
+      "Controlled addition of impurities to a pure semiconductor, creating an extrinsic semiconductor"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "N-type semiconductor is formed by adding:",
+    "options": [
+      "Pentavalent impurity atoms (5 valence electrons)",
+      "Trivalent impurity atoms (3 valence electrons)",
+      "Insulator compounds only",
+      "Extra protons to the nucleus"
+    ],
+    "explain": "Pentavalent dopants increase conduction-band electrons.",
+    "answer": [
+      "Pentavalent impurity atoms (5 valence electrons)"
+    ]
+  },
+  {
+    "type": "multi",
+    "q": "Which are common pentavalent (donor) dopants? (Select two)",
+    "options": [
+      "Arsenic (As)",
+      "Phosphorus (P)",
+      "Boron (B)",
+      "Indium (In)"
+    ],
+    "explain": "Pentavalent: As, P, Bi, Sb. Trivalent: B, In, Ga.",
+    "answer": [
+      "Arsenic (As)",
+      "Phosphorus (P)"
+    ],
+    "need": 2
+  },
+  {
+    "type": "single",
+    "q": "A pentavalent atom that gives up an extra electron is called a:",
+    "options": [
+      "Donor atom",
+      "Acceptor atom",
+      "Hole",
+      "Insulator"
+    ],
+    "explain": "Donors donate the extra (5th) electron.",
+    "answer": [
+      "Donor atom"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "P-type semiconductor is formed by adding:",
+    "options": [
+      "Trivalent impurity atoms (3 valence electrons)",
+      "Pentavalent impurity atoms",
+      "Silver atoms",
+      "Free neutrons"
+    ],
+    "explain": "Trivalent dopants increase the number of holes.",
+    "answer": [
+      "Trivalent impurity atoms (3 valence electrons)"
+    ]
+  },
+  {
+    "type": "multi",
+    "q": "Which are common trivalent (acceptor) dopants? (Select two)",
+    "options": [
+      "Boron (B)",
+      "Gallium (Ga)",
+      "Antimony (Sb)",
+      "Phosphorus (P)"
+    ],
+    "explain": "Trivalent: boron, indium, gallium. Sb and P are pentavalent.",
+    "answer": [
+      "Boron (B)",
+      "Gallium (Ga)"
+    ],
+    "need": 2
+  },
+  {
+    "type": "single",
+    "q": "A trivalent atom that accepts an electron to complete its bonds is called an:",
+    "options": [
+      "Acceptor atom",
+      "Donor atom",
+      "Intrinsic atom",
+      "Conduction proton"
+    ],
+    "explain": "Acceptors take an electron and leave a hole.",
+    "answer": [
+      "Acceptor atom"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "In N-type material, the majority carriers are:",
+    "options": [
+      "Electrons",
+      "Holes",
+      "Protons",
+      "Neutrons"
+    ],
+    "explain": "N-type: majority electrons, minority holes.",
+    "answer": [
+      "Electrons"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "In P-type material, the majority carriers are:",
+    "options": [
+      "Holes",
+      "Electrons",
+      "Photons",
+      "Copper ions"
+    ],
+    "explain": "P-type: majority holes, minority electrons.",
+    "answer": [
+      "Holes"
+    ]
+  },
+  {
+    "type": "match",
+    "q": "Classify majority vs minority carriers.",
+    "hint": "For each type, pick majority or the matching minority note. Use the labels as given.",
+    "items": [
+      "N-type majority",
+      "N-type minority",
+      "P-type majority",
+      "P-type minority"
+    ],
+    "choices": [
+      {
+        "v": "electrons",
+        "l": "Electrons"
+      },
+      {
+        "v": "holes",
+        "l": "Holes"
+      }
+    ],
+    "map": {
+      "N-type majority": "electrons",
+      "N-type minority": "holes",
+      "P-type majority": "holes",
+      "P-type minority": "electrons"
+    },
+    "explain": "N-type: majority electrons, minority holes. P-type: majority holes, minority electrons."
+  },
+  {
+    "type": "single",
+    "q": "A PN junction is formed when:",
+    "options": [
+      "One crystal is doped N-type on one side and P-type on the other",
+      "Two insulators are glued together",
+      "Copper is alloyed with rubber",
+      "Bands of a metal overlap"
+    ],
+    "explain": "The PN junction is the interface where p-type and n-type meet — a building block of diodes and transistors.",
+    "answer": [
+      "One crystal is doped N-type on one side and P-type on the other"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "At a PN junction, free electrons from N and holes from P recombine and form:",
+    "options": [
+      "A depletion zone with no free charge carriers (a non-conductive barrier)",
+      "A superconductor path",
+      "A metallic conductor",
+      "An intrinsic vacuum in the nucleus"
+    ],
+    "explain": "The depletion zone has no free carriers and acts as a non-conductive barrier.",
+    "answer": [
+      "A depletion zone with no free charge carriers (a non-conductive barrier)"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Why are metals preferred for electrical wires?",
+    "options": [
+      "Valence electrons are loosely bound and easily become free, so current flows with very little resistance",
+      "They have a very wide band gap",
+      "They have no free electrons",
+      "They are always superconductors at room temperature"
+    ],
+    "explain": "Copper and aluminum have loosely bound valence electrons.",
+    "answer": [
+      "Valence electrons are loosely bound and easily become free, so current flows with very little resistance"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "A material that has a resistance of zero is known as a:",
+    "options": [
+      "Superconductor",
+      "Semiconductor",
+      "Insulator",
+      "Hole conductor"
+    ],
+    "explain": "Superconductors offer zero electrical resistance, typically at extremely low temperatures.",
+    "answer": [
+      "Superconductor"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "What is the purpose of a lightning rod?",
+    "options": [
+      "Provide a low-resistance path for lightning current into the ground to protect the structure",
+      "Store holes in a depletion zone",
+      "Dope the air N-type",
+      "Increase the band gap of wood"
+    ],
+    "explain": "A conductive rod gives lightning a safe path to ground.",
+    "answer": [
+      "Provide a low-resistance path for lightning current into the ground to protect the structure"
+    ]
+  },
+  {
+    "type": "multi",
+    "q": "Which factors affect the resistivity/resistance of a conductor? (Select all four that the reviewer lists)",
+    "options": [
+      "Type of material",
+      "Length of the conductor",
+      "Cross-sectional area",
+      "Temperature"
+    ],
+    "explain": "Material, length (longer = more R), cross-section (thicker = less R), and temperature (resistivity of most conductors increases with temperature).",
+    "answer": [
+      "Type of material",
+      "Length of the conductor",
+      "Cross-sectional area",
+      "Temperature"
+    ],
+    "need": 4
+  },
+  {
+    "type": "single",
+    "q": "If a conductor is made longer, resistance:",
+    "options": [
+      "Increases",
+      "Decreases to zero",
+      "Is unrelated to length",
+      "Becomes negative"
+    ],
+    "explain": "Longer = more resistance.",
+    "answer": [
+      "Increases"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "If a conductor is made thicker (larger cross-sectional area), resistance:",
+    "options": [
+      "Decreases",
+      "Increases",
+      "Becomes infinite",
+      "Depends only on color"
+    ],
+    "explain": "Thicker = less resistance.",
+    "answer": [
+      "Decreases"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "For most conductors, resistivity as temperature increases:",
+    "options": [
+      "Increases",
+      "Drops to zero immediately",
+      "Becomes a hole current only",
+      "Is forbidden by band theory"
+    ],
+    "explain": "Resistivity of most conductors increases with temperature.",
+    "answer": [
+      "Increases"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Memory: pentavalent dopant (5 valence e−) leads to:",
+    "options": [
+      "N-type, donor atom, majority carriers are electrons",
+      "P-type, acceptor atom, majority carriers are holes",
+      "An insulator with a wide gap",
+      "A superconductor"
+    ],
+    "explain": "5 valence e− → N-type → donor → majority electrons.",
+    "answer": [
+      "N-type, donor atom, majority carriers are electrons"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Memory: trivalent dopant (3 valence e−) leads to:",
+    "options": [
+      "P-type, acceptor atom, majority carriers are holes",
+      "N-type, donor atom, majority carriers are electrons",
+      "A metal with overlapping bands",
+      "Zero resistance"
+    ],
+    "explain": "3 valence e− → P-type → acceptor → majority holes.",
+    "answer": [
+      "P-type, acceptor atom, majority carriers are holes"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "The PN junction is the foundation of:",
+    "options": [
+      "Diodes and transistors",
+      "Only lightning rods",
+      "Only superconductors",
+      "Only rubber insulators"
+    ],
+    "explain": "Its depletion zone is key to how those devices work.",
+    "answer": [
+      "Diodes and transistors"
+    ]
+  },
+  {
+    "type": "match",
+    "q": "Classify each dopant as pentavalent/donor or trivalent/acceptor.",
+    "hint": "Pentavalent = 5 valence electrons (N-type donor). Trivalent = 3 (P-type acceptor).",
+    "items": [
+      "Arsenic (As)",
+      "Phosphorus (P)",
+      "Antimony (Sb)",
+      "Boron (B)",
+      "Indium (In)",
+      "Gallium (Ga)",
+      "Bismuth (Bi)"
+    ],
+    "choices": [
+      {
+        "v": "penta",
+        "l": "Pentavalent / donor"
+      },
+      {
+        "v": "tri",
+        "l": "Trivalent / acceptor"
+      }
+    ],
+    "map": {
+      "Arsenic (As)": "penta",
+      "Phosphorus (P)": "penta",
+      "Antimony (Sb)": "penta",
+      "Bismuth (Bi)": "penta",
+      "Boron (B)": "tri",
+      "Indium (In)": "tri",
+      "Gallium (Ga)": "tri"
+    },
+    "explain": "As, P, Bi, Sb = pentavalent donors. B, In, Ga = trivalent acceptors."
+  },
+  {
+    "type": "match",
+    "q": "Classify each material.",
+    "hint": "Think free electrons and band gap.",
+    "items": [
+      "Silver",
+      "Copper",
+      "Rubber",
+      "Glass",
+      "Silicon",
+      "Germanium"
+    ],
+    "choices": [
+      {
+        "v": "cond",
+        "l": "Conductor"
+      },
+      {
+        "v": "ins",
+        "l": "Insulator"
+      },
+      {
+        "v": "semi",
+        "l": "Semiconductor"
+      }
+    ],
+    "map": {
+      "Silver": "cond",
+      "Copper": "cond",
+      "Rubber": "ins",
+      "Glass": "ins",
+      "Silicon": "semi",
+      "Germanium": "semi"
+    },
+    "explain": "Ag/Cu = conductors. Rubber/glass = insulators. Si/Ge = semiconductors."
+  }
+];
+
+    const shuffle = (arr) => [...arr].sort(() => Math.random() - 0.5);
+    const same = (a, b) => a.length === b.length && a.every((x) => b.includes(x));
+
+    let deck = [];
+    let i = 0;
+    let correct = 0;
+    let locked = false;
+    let missed = [];
+    let picked = new Set();
+
+    const panel = document.getElementById("panel");
+    const prog = document.getElementById("prog");
+    const count = document.getElementById("count");
+    const scoreline = document.getElementById("scoreline");
+
+    function start(pool) {
+      deck = shuffle(pool.map((q) => {
+        if (q.type === "match") return { ...q, items: shuffle(q.items) };
+        return { ...q, options: shuffle(q.options) };
+      }));
+      i = 0; correct = 0; missed = []; locked = false; picked = new Set();
+      render();
+    }
+
+    function render() {
+      if (i >= deck.length) return results();
+      const q = deck[i];
+      prog.style.width = ((i / deck.length) * 100) + "%";
+      count.textContent = "Question " + (i + 1) + " of " + deck.length;
+      scoreline.textContent = "Score " + correct;
+      locked = false; picked = new Set();
+
+      if (q.type === "match") {
+        const opts = (q.choices || []).map((c) => `<option value="${c.v}">${c.l}</option>`).join("");
+        panel.innerHTML = `<p class="q">${q.q}</p>
+          <p class="hint">${q.hint || "Classify each item."}</p>
+          <div class="match">${q.items.map((item, idx) => `
+            <div class="row">
+              <span>${item}</span>
+              <select data-item="${idx}">
+                <option value="">Choose…</option>
+                ${opts}
+              </select>
+            </div>`).join("")}</div>
+          <div class="actions"><button class="btn" id="check">Check</button></div>
+          <div class="fb" id="fb"></div>`;
+        document.getElementById("check").onclick = checkMatch;
+        return;
+      }
+
+      const need = q.need || (q.type === "multi" ? q.answer.length : 1);
+      panel.innerHTML = `<p class="q">${q.q}</p>
+        ${q.type === "multi" ? `<p class="hint">${q.hint || ("Select " + need + ", then check.")}</p>` : ""}
+        <div id="opts">${q.options.map((opt) => `<button class="opt" data-v="${encodeURIComponent(opt)}">${opt}</button>`).join("")}</div>
+        <div class="actions">
+          ${q.type === "multi" ? `<button class="btn" id="check" disabled>Check</button>` : ""}
+        </div>
+        <div class="fb" id="fb"></div>`;
+
+      panel.querySelectorAll(".opt").forEach((btn) => {
+        btn.onclick = () => {
+          if (locked) return;
+          const v = decodeURIComponent(btn.dataset.v);
+          if (q.type === "single") {
+            picked = new Set([v]);
+            finish(q);
+          } else {
+            if (picked.has(v)) picked.delete(v); else {
+              if (picked.size >= need) return;
+              picked.add(v);
+            }
+            panel.querySelectorAll(".opt").forEach((b) => {
+              b.classList.toggle("sel", picked.has(decodeURIComponent(b.dataset.v)));
+            });
+            document.getElementById("check").disabled = picked.size !== need;
+          }
+        };
+      });
+      const check = document.getElementById("check");
+      if (check) check.onclick = () => finish(q);
+    }
+
+    function checkMatch() {
+      if (locked) return;
+      const q = deck[i];
+      const selects = [...panel.querySelectorAll("select")];
+      if (selects.some((s) => !s.value)) return;
+      locked = true;
+      let ok = true;
+      selects.forEach((s, idx) => {
+        const item = q.items[idx];
+        const good = s.value === q.map[item];
+        if (!good) ok = false;
+        s.style.borderColor = good ? "var(--good)" : "var(--bad)";
+      });
+      after(ok, q, q.explain || "Review the classifications.");
+    }
+
+    function finish(q) {
+      if (locked) return;
+      locked = true;
+      const chosen = [...picked];
+      const ok = same(chosen, q.answer);
+      panel.querySelectorAll(".opt").forEach((b) => {
+        const v = decodeURIComponent(b.dataset.v);
+        b.disabled = true;
+        if (q.answer.includes(v)) b.classList.add("ok");
+        else if (picked.has(v)) b.classList.add("no");
+      });
+      after(ok, q, q.explain || ("Correct: " + q.answer.join(" · ")));
+    }
+
+    function after(ok, q, msg) {
+      if (ok) correct++; else missed.push({ q: q.q, msg });
+      const fb = document.getElementById("fb");
+      fb.className = "fb " + (ok ? "ok" : "no");
+      fb.textContent = ok ? "Correct. " + msg : "Not quite. " + msg;
+      scoreline.textContent = "Score " + correct;
+      const actions = panel.querySelector(".actions");
+      actions.innerHTML = `<button class="btn" id="next">${i + 1 === deck.length ? "See results" : "Next"}</button>`;
+      document.getElementById("next").onclick = () => { i++; render(); };
+    }
+
+    function results() {
+      prog.style.width = "100%";
+      count.textContent = "Round complete";
+      scoreline.textContent = "";
+      const pct = Math.round((correct / deck.length) * 100);
+      panel.innerHTML = `
+        <p class="q">You scored</p>
+        <div class="score">${correct} / ${deck.length}</div>
+        <p class="sub" style="margin:0">${pct}% · ${missed.length ? missed.length + " to review" : "Clean round."}</p>
+        ${missed.length ? `<ul class="miss">${missed.map((m) => `<li><b>${m.q}</b><br>${m.msg}</li>`).join("")}</ul>` : ""}
+        <div class="actions">
+          <button class="btn" id="again">Play again (shuffle)</button>
+          ${missed.length ? `<button class="btn ghost" id="missed">Replay missed only</button>` : ""}
+        </div>`;
+      document.getElementById("again").onclick = () => start(BANK);
+      const missBtn = document.getElementById("missed");
+      if (missBtn) {
+        missBtn.onclick = () => {
+          const ids = new Set(missed.map((m) => m.q));
+          start(BANK.filter((q) => ids.has(q.q)));
+        };
+      }
+    }
+
+    start(BANK);
+
+  </script>
+</body>
+</html>

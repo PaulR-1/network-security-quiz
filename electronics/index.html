@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Module 1 Reviewer — Introduction to Electronics</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --card: #1a2332;
+      --line: #2a3a4f;
+      --text: #e8eef6;
+      --muted: #8fa3b8;
+      --accent: #3d8bfd;
+      --good: #2fbf71;
+      --bad: #e85d5d;
+      --pick: #24324a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .wrap { max-width: 720px; margin: 0 auto; padding: 28px 20px 64px; }
+    h1 { font-size: 1.35rem; margin: 0 0 6px; font-weight: 650; }
+    .sub { color: var(--muted); margin: 0 0 22px; font-size: 0.95rem; }
+    .bar {
+      height: 6px;
+      background: var(--line);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+    .bar > i {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: var(--accent);
+      transition: width .2s ease;
+    }
+    .meta { display: flex; justify-content: space-between; color: var(--muted); font-size: 0.85rem; margin-bottom: 14px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 20px;
+    }
+    .q { font-size: 1.08rem; line-height: 1.45; margin: 0 0 16px; }
+    .hint { color: var(--muted); font-size: 0.82rem; margin: -8px 0 14px; }
+    .opt {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      width: 100%;
+      text-align: left;
+      background: var(--pick);
+      border: 1px solid var(--line);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 11px 12px;
+      margin: 0 0 8px;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+    .opt:hover { border-color: var(--accent); }
+    .opt.sel { border-color: var(--accent); background: #1d3358; }
+    .opt.ok { border-color: var(--good); background: #163528; }
+    .opt.no { border-color: var(--bad); background: #3a1e24; }
+    .opt:disabled { cursor: default; }
+    .match { display: grid; gap: 10px; }
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 180px;
+      gap: 10px;
+      align-items: center;
+    }
+    .row span { font-size: 0.95rem; }
+    select {
+      width: 100%;
+      background: var(--pick);
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px;
+    }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+    button.btn {
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+    }
+    button.btn.ghost {
+      background: transparent;
+      border: 1px solid var(--line);
+      color: var(--text);
+    }
+    button.btn:disabled { opacity: .45; cursor: default; }
+    .fb { margin-top: 12px; font-size: 0.92rem; }
+    .fb.ok { color: var(--good); }
+    .fb.no { color: #ff8b8b; }
+    .score { font-size: 2.2rem; font-weight: 700; margin: 8px 0; }
+    .miss { margin-top: 16px; }
+    .miss li { margin: 0 0 10px; color: var(--muted); font-size: 0.9rem; }
+    .miss b { color: var(--text); }
+
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a href="../index.html" style="display:inline-block;margin:0 0 16px;color:#8fa3b8;text-decoration:none;border:1px solid #2a3a4f;padding:7px 12px;border-radius:8px;font-size:0.85rem;">All reviewers</a>
+    <h1>Module 1 Reviewer — Introduction to Electronics</h1>
+    <p class="sub">From your Module 1 reviewer. Covers charge, energy, voltage, current, resistance, Ohm’s Law, power, units, and the practice problems. Shuffles every round.</p>
+    <div class="bar"><i id="prog"></i></div>
+    <div class="meta">
+      <span id="count"></span>
+      <span id="scoreline"></span>
+    </div>
+    <div class="card" id="panel"></div>
+  </div>
+  <script>
+    const BANK = [
+  {
+    "type": "single",
+    "q": "Electric charge uses which symbol and unit?",
+    "options": [
+      "q, coulomb (C)",
+      "I, ampere (A)",
+      "V, volt (V)",
+      "P, watt (W)"
+    ],
+    "explain": "Charge symbol q, unit coulombs (C).",
+    "answer": [
+      "q, coulomb (C)"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Like charges ____; unlike charges ____.",
+    "options": [
+      "repel; attract",
+      "attract; repel",
+      "both attract",
+      "both repel only if moving"
+    ],
+    "explain": "Like charges repel; unlike charges attract.",
+    "answer": [
+      "repel; attract"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "The charge of one electron is:",
+    "options": [
+      "q = −1.602 × 10⁻¹⁹ C",
+      "q = +1.602 × 10⁻¹⁹ C",
+      "q = 1 C",
+      "q = 0 C"
+    ],
+    "explain": "One electron: −1.602 × 10⁻¹⁹ C.",
+    "answer": [
+      "q = −1.602 × 10⁻¹⁹ C"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "The conservation law of charge says charge:",
+    "options": [
+      "Can neither be created nor destroyed, but can be transferred",
+      "Is created whenever a battery is connected",
+      "Exists only in metals",
+      "Is the same as power"
+    ],
+    "explain": "Charge is conserved but mobile (e.g. electrical energy → heat).",
+    "answer": [
+      "Can neither be created nor destroyed, but can be transferred"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Electrical energy/work uses which symbol and unit?",
+    "options": [
+      "w, joule (J)",
+      "q, coulomb",
+      "R, ohm",
+      "I, ampere"
+    ],
+    "explain": "Work and energy are the same idea, both in joules.",
+    "answer": [
+      "w, joule (J)"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Voltage is defined as:",
+    "options": [
+      "Change in energy per unit charge as charge moves from A to B (V = dw/dq)",
+      "Charge per second only",
+      "Power divided by resistance only",
+      "The slope of a resistor color code"
+    ],
+    "explain": "VAB = dw/dq. Voltage is always a difference between two points.",
+    "answer": [
+      "Change in energy per unit charge as charge moves from A to B (V = dw/dq)"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Voltage is always measured as:",
+    "options": [
+      "A difference between two points",
+      "An absolute amount of protons in a wire",
+      "Only AC, never DC",
+      "Only with an ammeter in series"
+    ],
+    "explain": "Voltage is a potential difference. It is signed/directional and causes current.",
+    "answer": [
+      "A difference between two points"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Which instrument measures DC and AC voltage?",
+    "options": [
+      "Voltmeter",
+      "Ammeter only",
+      "Ohmmeter only",
+      "Wattmeter only"
+    ],
+    "explain": "Voltmeter measures DC and AC voltage. Oscilloscope shows voltage vs time.",
+    "answer": [
+      "Voltmeter"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "An oscilloscope measures:",
+    "options": [
+      "Voltage changes as a function of time",
+      "Only resistance",
+      "Only charge of one electron",
+      "Only kWh on a bill"
+    ],
+    "explain": "Oscilloscope: voltage vs time.",
+    "answer": [
+      "Voltage changes as a function of time"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Current is a measure of:",
+    "options": [
+      "The flow of electric charge over time (I = dq/dt)",
+      "Energy per charge only",
+      "Opposition to electron motion only",
+      "Work divided by voltage"
+    ],
+    "explain": "IAB = dq/dt, unit ampere (A).",
+    "answer": [
+      "The flow of electric charge over time (I = dq/dt)"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Conventional current is defined as:",
+    "options": [
+      "Direction of the net flow of positive charge",
+      "The flow of electrons only",
+      "Always opposite to Ohm’s law",
+      "The same as hole current in metals only"
+    ],
+    "explain": "Electronic current (electron flow) is opposite conventional current.",
+    "answer": [
+      "Direction of the net flow of positive charge"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Electronic current is:",
+    "options": [
+      "Flow of negative charge (electrons), opposite conventional current",
+      "Flow of protons in the nucleus",
+      "Zero in every complete circuit",
+      "The same direction as conventional current by definition"
+    ],
+    "explain": "Electrons flow opposite the conventional + direction.",
+    "answer": [
+      "Flow of negative charge (electrons), opposite conventional current"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Current is caused by:",
+    "options": [
+      "The motion of electrons",
+      "Stationary neutrons",
+      "Only insulators",
+      "Only kWh meters"
+    ],
+    "explain": "Current is directional along a path/wire and follows Ohm’s law. Measure it with an ammeter.",
+    "answer": [
+      "The motion of electrons"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "A larger current means:",
+    "options": [
+      "A faster rate of charge flow",
+      "A smaller voltage always",
+      "Zero resistance",
+      "No electrons moving"
+    ],
+    "explain": "Current also changes when circuit voltage changes. Opposition is resistance.",
+    "answer": [
+      "A faster rate of charge flow"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Resistance is:",
+    "options": [
+      "A measure of how hard it is for electrons to move in a circuit",
+      "The flow of charge per second",
+      "Energy per coulomb",
+      "Always zero in copper"
+    ],
+    "explain": "Symbol R, unit ohm (Ω).",
+    "answer": [
+      "A measure of how hard it is for electrons to move in a circuit"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "A resistor is a passive device with:",
+    "options": [
+      "A linear voltage–current (V–I) relationship",
+      "Infinite current at 0 V",
+      "No effect on current",
+      "Only a magnetic field and no resistance"
+    ],
+    "explain": "Used to limit/control current and to affect gain, offset, and frequency response.",
+    "answer": [
+      "A linear voltage–current (V–I) relationship"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "A fixed resistor:",
+    "options": [
+      "Has resistance that stays the same",
+      "Can be changed by a knob",
+      "Has zero ohms",
+      "Stores charge like a battery"
+    ],
+    "explain": "Variable resistors can be changed.",
+    "answer": [
+      "Has resistance that stays the same"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "On a current (y) vs voltage (x) graph, a steeper slope means:",
+    "options": [
+      "Lower resistance (example: copper vs nichrome)",
+      "Higher resistance",
+      "Zero current at all voltages",
+      "A shorted voltmeter"
+    ],
+    "explain": "Steeper I–V slope → lower R. At the same V, copper allows more current than nichrome.",
+    "answer": [
+      "Lower resistance (example: copper vs nichrome)"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "In an electric kettle, resistance in the heating element:",
+    "options": [
+      "Converts electrical energy to heat",
+      "Stores voltage in coulombs",
+      "Creates a PN junction",
+      "Removes all current"
+    ],
+    "explain": "Current through the element meets resistance → heat → boils water.",
+    "answer": [
+      "Converts electrical energy to heat"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Ohm’s Law (discovered by Georg Ohm, 1827) states current is:",
+    "options": [
+      "Directly proportional to the voltage applied across most materials",
+      "Inversely proportional to voltage always",
+      "Independent of resistance",
+      "Equal to power squared"
+    ],
+    "explain": "V = I × R.",
+    "answer": [
+      "Directly proportional to the voltage applied across most materials"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Which is the voltage form of Ohm’s Law?",
+    "options": [
+      "V = I × R",
+      "I = V × R",
+      "R = I / V",
+      "P = I / V"
+    ],
+    "explain": "Cover the quantity on the Ohm’s Law triangle: V on top, I and R on the bottom.",
+    "answer": [
+      "V = I × R"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Which formula solves for current?",
+    "options": [
+      "I = V / R",
+      "I = V × R",
+      "I = R / V",
+      "I = P × R"
+    ],
+    "explain": "I = V/R.",
+    "answer": [
+      "I = V / R"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Which formula solves for resistance?",
+    "options": [
+      "R = V / I",
+      "R = I / V",
+      "R = V × I",
+      "R = P / V² only and never V/I"
+    ],
+    "explain": "R = V/I.",
+    "answer": [
+      "R = V / I"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Power is the time rate of doing work. Which formula is used in the reviewer?",
+    "options": [
+      "P = V × I",
+      "P = V / I",
+      "P = I / V",
+      "P = R × q"
+    ],
+    "explain": "Watts = joules/second = volts × amps.",
+    "answer": [
+      "P = V × I"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Batteries provide fairly constant voltage and are often rated in:",
+    "options": [
+      "Amp-hours (A·h)",
+      "Coulombs per ohm only",
+      "Holes per second",
+      "Only kilowatt-hours of resistance"
+    ],
+    "explain": "Example: AA alkaline — 2 A·h at 1.5 V.",
+    "answer": [
+      "Amp-hours (A·h)"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "The kilowatt-hour (kWh) is:",
+    "options": [
+      "The standard billing unit for large amounts of electrical energy",
+      "The same as one watt",
+      "A unit of resistance",
+      "A unit of charge only"
+    ],
+    "explain": "Energy (kWh) = Power (kW) × Time (hours).",
+    "answer": [
+      "The standard billing unit for large amounts of electrical energy"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "An air conditioner at 240 V and 20 A. What is the power?",
+    "options": [
+      "4,800 W (4.8 kW)",
+      "240 W",
+      "20 W",
+      "4.8 W"
+    ],
+    "explain": "P = V×I = 240×20 = 4,800 W = 4.8 kW.",
+    "answer": [
+      "4,800 W (4.8 kW)"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "That 4.8 kW air conditioner runs 12 hours/day. Energy per day?",
+    "options": [
+      "57.6 kWh",
+      "4.8 kWh",
+      "12 kWh",
+      "240 kWh"
+    ],
+    "explain": "4.8 kW × 12 h = 57.6 kWh.",
+    "answer": [
+      "57.6 kWh"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "At Php 25/kWh, cost per day for 57.6 kWh is:",
+    "options": [
+      "Php 1,440",
+      "Php 25",
+      "Php 57.60",
+      "Php 4,800"
+    ],
+    "explain": "57.6 × 25 = Php 1,440 per day.",
+    "answer": [
+      "Php 1,440"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Unit of charge:",
+    "options": [
+      "coulomb (C)",
+      "volt (V)",
+      "ohm (Ω)",
+      "watt (W)"
+    ],
+    "explain": "Charge → C; energy → J; voltage → V; current → A; resistance → Ω; power → W.",
+    "answer": [
+      "coulomb (C)"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Tera (T) means:",
+    "options": [
+      "× 10¹²",
+      "× 10³",
+      "× 10⁻¹²",
+      "× 10⁶"
+    ],
+    "explain": "Tera 10¹², Giga 10⁹, Mega 10⁶, kilo 10³, milli 10⁻³, micro 10⁻⁶, nano 10⁻⁹, pico 10⁻¹².",
+    "answer": [
+      "× 10¹²"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Milli (m) means:",
+    "options": [
+      "× 10⁻³",
+      "× 10³",
+      "× 10⁶",
+      "× 10⁻⁶"
+    ],
+    "explain": "milli = 10⁻³. micro (µ) = 10⁻⁶.",
+    "answer": [
+      "× 10⁻³"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "25 µA equals:",
+    "options": [
+      "0.000025 A",
+      "0.025 A",
+      "25 A",
+      "0.000025 mA"
+    ],
+    "explain": "25 × 10⁻⁶ A = 0.000025 A.",
+    "answer": [
+      "0.000025 A"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "3.2 mA equals:",
+    "options": [
+      "0.0032 A",
+      "3.2 A",
+      "0.32 A",
+      "32 A"
+    ],
+    "explain": "3.2 × 10⁻³ A = 0.0032 A.",
+    "answer": [
+      "0.0032 A"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "1.5 kV equals:",
+    "options": [
+      "1,500 V",
+      "0.0015 V",
+      "1.5 V",
+      "15 V"
+    ],
+    "explain": "kilo = 10³ → 1,500 volts.",
+    "answer": [
+      "1,500 V"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "20 MW equals:",
+    "options": [
+      "20,000,000 W",
+      "20 W",
+      "0.020 W",
+      "20,000 W"
+    ],
+    "explain": "Mega = 10⁶.",
+    "answer": [
+      "20,000,000 W"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Ohm’s Law practice: 12 V across 6 Ω. Current?",
+    "options": [
+      "2 A",
+      "72 A",
+      "0.5 A",
+      "18 A"
+    ],
+    "explain": "I = V/R = 12/6 = 2 A.",
+    "answer": [
+      "2 A"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "25 V and 5 A. Resistance?",
+    "options": [
+      "5 Ω",
+      "125 Ω",
+      "0.2 Ω",
+      "30 Ω"
+    ],
+    "explain": "R = V/I = 25/5 = 5 Ω.",
+    "answer": [
+      "5 Ω"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "1.5 V and 4 A. Resistance?",
+    "options": [
+      "0.375 Ω",
+      "6 Ω",
+      "2.5 Ω",
+      "0.5 Ω"
+    ],
+    "explain": "R = 1.5/4 = 0.375 Ω.",
+    "answer": [
+      "0.375 Ω"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "2 A through 60 Ω. Voltage?",
+    "options": [
+      "120 V",
+      "30 V",
+      "62 V",
+      "0.033 V"
+    ],
+    "explain": "V = IR = 2×60 = 120 V.",
+    "answer": [
+      "120 V"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "220 V and 0.1 A. Resistance?",
+    "options": [
+      "2,200 Ω (2.2 kΩ)",
+      "22 Ω",
+      "220 Ω",
+      "0.00045 Ω"
+    ],
+    "explain": "R = 220/0.1 = 2,200 Ω = 2.2 kΩ.",
+    "answer": [
+      "2,200 Ω (2.2 kΩ)"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Circuit: 20 V source and 4 Ω resistor. Current?",
+    "options": [
+      "5 A",
+      "80 A",
+      "16 A",
+      "0.2 A"
+    ],
+    "explain": "I = 20/4 = 5 A.",
+    "answer": [
+      "5 A"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "A source drives 1 A through 12 Ω. Voltage?",
+    "options": [
+      "12 V",
+      "13 V",
+      "0.083 V",
+      "1 V"
+    ],
+    "explain": "V = 1×12 = 12 V.",
+    "answer": [
+      "12 V"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "6 V source drives 3 A. Resistance?",
+    "options": [
+      "2 Ω",
+      "18 Ω",
+      "9 Ω",
+      "0.5 Ω"
+    ],
+    "explain": "R = 6/3 = 2 Ω.",
+    "answer": [
+      "2 Ω"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "A supply delivers 75 W at 5 A. Output voltage?",
+    "options": [
+      "15 V",
+      "375 V",
+      "80 V",
+      "0.067 V"
+    ],
+    "explain": "P = VI → V = P/I = 75/5 = 15 V.",
+    "answer": [
+      "15 V"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "Cost to light a 300 W bulb for 30 days at Php 12.50/kWh (24 h/day)?",
+    "options": [
+      "Php 2,700",
+      "Php 300",
+      "Php 12.50",
+      "Php 216"
+    ],
+    "explain": "0.3 kW × 24 × 30 = 216 kWh; 216 × 12.50 = Php 2,700.",
+    "answer": [
+      "Php 2,700"
+    ]
+  },
+  {
+    "type": "single",
+    "q": "An open circuit versus a short circuit: which is correct?",
+    "options": [
+      "Open: path is broken so current cannot flow. Short: unintended low-resistance path, current can be very large.",
+      "Open always has infinite current. Short always has zero current.",
+      "They are the same.",
+      "A short means the switch is off."
+    ],
+    "explain": "Open = broken path, no current. Short = almost 0 Ω path, dangerously large current.",
+    "answer": [
+      "Open: path is broken so current cannot flow. Short: unintended low-resistance path, current can be very large."
+    ]
+  },
+  {
+    "type": "match",
+    "q": "Match each quantity to its unit.",
+    "hint": "Use the reference sheet.",
+    "items": [
+      "Charge",
+      "Energy / work",
+      "Voltage",
+      "Current",
+      "Resistance",
+      "Power"
+    ],
+    "choices": [
+      {
+        "v": "C",
+        "l": "coulomb (C)"
+      },
+      {
+        "v": "J",
+        "l": "joule (J)"
+      },
+      {
+        "v": "V",
+        "l": "volt (V)"
+      },
+      {
+        "v": "A",
+        "l": "ampere (A)"
+      },
+      {
+        "v": "O",
+        "l": "ohm (Ω)"
+      },
+      {
+        "v": "W",
+        "l": "watt (W)"
+      }
+    ],
+    "map": {
+      "Charge": "C",
+      "Energy / work": "J",
+      "Voltage": "V",
+      "Current": "A",
+      "Resistance": "O",
+      "Power": "W"
+    },
+    "explain": "q→C, w→J, V→V, I→A, R→Ω, P→W."
+  },
+  {
+    "type": "match",
+    "q": "Match each quantity to its key formula.",
+    "hint": "Ohm’s law and definitions.",
+    "items": [
+      "Voltage from energy",
+      "Current from charge",
+      "Ohm’s law for V",
+      "Power"
+    ],
+    "choices": [
+      {
+        "v": "dw",
+        "l": "V = dw/dq"
+      },
+      {
+        "v": "dq",
+        "l": "I = dq/dt"
+      },
+      {
+        "v": "ir",
+        "l": "V = I × R"
+      },
+      {
+        "v": "vi",
+        "l": "P = V × I"
+      }
+    ],
+    "map": {
+      "Voltage from energy": "dw",
+      "Current from charge": "dq",
+      "Ohm’s law for V": "ir",
+      "Power": "vi"
+    },
+    "explain": "V = dw/dq = IR. I = dq/dt = V/R. P = VI."
+  }
+];
+
+    const shuffle = (arr) => [...arr].sort(() => Math.random() - 0.5);
+    const same = (a, b) => a.length === b.length && a.every((x) => b.includes(x));
+
+    let deck = [];
+    let i = 0;
+    let correct = 0;
+    let locked = false;
+    let missed = [];
+    let picked = new Set();
+
+    const panel = document.getElementById("panel");
+    const prog = document.getElementById("prog");
+    const count = document.getElementById("count");
+    const scoreline = document.getElementById("scoreline");
+
+    function start(pool) {
+      deck = shuffle(pool.map((q) => {
+        if (q.type === "match") return { ...q, items: shuffle(q.items) };
+        return { ...q, options: shuffle(q.options) };
+      }));
+      i = 0; correct = 0; missed = []; locked = false; picked = new Set();
+      render();
+    }
+
+    function render() {
+      if (i >= deck.length) return results();
+      const q = deck[i];
+      prog.style.width = ((i / deck.length) * 100) + "%";
+      count.textContent = "Question " + (i + 1) + " of " + deck.length;
+      scoreline.textContent = "Score " + correct;
+      locked = false; picked = new Set();
+
+      if (q.type === "match") {
+        const opts = (q.choices || []).map((c) => `<option value="${c.v}">${c.l}</option>`).join("");
+        panel.innerHTML = `<p class="q">${q.q}</p>
+          <p class="hint">${q.hint || "Classify each item."}</p>
+          <div class="match">${q.items.map((item, idx) => `
+            <div class="row">
+              <span>${item}</span>
+              <select data-item="${idx}">
+                <option value="">Choose…</option>
+                ${opts}
+              </select>
+            </div>`).join("")}</div>
+          <div class="actions"><button class="btn" id="check">Check</button></div>
+          <div class="fb" id="fb"></div>`;
+        document.getElementById("check").onclick = checkMatch;
+        return;
+      }
+
+      const need = q.need || (q.type === "multi" ? q.answer.length : 1);
+      panel.innerHTML = `<p class="q">${q.q}</p>
+        ${q.type === "multi" ? `<p class="hint">${q.hint || ("Select " + need + ", then check.")}</p>` : ""}
+        <div id="opts">${q.options.map((opt) => `<button class="opt" data-v="${encodeURIComponent(opt)}">${opt}</button>`).join("")}</div>
+        <div class="actions">
+          ${q.type === "multi" ? `<button class="btn" id="check" disabled>Check</button>` : ""}
+        </div>
+        <div class="fb" id="fb"></div>`;
+
+      panel.querySelectorAll(".opt").forEach((btn) => {
+        btn.onclick = () => {
+          if (locked) return;
+          const v = decodeURIComponent(btn.dataset.v);
+          if (q.type === "single") {
+            picked = new Set([v]);
+            finish(q);
+          } else {
+            if (picked.has(v)) picked.delete(v); else {
+              if (picked.size >= need) return;
+              picked.add(v);
+            }
+            panel.querySelectorAll(".opt").forEach((b) => {
+              b.classList.toggle("sel", picked.has(decodeURIComponent(b.dataset.v)));
+            });
+            document.getElementById("check").disabled = picked.size !== need;
+          }
+        };
+      });
+      const check = document.getElementById("check");
+      if (check) check.onclick = () => finish(q);
+    }
+
+    function checkMatch() {
+      if (locked) return;
+      const q = deck[i];
+      const selects = [...panel.querySelectorAll("select")];
+      if (selects.some((s) => !s.value)) return;
+      locked = true;
+      let ok = true;
+      selects.forEach((s, idx) => {
+        const item = q.items[idx];
+        const good = s.value === q.map[item];
+        if (!good) ok = false;
+        s.style.borderColor = good ? "var(--good)" : "var(--bad)";
+      });
+      after(ok, q, q.explain || "Review the classifications.");
+    }
+
+    function finish(q) {
+      if (locked) return;
+      locked = true;
+      const chosen = [...picked];
+      const ok = same(chosen, q.answer);
+      panel.querySelectorAll(".opt").forEach((b) => {
+        const v = decodeURIComponent(b.dataset.v);
+        b.disabled = true;
+        if (q.answer.includes(v)) b.classList.add("ok");
+        else if (picked.has(v)) b.classList.add("no");
+      });
+      after(ok, q, q.explain || ("Correct: " + q.answer.join(" · ")));
+    }
+
+    function after(ok, q, msg) {
+      if (ok) correct++; else missed.push({ q: q.q, msg });
+      const fb = document.getElementById("fb");
+      fb.className = "fb " + (ok ? "ok" : "no");
+      fb.textContent = ok ? "Correct. " + msg : "Not quite. " + msg;
+      scoreline.textContent = "Score " + correct;
+      const actions = panel.querySelector(".actions");
+      actions.innerHTML = `<button class="btn" id="next">${i + 1 === deck.length ? "See results" : "Next"}</button>`;
+      document.getElementById("next").onclick = () => { i++; render(); };
+    }
+
+    function results() {
+      prog.style.width = "100%";
+      count.textContent = "Round complete";
+      scoreline.textContent = "";
+      const pct = Math.round((correct / deck.length) * 100);
+      panel.innerHTML = `
+        <p class="q">You scored</p>
+        <div class="score">${correct} / ${deck.length}</div>
+        <p class="sub" style="margin:0">${pct}% · ${missed.length ? missed.length + " to review" : "Clean round."}</p>
+        ${missed.length ? `<ul class="miss">${missed.map((m) => `<li><b>${m.q}</b><br>${m.msg}</li>`).join("")}</ul>` : ""}
+        <div class="actions">
+          <button class="btn" id="again">Play again (shuffle)</button>
+          ${missed.length ? `<button class="btn ghost" id="missed">Replay missed only</button>` : ""}
+        </div>`;
+      document.getElementById("again").onclick = () => start(BANK);
+      const missBtn = document.getElementById("missed");
+      if (missBtn) {
+        missBtn.onclick = () => {
+          const ids = new Set(missed.map((m) => m.q));
+          start(BANK.filter((q) => ids.has(q.q)));
+        };
+      }
+    }
+
+    start(BANK);
+
+  </script>
+</body>
+</html>

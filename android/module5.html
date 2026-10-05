@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Module 5 — Kotlin variables, logic, and expressions</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --card: #1a2332;
+      --line: #2a3a4f;
+      --text: #e8eef6;
+      --muted: #8fa3b8;
+      --accent: #3d8bfd;
+      --good: #2fbf71;
+      --bad: #e85d5d;
+      --pick: #24324a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .wrap { max-width: 720px; margin: 0 auto; padding: 28px 20px 64px; }
+    h1 { font-size: 1.35rem; margin: 0 0 6px; font-weight: 650; }
+    .sub { color: var(--muted); margin: 0 0 22px; font-size: 0.95rem; }
+    .bar {
+      height: 6px;
+      background: var(--line);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+    .bar > i {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: var(--accent);
+      transition: width .2s ease;
+    }
+    .meta { display: flex; justify-content: space-between; color: var(--muted); font-size: 0.85rem; margin-bottom: 14px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 20px;
+    }
+    .q { font-size: 1.08rem; line-height: 1.45; margin: 0 0 16px; }
+    .hint { color: var(--muted); font-size: 0.82rem; margin: -8px 0 14px; }
+    .opt {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      width: 100%;
+      text-align: left;
+      background: var(--pick);
+      border: 1px solid var(--line);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 11px 12px;
+      margin: 0 0 8px;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+    .opt:hover { border-color: var(--accent); }
+    .opt.sel { border-color: var(--accent); background: #1d3358; }
+    .opt.ok { border-color: var(--good); background: #163528; }
+    .opt.no { border-color: var(--bad); background: #3a1e24; }
+    .opt:disabled { cursor: default; }
+    .match { display: grid; gap: 10px; }
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 180px;
+      gap: 10px;
+      align-items: center;
+    }
+    .row span { font-size: 0.95rem; }
+    select {
+      width: 100%;
+      background: var(--pick);
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px;
+    }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+    button.btn {
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+    }
+    button.btn.ghost {
+      background: transparent;
+      border: 1px solid var(--line);
+      color: var(--text);
+    }
+    button.btn:disabled { opacity: .45; cursor: default; }
+    .fb { margin-top: 12px; font-size: 0.92rem; }
+    .fb.ok { color: var(--good); }
+    .fb.no { color: #ff8b8b; }
+    .score { font-size: 2.2rem; font-weight: 700; margin: 8px 0; }
+    .miss { margin-top: 16px; }
+    .miss li { margin: 0 0 10px; color: var(--muted); font-size: 0.9rem; }
+    .miss b { color: var(--text); }
+
+    a.exit {
+      display: inline-block;
+      margin: 0 0 16px;
+      color: var(--muted);
+      text-decoration: none;
+      border: 1px solid var(--line);
+      padding: 7px 12px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+    }
+    a.exit:hover { color: var(--text); border-color: var(--accent); }
+    a.btn { text-decoration: none; display: inline-block; }
+    .dir { display: grid; gap: 12px; }
+    a.mod {
+      display: block;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 18px 20px;
+      color: var(--text);
+      text-decoration: none;
+    }
+    a.mod:hover { border-color: var(--accent); }
+    a.mod .n { color: var(--accent); font-size: 0.8rem; font-weight: 650; letter-spacing: .04em; }
+    a.mod h2 { margin: 6px 0 6px; font-size: 1.12rem; font-weight: 650; }
+    a.mod p { margin: 0; color: var(--muted); font-size: 0.92rem; line-height: 1.4; }
+    .why-h { font-size: 0.8rem; color: var(--muted); margin: 12px 0 4px; font-weight: 650; letter-spacing: .03em; }
+    .why { margin: 0; padding-left: 18px; }
+    .why li { margin: 0 0 6px; font-size: 0.9rem; line-height: 1.4; color: var(--text); }
+
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="exit" href="index.html">Exit module</a>
+    <h1>Module 5 — Kotlin variables, logic, and expressions</h1>
+    <p class="sub">From the Kotlin variables, logic, and expressions slides. Shuffle, replay, or exit back to the directory.</p>
+    <div class="bar"><i id="prog"></i></div>
+    <div class="meta">
+      <span id="count"></span>
+      <span id="scoreline"></span>
+    </div>
+    <div class="card" id="panel"></div>
+  </div>
+  <script>
+    const BANK = [
+  {
+    "type": "single",
+    "q": "A variable is:",
+    "options": [
+      "A value in memory that is ready to be used by referring to it by name",
+      "A lifecycle callback",
+      "An XML layout file",
+      "A log tag in Logcat"
+    ],
+    "answer": [
+      "A value in memory that is ready to be used by referring to it by name"
+    ],
+    "explain": "Names are arbitrary as long as you avoid restricted characters and keywords.",
+    "why": {
+      "A value in memory that is ready to be used by referring to it by name": "Names are arbitrary as long as you avoid restricted characters and keywords.",
+      "A lifecycle callback": "A lifecycle callback is an Activity method such as onCreate, not a stored value.",
+      "An XML layout file": "An XML layout describes views. A variable is the in-memory value you refer to by name.",
+      "A log tag in Logcat": "Logcat is where logs are viewed. It is not what a variable is."
+    }
+  },
+  {
+    "type": "single",
+    "q": "In practice, variable names should:",
+    "options": [
+      "Follow a naming convention so they stay consistent",
+      "Always be a single letter",
+      "Match a Kotlin keyword",
+      "Change spelling every time they are used"
+    ],
+    "answer": [
+      "Follow a naming convention so they stay consistent"
+    ],
+    "explain": "You can name them freely, but consistency matters.",
+    "why": {
+      "Follow a naming convention so they stay consistent": "You can name them freely, but consistency matters.",
+      "Always be a single letter": "Single letters are allowed but not required. The slides recommend a convention.",
+      "Match a Kotlin keyword": "Keywords are restricted. You must not use them as names.",
+      "Change spelling every time they are used": "Changing the spelling would make the name inconsistent, which is what the convention avoids."
+    }
+  },
+  {
+    "type": "single",
+    "q": "val is for values that:",
+    "options": [
+      "Are decided before the app starts or during initialization and cannot be changed again during execution",
+      "Must be reassigned throughout execution",
+      "Can only store Strings",
+      "Are always nullable EditText text"
+    ],
+    "answer": [
+      "Are decided before the app starts or during initialization and cannot be changed again during execution"
+    ],
+    "explain": "If it does not need to change, use val so the compiler can catch mistakes.",
+    "why": {
+      "Are decided before the app starts or during initialization and cannot be changed again during execution": "If it does not need to change, use val so the compiler can catch mistakes.",
+      "Must be reassigned throughout execution": "Values that must change use var, not val.",
+      "Can only store Strings": "val can store numbers, Booleans, and other types, not only Strings.",
+      "Are always nullable EditText text": "EditText text is a UI value. val is about whether the reference can be reassigned."
+    }
+  },
+  {
+    "type": "single",
+    "q": "var is for values that:",
+    "options": [
+      "Can be manipulated and altered throughout execution",
+      "Are frozen after initialization",
+      "Can only be true or false",
+      "Are compile-time constants only"
+    ],
+    "answer": [
+      "Can be manipulated and altered throughout execution"
+    ],
+    "explain": "Use var when the value must change while the app runs.",
+    "why": {
+      "Can be manipulated and altered throughout execution": "Use var when the value must change while the app runs.",
+      "Are frozen after initialization": "Frozen after initialization is val.",
+      "Can only be true or false": "true or false is a Boolean, which can be either val or var.",
+      "Are compile-time constants only": "A compile-time constant is const val, which is stricter than a normal var."
+    }
+  },
+  {
+    "type": "single",
+    "q": "Int stores:",
+    "options": [
+      "Integers and whole numbers",
+      "True or false only",
+      "Numbers that need precision past the decimal point",
+      "A single character"
+    ],
+    "answer": [
+      "Integers and whole numbers"
+    ],
+    "explain": "Example from the slides: battleOfHastings = 1066.",
+    "why": {
+      "Integers and whole numbers": "Example from the slides: battleOfHastings = 1066.",
+      "True or false only": "True or false is Boolean.",
+      "Numbers that need precision past the decimal point": "Precision past the decimal point is Float or Double.",
+      "A single character": "A single character is Char."
+    }
+  },
+  {
+    "type": "single",
+    "q": "Long is used when:",
+    "options": [
+      "Even larger numbers than Int are needed",
+      "You need a single character",
+      "You need true or false",
+      "You need a UI widget"
+    ],
+    "answer": [
+      "Even larger numbers than Int are needed"
+    ],
+    "explain": "The slides show a large millisecondsSince1970 value as this kind of number.",
+    "why": {
+      "Even larger numbers than Int are needed": "The slides show a large millisecondsSince1970 value as this kind of number.",
+      "You need a single character": "A single character is Char.",
+      "You need true or false": "True or false is Boolean.",
+      "You need a UI widget": "A UI widget is a View such as TextView, not a numeric type."
+    }
+  },
+  {
+    "type": "single",
+    "q": "Float is for:",
+    "options": [
+      "Floating-point numbers, with precision beyond the decimal point",
+      "Only whole numbers",
+      "Only true or false",
+      "Only one character"
+    ],
+    "answer": [
+      "Floating-point numbers, with precision beyond the decimal point"
+    ],
+    "explain": "Examples: pi = 3.14f and worldRecord100m = 9.63f.",
+    "why": {
+      "Floating-point numbers, with precision beyond the decimal point": "Examples: pi = 3.14f and worldRecord100m = 9.63f.",
+      "Only whole numbers": "Whole numbers are Int, or Long when they are larger.",
+      "Only true or false": "True or false is Boolean.",
+      "Only one character": "One character is Char. Float is for decimals, marked with f in the examples."
+    }
+  },
+  {
+    "type": "single",
+    "q": "Double is used when:",
+    "options": [
+      "The precision of a Float is not enough",
+      "You only need a whole number",
+      "You need a read-only String",
+      "You need a Button id"
+    ],
+    "answer": [
+      "The precision of a Float is not enough"
+    ],
+    "explain": "Float first; Double when Float precision is not enough.",
+    "why": {
+      "The precision of a Float is not enough": "Float first; Double when Float precision is not enough.",
+      "You only need a whole number": "A whole number is Int or Long.",
+      "You need a read-only String": "A read-only String would be a String declared with val, not Double.",
+      "You need a Button id": "A Button id is R.id, used with findViewById."
+    }
+  },
+  {
+    "type": "single",
+    "q": "A Boolean can be:",
+    "options": [
+      "true or false, and nothing else",
+      "Any whole number",
+      "Any keyboard character",
+      "Only null"
+    ],
+    "answer": [
+      "true or false, and nothing else"
+    ],
+    "explain": "Examples: beerIsTasty = true and isItRaining = false.",
+    "why": {
+      "true or false, and nothing else": "Examples: beerIsTasty = true and isItRaining = false.",
+      "Any whole number": "Whole numbers are Int.",
+      "Any keyboard character": "Keyboard characters belong in Char or String.",
+      "Only null": "Boolean is specifically true or false, not null."
+    }
+  },
+  {
+    "type": "single",
+    "q": "Char stores:",
+    "options": [
+      "A single alphanumeric character",
+      "Any sequence of keyboard characters",
+      "A true/false value",
+      "A decimal number"
+    ],
+    "answer": [
+      "A single alphanumeric character"
+    ],
+    "explain": "String is the type for any keyboard characters, not just one.",
+    "why": {
+      "A single alphanumeric character": "String is the type for any keyboard characters, not just one.",
+      "Any sequence of keyboard characters": "A sequence of characters is a String. Char is only one.",
+      "A true/false value": "True or false is Boolean.",
+      "A decimal number": "A decimal number is Float or Double."
+    }
+  },
+  {
+    "type": "single",
+    "q": "String stores:",
+    "options": [
+      "Any keyboard character sequence",
+      "Only one character",
+      "Only true or false",
+      "Only whole numbers"
+    ],
+    "answer": [
+      "Any keyboard character sequence"
+    ],
+    "explain": "Examples: appName = \"Express Yourself\" and contactName = \"Geralt\".",
+    "why": {
+      "Any keyboard character sequence": "Examples: appName = \"Express Yourself\" and contactName = \"Geralt\".",
+      "Only one character": "One character is Char.",
+      "Only true or false": "True or false is Boolean.",
+      "Only whole numbers": "Whole numbers are Int or Long."
+    }
+  },
+  {
+    "type": "single",
+    "q": "The + operator:",
+    "options": [
+      "Adds values, or concatenates if the values are strings",
+      "Always divides",
+      "Compares two values for equality",
+      "Declares a val"
+    ],
+    "answer": [
+      "Adds values, or concatenates if the values are strings"
+    ],
+    "explain": "Addition for numbers; concatenation for strings.",
+    "why": {
+      "Adds values, or concatenates if the values are strings": "Addition for numbers; concatenation for strings.",
+      "Always divides": "Division is /.",
+      "Compares two values for equality": "Equality comparison is ==.",
+      "Declares a val": "val is a declaration keyword, not the + operator."
+    }
+  },
+  {
+    "type": "single",
+    "q": "findViewById connects:",
+    "options": [
+      "A Kotlin variable to a View declared in the XML layout, so Kotlin can access or modify that View",
+      "Two Activities with an implicit broadcast only",
+      "A Float literal to a Double",
+      "Logcat to Gradle"
+    ],
+    "answer": [
+      "A Kotlin variable to a View declared in the XML layout, so Kotlin can access or modify that View"
+    ],
+    "explain": "Example: val txtName = findViewById<TextView>(R.id.txtName).",
+    "why": {
+      "A Kotlin variable to a View declared in the XML layout, so Kotlin can access or modify that View": "Example: val txtName = findViewById<TextView>(R.id.txtName).",
+      "Two Activities with an implicit broadcast only": "Opening another Activity is an Intent, not findViewById.",
+      "A Float literal to a Double": "Float and Double are numeric types. findViewById does not convert them.",
+      "Logcat to Gradle": "Logcat and Gradle are tools. findViewById links a variable to a View."
+    }
+  },
+  {
+    "type": "single",
+    "q": "An Intent is used to:",
+    "options": [
+      "Communicate between Android components, open another Activity, or pass information from one Activity to another",
+      "Declare an Int",
+      "Replace the when statement",
+      "Inflate a layout inside onDestroy only"
+    ],
+    "answer": [
+      "Communicate between Android components, open another Activity, or pass information from one Activity to another"
+    ],
+    "explain": "It is the messaging object between components.",
+    "why": {
+      "Communicate between Android components, open another Activity, or pass information from one Activity to another": "It is the messaging object between components.",
+      "Declare an Int": "An Int is a whole-number type, declared with val or var.",
+      "Replace the when statement": "when is a conditional. It does not open another screen.",
+      "Inflate a layout inside onDestroy only": "Layouts are set in onCreate with setContentView, not by an Intent inside onDestroy."
+    }
+  },
+  {
+    "type": "single",
+    "q": "An explicit Intent:",
+    "options": [
+      "Identifies the specific Activity or component to open",
+      "Leaves the destination unspecified",
+      "Only compares two Booleans",
+      "Declares a var"
+    ],
+    "answer": [
+      "Identifies the specific Activity or component to open"
+    ],
+    "explain": "Example: Intent(this, SecondActivity::class.java).",
+    "why": {
+      "Identifies the specific Activity or component to open": "Example: Intent(this, SecondActivity::class.java).",
+      "Leaves the destination unspecified": "An explicit Intent names the component. Leaving it unspecified would not be explicit.",
+      "Only compares two Booleans": "Comparing Booleans uses == or logical operators.",
+      "Declares a var": "var declares a changeable variable. It does not name an Activity."
+    }
+  },
+  {
+    "type": "single",
+    "q": "After creating an Intent that names SecondActivity, you start it with:",
+    "options": [
+      "startActivity(intent)",
+      "setContentView(intent)",
+      "Log.i(intent)",
+      "findViewById(intent)"
+    ],
+    "answer": [
+      "startActivity(intent)"
+    ],
+    "explain": "The first line creates the Intent; startActivity() starts the Activity.",
+    "why": {
+      "startActivity(intent)": "The first line creates the Intent; startActivity() starts the Activity.",
+      "setContentView(intent)": "setContentView loads a layout in onCreate. It does not open SecondActivity.",
+      "Log.i(intent)": "Log.i writes a log line. It does not start an Activity.",
+      "findViewById(intent)": "findViewById looks up a View in the current layout."
+    }
+  },
+  {
+    "type": "single",
+    "q": "The main Kotlin conditional forms in this module are:",
+    "options": [
+      "if, else, and when",
+      "for and while only",
+      "switch and case only",
+      "try and catch only"
+    ],
+    "answer": [
+      "if, else, and when"
+    ],
+    "explain": "They let the program handle different inputs.",
+    "why": {
+      "if, else, and when": "They let the program handle different inputs.",
+      "for and while only": "for and while repeat code. The slides name if, else, and when as the conditionals.",
+      "switch and case only": "Kotlin uses when instead of switch and case.",
+      "try and catch only": "try and catch handle exceptions, not the decisions in this module."
+    }
+  },
+  {
+    "type": "single",
+    "q": "== is:",
+    "options": [
+      "The comparison operator; it yields true or false",
+      "The assignment operator",
+      "The logical NOT operator",
+      "The string concatenation operator"
+    ],
+    "answer": [
+      "The comparison operator; it yields true or false"
+    ],
+    "explain": "Assignment is a single =.",
+    "why": {
+      "The comparison operator; it yields true or false": "Assignment is a single =.",
+      "The assignment operator": "Assignment is one equals sign, =, which stores a value.",
+      "The logical NOT operator": "Logical NOT is !.",
+      "The string concatenation operator": "Concatenation of strings uses +."
+    }
+  },
+  {
+    "type": "single",
+    "q": "The logical NOT operator is:",
+    "options": [
+      "! — it yields the opposite result",
+      "&&",
+      "||",
+      "!="
+    ],
+    "answer": [
+      "! — it yields the opposite result"
+    ],
+    "explain": "!= is not-equal, which is different from NOT.",
+    "why": {
+      "! — it yields the opposite result": "!= is not-equal, which is different from NOT.",
+      "&&": "&& is logical AND.",
+      "||": "|| is logical OR.",
+      "!=": "!= means not equal. NOT by itself is ! and flips a Boolean."
+    }
+  },
+  {
+    "type": "single",
+    "q": "&& and || are:",
+    "options": [
+      "Logical AND and logical OR",
+      "Increment and decrement",
+      "Greater-than and less-than",
+      "Assignment and comparison"
+    ],
+    "answer": [
+      "Logical AND and logical OR"
+    ],
+    "explain": "Use them to combine conditions.",
+    "why": {
+      "Logical AND and logical OR": "Use them to combine conditions.",
+      "Increment and decrement": "Increment and decrement are ++ and --.",
+      "Greater-than and less-than": "Greater-than and less-than are > and <.",
+      "Assignment and comparison": "Assignment is = and comparison is ==."
+    }
+  },
+  {
+    "type": "single",
+    "q": "An if statement:",
+    "options": [
+      "Evaluates a condition and runs code based on whether that condition is true or false",
+      "Checks one variable against many values as a switch replacement",
+      "Declares a val",
+      "Starts another Activity"
+    ],
+    "answer": [
+      "Evaluates a condition and runs code based on whether that condition is true or false"
+    ],
+    "explain": "when is the multi-value form.",
+    "why": {
+      "Evaluates a condition and runs code based on whether that condition is true or false": "when is the multi-value form.",
+      "Checks one variable against many values as a switch replacement": "Checking one variable against many values is when, which replaces switch.",
+      "Declares a val": "val declares a read-only variable.",
+      "Starts another Activity": "Starting another Activity uses an Intent and startActivity."
+    }
+  },
+  {
+    "type": "single",
+    "q": "when is:",
+    "options": [
+      "A replacement for switch in other languages; it checks a variable against multiple values",
+      "The assignment operator",
+      "A lifecycle method",
+      "A way to declare a Float"
+    ],
+    "answer": [
+      "A replacement for switch in other languages; it checks a variable against multiple values"
+    ],
+    "explain": "Use when when one value has several possible matches.",
+    "why": {
+      "A replacement for switch in other languages; it checks a variable against multiple values": "Use when when one value has several possible matches.",
+      "The assignment operator": "Assignment is =.",
+      "A lifecycle method": "Lifecycle methods are onCreate, onStart, and the rest.",
+      "A way to declare a Float": "A Float is declared as a number with an f suffix, such as 3.14f."
+    }
+  },
+  {
+    "type": "single",
+    "q": "++ and -- are:",
+    "options": [
+      "The increment and decrement operators",
+      "Logical AND and OR",
+      "Greater-than and less-than",
+      "Comparison and assignment"
+    ],
+    "answer": [
+      "The increment and decrement operators"
+    ],
+    "explain": "They change a numeric value by one.",
+    "why": {
+      "The increment and decrement operators": "They change a numeric value by one.",
+      "Logical AND and OR": "Logical AND and OR are && and ||.",
+      "Greater-than and less-than": "Greater-than and less-than are > and <.",
+      "Comparison and assignment": "Comparison is == and assignment is =."
+    }
+  },
+  {
+    "type": "match",
+    "q": "Match each declaration from the slides to its type.",
+    "items": [
+      "battleOfHastings = 1066",
+      "pi = 3.14f",
+      "beerIsTasty = true",
+      "appName = \"Express Yourself\""
+    ],
+    "choices": [
+      {
+        "v": "int",
+        "l": "Int"
+      },
+      {
+        "v": "float",
+        "l": "Float"
+      },
+      {
+        "v": "bool",
+        "l": "Boolean"
+      },
+      {
+        "v": "str",
+        "l": "String"
+      }
+    ],
+    "map": {
+      "battleOfHastings = 1066": "int",
+      "pi = 3.14f": "float",
+      "beerIsTasty = true": "bool",
+      "appName = \"Express Yourself\"": "str"
+    },
+    "explain": "1066 is a whole number, 3.14f is a Float, true is Boolean, quoted text is a String.",
+    "hint": "Classify each item."
+  }
+];
+
+    const shuffle = (arr) => [...arr].sort(() => Math.random() - 0.5);
+    const same = (a, b) => a.length === b.length && a.every((x) => b.includes(x));
+
+    let deck = [];
+    let i = 0;
+    let correct = 0;
+    let locked = false;
+    let missed = [];
+    let picked = new Set();
+
+    const panel = document.getElementById("panel");
+    const prog = document.getElementById("prog");
+    const count = document.getElementById("count");
+    const scoreline = document.getElementById("scoreline");
+
+    function start(pool) {
+      deck = shuffle(pool.map((q) => {
+        if (q.type === "match") return { ...q, items: shuffle(q.items) };
+        return { ...q, options: shuffle(q.options) };
+      }));
+      i = 0; correct = 0; missed = []; locked = false; picked = new Set();
+      render();
+    }
+
+    function render() {
+      if (i >= deck.length) return results();
+      const q = deck[i];
+      prog.style.width = ((i / deck.length) * 100) + "%";
+      count.textContent = "Question " + (i + 1) + " of " + deck.length;
+      scoreline.textContent = "Score " + correct;
+      locked = false; picked = new Set();
+
+      if (q.type === "match") {
+        const opts = (q.choices || []).map((c) => `<option value="${c.v}">${c.l}</option>`).join("");
+        panel.innerHTML = `<p class="q">${q.q}</p>
+          <p class="hint">${q.hint || "Classify each item."}</p>
+          <div class="match">${q.items.map((item, idx) => `
+            <div class="row">
+              <span>${item}</span>
+              <select data-item="${idx}">
+                <option value="">Choose…</option>
+                ${opts}
+              </select>
+            </div>`).join("")}</div>
+          <div class="actions"><button class="btn" id="check">Check</button></div>
+          <div class="fb" id="fb"></div>`;
+        document.getElementById("check").onclick = checkMatch;
+        return;
+      }
+
+      const need = q.need || (q.type === "multi" ? q.answer.length : 1);
+      panel.innerHTML = `<p class="q">${q.q}</p>
+        ${q.type === "multi" ? `<p class="hint">${q.hint || ("Select " + need + ", then check.")}</p>` : ""}
+        <div id="opts">${q.options.map((opt) => `<button class="opt" data-v="${encodeURIComponent(opt)}">${esc(opt)}</button>`).join("")}</div>
+        <div class="actions">
+          ${q.type === "multi" ? `<button class="btn" id="check" disabled>Check</button>` : ""}
+        </div>
+        <div class="fb" id="fb"></div>`;
+
+      panel.querySelectorAll(".opt").forEach((btn) => {
+        btn.onclick = () => {
+          if (locked) return;
+          const v = decodeURIComponent(btn.dataset.v);
+          if (q.type === "single") {
+            picked = new Set([v]);
+            finish(q);
+          } else {
+            if (picked.has(v)) picked.delete(v); else {
+              if (picked.size >= need) return;
+              picked.add(v);
+            }
+            panel.querySelectorAll(".opt").forEach((b) => {
+              b.classList.toggle("sel", picked.has(decodeURIComponent(b.dataset.v)));
+            });
+            document.getElementById("check").disabled = picked.size !== need;
+          }
+        };
+      });
+      const check = document.getElementById("check");
+      if (check) check.onclick = () => finish(q);
+    }
+
+    function checkMatch() {
+      if (locked) return;
+      const q = deck[i];
+      const selects = [...panel.querySelectorAll("select")];
+      if (selects.some((s) => !s.value)) return;
+      locked = true;
+      let ok = true;
+      selects.forEach((s, idx) => {
+        const item = q.items[idx];
+        const good = s.value === q.map[item];
+        if (!good) ok = false;
+        s.style.borderColor = good ? "var(--good)" : "var(--bad)";
+      });
+      after(ok, q, q.explain || "Review the classifications.");
+    }
+
+    function finish(q) {
+      if (locked) return;
+      locked = true;
+      const chosen = [...picked];
+      const ok = same(chosen, q.answer);
+      panel.querySelectorAll(".opt").forEach((b) => {
+        const v = decodeURIComponent(b.dataset.v);
+        b.disabled = true;
+        if (q.answer.includes(v)) b.classList.add("ok");
+        else if (picked.has(v)) b.classList.add("no");
+      });
+      after(ok, q, q.explain || ("Correct: " + q.answer.join(" · ")));
+    }
+
+    const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+
+    function reasonBlock(q) {
+      if (q.type === "match") {
+        const labels = {};
+        (q.choices || []).forEach((c) => { labels[c.v] = c.l; });
+        const lines = (q.items || []).map((item) => `<li><b>${esc(item)}</b> — ${esc(labels[q.map[item]] || q.map[item])}</li>`).join("");
+        return `<p class="why-h">WHY THIS IS RIGHT</p><ul class="why">${lines}</ul><p>${esc(q.explain || "")}</p>`;
+      }
+      const why = q.why || {};
+      const right = (q.answer || []).map((a) => `<li><b>${esc(a)}</b> — ${esc(why[a] || q.explain || "")}</li>`).join("");
+      const wrong = (q.options || []).filter((o) => !(q.answer || []).includes(o)).map((o) => `<li><b>${esc(o)}</b> — ${esc(why[o] || "")}</li>`).join("");
+      return `<p class="why-h">WHY THIS IS RIGHT</p><ul class="why">${right}</ul>` +
+        (wrong ? `<p class="why-h">WHY THE OTHERS ARE WRONG</p><ul class="why">${wrong}</ul>` : "");
+    }
+
+    function after(ok, q, msg) {
+      if (ok) correct++; else missed.push({ q: q.q, msg });
+      const fb = document.getElementById("fb");
+      fb.className = "fb " + (ok ? "ok" : "no");
+      fb.textContent = ok ? "Correct." : "Not quite.";
+      let box = document.getElementById("reasons");
+      if (!box) {
+        box = document.createElement("div");
+        box.id = "reasons";
+        fb.after(box);
+      }
+      box.innerHTML = reasonBlock(q);
+      scoreline.textContent = "Score " + correct;
+      const actions = panel.querySelector(".actions");
+      actions.innerHTML = `<button class="btn" id="next">${i + 1 === deck.length ? "See results" : "Next"}</button>`;
+      document.getElementById("next").onclick = () => { i++; render(); };
+    }
+
+    function results() {
+      prog.style.width = "100%";
+      count.textContent = "Round complete";
+      scoreline.textContent = "";
+      const pct = Math.round((correct / deck.length) * 100);
+      panel.innerHTML = `
+        <p class="q">You scored</p>
+        <div class="score">${correct} / ${deck.length}</div>
+        <p class="sub" style="margin:0">${pct}% · ${missed.length ? missed.length + " to review" : "Clean round."}</p>
+        ${missed.length ? `<ul class="miss">${missed.map((m) => `<li><b>${m.q}</b><br>${m.msg}</li>`).join("")}</ul>` : ""}
+        <div class="actions">
+          <a class="btn ghost" href="index.html">Exit module</a>
+          <button class="btn" id="again">Play again (shuffle)</button>
+          ${missed.length ? `<button class="btn ghost" id="missed">Replay missed only</button>` : ""}
+        </div>`;
+      document.getElementById("again").onclick = () => start(BANK);
+      const missBtn = document.getElementById("missed");
+      if (missBtn) {
+        missBtn.onclick = () => {
+          const ids = new Set(missed.map((m) => m.q));
+          start(BANK.filter((q) => ids.has(q.q)));
+        };
+      }
+    }
+
+    start(BANK);
+
+  </script>
+</body>
+</html>

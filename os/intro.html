@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Intro OS reviewer</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --card: #1a2332;
+      --line: #2a3a4f;
+      --text: #e8eef6;
+      --muted: #8fa3b8;
+      --accent: #3d8bfd;
+      --good: #2fbf71;
+      --bad: #e85d5d;
+      --pick: #24324a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .wrap { max-width: 720px; margin: 0 auto; padding: 28px 20px 64px; }
+    h1 { font-size: 1.35rem; margin: 0 0 6px; font-weight: 650; }
+    .sub { color: var(--muted); margin: 0 0 22px; font-size: 0.95rem; }
+    .bar {
+      height: 6px;
+      background: var(--line);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+    .bar > i {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: var(--accent);
+      transition: width .2s ease;
+    }
+    .meta { display: flex; justify-content: space-between; color: var(--muted); font-size: 0.85rem; margin-bottom: 14px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 20px;
+    }
+    .q { font-size: 1.08rem; line-height: 1.45; margin: 0 0 16px; }
+    .hint { color: var(--muted); font-size: 0.82rem; margin: -8px 0 14px; }
+    .opt {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      width: 100%;
+      text-align: left;
+      background: var(--pick);
+      border: 1px solid var(--line);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 11px 12px;
+      margin: 0 0 8px;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+    .opt:hover { border-color: var(--accent); }
+    .opt.sel { border-color: var(--accent); background: #1d3358; }
+    .opt.ok { border-color: var(--good); background: #163528; }
+    .opt.no { border-color: var(--bad); background: #3a1e24; }
+    .opt:disabled { cursor: default; }
+    .match { display: grid; gap: 10px; }
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 180px;
+      gap: 10px;
+      align-items: center;
+    }
+    .row span { font-size: 0.95rem; }
+    select {
+      width: 100%;
+      background: var(--pick);
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px;
+    }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+    button.btn {
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+    }
+    button.btn.ghost {
+      background: transparent;
+      border: 1px solid var(--line);
+      color: var(--text);
+    }
+    button.btn:disabled { opacity: .45; cursor: default; }
+    .fb { margin-top: 12px; font-size: 0.92rem; }
+    .fb.ok { color: var(--good); }
+    .fb.no { color: #ff8b8b; }
+    .score { font-size: 2.2rem; font-weight: 700; margin: 8px 0; }
+    .miss { margin-top: 16px; }
+    .miss li { margin: 0 0 10px; color: var(--muted); font-size: 0.9rem; }
+    .miss b { color: var(--text); }
+
+    a.exit {
+      display: inline-block;
+      margin: 0 0 16px;
+      color: var(--muted);
+      text-decoration: none;
+      border: 1px solid var(--line);
+      padding: 7px 12px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+    }
+    a.exit:hover { color: var(--text); border-color: var(--accent); }
+    a.btn { text-decoration: none; display: inline-block; }
+    .dir { display: grid; gap: 12px; }
+    a.mod {
+      display: block;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 18px 20px;
+      color: var(--text);
+      text-decoration: none;
+    }
+    a.mod:hover { border-color: var(--accent); }
+    a.mod .n { color: var(--accent); font-size: 0.8rem; font-weight: 650; letter-spacing: .04em; }
+    a.mod h2 { margin: 6px 0 6px; font-size: 1.12rem; font-weight: 650; }
+    a.mod p { margin: 0; color: var(--muted); font-size: 0.92rem; line-height: 1.4; }
+
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="exit" href="index.html">Exit module</a>
+    <h1>Intro OS reviewer</h1>
+    <p class="sub">From 1. Intro OS. Shuffle, replay, or exit back to the directory.</p>
+    <div class="bar"><i id="prog"></i></div>
+    <div class="meta">
+      <span id="count"></span>
+      <span id="scoreline"></span>
+    </div>
+    <div class="card" id="panel"></div>
+  </div>
+  <script>
+    const BANK = [
+  {
+    "type": "single",
+    "q": "What is an operating system?",
+    "options": [
+      "System software that manages hardware and software resources and provides services so application programs can run",
+      "Only a collection of device drivers with no user services",
+      "Application software used to edit documents",
+      "Firmware burned into the CPU that never changes"
+    ],
+    "answer": [
+      "System software that manages hardware and software resources and provides services so application programs can run"
+    ],
+    "explain": "The OS is an intermediary: User → Application Software → OS → Hardware."
+  },
+  {
+    "type": "single",
+    "q": "Which sequence correctly describes the OS as an intermediary?",
+    "options": [
+      "User → Application Software → Operating System → Hardware",
+      "Hardware → User → Application → OS",
+      "OS → Hardware → User → Application",
+      "Application → Hardware → User → OS"
+    ],
+    "answer": [
+      "User → Application Software → Operating System → Hardware"
+    ],
+    "explain": "Users run apps; apps request OS services; the OS talks to hardware."
+  },
+  {
+    "type": "multi",
+    "q": "Which are examples of operating systems from the intro lecture? (Select three)",
+    "options": [
+      "Microsoft Windows",
+      "Linux",
+      "Android",
+      "Microsoft Word",
+      "Google Chrome"
+    ],
+    "answer": [
+      "Microsoft Windows",
+      "Linux",
+      "Android"
+    ],
+    "need": 3,
+    "explain": "Examples include Windows, macOS, Linux, Android, iOS, Unix, and ChromeOS. Word and Chrome are applications."
+  },
+  {
+    "type": "single",
+    "q": "Which is NOT listed as a main goal of an operating system?",
+    "options": [
+      "Maximizing the number of open browser tabs",
+      "Convenience: make the computer easy to use",
+      "Efficiency: maximize hardware utilization",
+      "Ability to evolve: integrate new technologies and hardware"
+    ],
+    "answer": [
+      "Maximizing the number of open browser tabs"
+    ],
+    "explain": "The three main goals are convenience, efficiency, and ability to evolve."
+  },
+  {
+    "type": "single",
+    "q": "A process is:",
+    "options": [
+      "A program that is currently being executed",
+      "A file stored on disk that has never been opened",
+      "A device driver only",
+      "The BIOS"
+    ],
+    "answer": [
+      "A program that is currently being executed"
+    ],
+    "explain": "Chrome.exe, Word.exe, and Spotify.exe become processes when they run."
+  },
+  {
+    "type": "multi",
+    "q": "How does the OS manage processes? (Select three)",
+    "options": [
+      "Creating processes",
+      "Scheduling processes",
+      "Terminating processes",
+      "Soldering RAM onto the motherboard"
+    ],
+    "answer": [
+      "Creating processes",
+      "Scheduling processes",
+      "Terminating processes"
+    ],
+    "need": 3,
+    "explain": "Also suspending, resuming, allocating CPU time, and coordinating processes."
+  },
+  {
+    "type": "single",
+    "q": "Multitasking allows:",
+    "options": [
+      "Multiple applications to appear to run simultaneously",
+      "Only one program in memory at a time",
+      "The CPU to execute zero instructions",
+      "Storage to replace RAM entirely"
+    ],
+    "answer": [
+      "Multiple applications to appear to run simultaneously"
+    ],
+    "explain": "Example: Spotify + browser + download + document at once."
+  },
+  {
+    "type": "single",
+    "q": "Memory management is the process of controlling and coordinating:",
+    "options": [
+      "The computer's main memory, or RAM",
+      "Only cloud storage accounts",
+      "Printer ink levels",
+      "DNS records"
+    ],
+    "answer": [
+      "The computer's main memory, or RAM"
+    ],
+    "explain": "The OS decides which processes are in memory, how much they get, which locations are used, when memory is released, and how virtual memory is managed."
+  },
+  {
+    "type": "multi",
+    "q": "Which file operations does the OS provide? (Select three)",
+    "options": [
+      "Create",
+      "Read",
+      "Delete",
+      "Compile Java to bytecode inside the HDD controller"
+    ],
+    "answer": [
+      "Create",
+      "Read",
+      "Delete"
+    ],
+    "need": 3,
+    "explain": "Also open, write, rename, copy, move, and search."
+  },
+  {
+    "type": "single",
+    "q": "A device driver is:",
+    "options": [
+      "Software that allows the OS to communicate with particular hardware",
+      "A physical USB cable",
+      "The CPU cache",
+      "A cloud SaaS application"
+    ],
+    "answer": [
+      "Software that allows the OS to communicate with particular hardware"
+    ],
+    "explain": "The OS uses drivers to talk to keyboard, mouse, printer, GPU, NIC, and so on."
+  },
+  {
+    "type": "single",
+    "q": "Primary storage in the storage hierarchy refers to:",
+    "options": [
+      "RAM (temporary, fast memory)",
+      "HDDs, SSDs, USB drives, and memory cards only",
+      "Online remote servers only",
+      "Paper backups"
+    ],
+    "answer": [
+      "RAM (temporary, fast memory)"
+    ],
+    "explain": "Secondary = HDD/SSD/USB; cloud = remote servers."
+  },
+  {
+    "type": "single",
+    "q": "Storage management includes backing up data in order to:",
+    "options": [
+      "Protect against data loss",
+      "Increase CPU clock speed",
+      "Remove the need for file permissions",
+      "Disable encryption forever"
+    ],
+    "answer": [
+      "Protect against data loss"
+    ],
+    "explain": "It also allocates space, organizes data, monitors usage, secures data, and optimizes performance (cleanup, compression, HDD defrag)."
+  },
+  {
+    "type": "single",
+    "q": "In the grades.xlsx permission example, a Guest typically has:",
+    "options": [
+      "No Access",
+      "Read + Write",
+      "Read Only equal to the owner",
+      "Full control of the kernel"
+    ],
+    "answer": [
+      "No Access"
+    ],
+    "explain": "Owner/Teacher: Read+Write; Student: Read Only; Guest: No Access. The OS enforces these rules."
+  },
+  {
+    "type": "single",
+    "q": "Network management includes configuring:",
+    "options": [
+      "IP addresses, subnet masks, gateways, and DNS",
+      "Only the color of the desktop wallpaper",
+      "CPU register names",
+      "The text section of a process"
+    ],
+    "answer": [
+      "IP addresses, subnet masks, gateways, and DNS"
+    ],
+    "explain": "Also monitoring, connection management, resource/bandwidth control, security, and fault management."
+  },
+  {
+    "type": "single",
+    "q": "A CLI lets users interact through:",
+    "options": [
+      "Typed commands such as dir, cd, mkdir, and copy",
+      "Only icons and windows",
+      "Touch swipes only",
+      "No user input at all"
+    ],
+    "answer": [
+      "Typed commands such as dir, cd, mkdir, and copy"
+    ],
+    "explain": "GUI examples: Windows desktop, macOS Finder, Android, Linux desktops."
+  },
+  {
+    "type": "single",
+    "q": "Resource allocation distributes among programs and users things such as:",
+    "options": [
+      "CPU time, RAM, storage, I/O devices, and network bandwidth",
+      "Only the BIOS password",
+      "Only compiler error messages",
+      "Only cloud invoices"
+    ],
+    "answer": [
+      "CPU time, RAM, storage, I/O devices, and network bandwidth"
+    ],
+    "explain": "The OS shares limited hardware among competing users/programs."
+  },
+  {
+    "type": "single",
+    "q": "Which is a hardware error example?",
+    "options": [
+      "RAM failure or CPU overheating",
+      "An infinite loop in an app",
+      "A missing system file",
+      "An invalid instruction in software"
+    ],
+    "answer": [
+      "RAM failure or CPU overheating"
+    ],
+    "explain": "Hardware = physical components. Software errors include crashes, invalid instructions, infinite loops, missing files."
+  },
+  {
+    "type": "single",
+    "q": "I/O errors occur when:",
+    "options": [
+      "Communication with a device fails (printer offline, USB disconnects, disk unread, network lost)",
+      "The compiler finishes successfully",
+      "A process is in the NEW state only",
+      "Cloud SaaS is defined"
+    ],
+    "answer": [
+      "Communication with a device fails (printer offline, USB disconnects, disk unread, network lost)"
+    ],
+    "explain": "Memory errors occur when a program improperly accesses RAM; the OS protects others."
+  },
+  {
+    "type": "multi",
+    "q": "How can the OS handle errors? (Select three)",
+    "options": [
+      "Retry the operation",
+      "Terminate the process",
+      "Log the error",
+      "Delete the CPU"
+    ],
+    "answer": [
+      "Retry the operation",
+      "Terminate the process",
+      "Log the error"
+    ],
+    "need": 3,
+    "explain": "Also recovery and notifying the user."
+  },
+  {
+    "type": "single",
+    "q": "A batch operating system:",
+    "options": [
+      "Collects jobs and processes them in groups (payroll, billing, large-scale data processing)",
+      "Always gives every user a GUI desktop",
+      "Is only for smartphones",
+      "Never queues jobs"
+    ],
+    "answer": [
+      "Collects jobs and processes them in groups (payroll, billing, large-scale data processing)"
+    ],
+    "explain": "Jobs are collected and processed in groups."
+  },
+  {
+    "type": "single",
+    "q": "A multiprogramming OS keeps multiple programs in memory so:",
+    "options": [
+      "The CPU can switch among them",
+      "RAM is never used",
+      "Only one job exists on disk",
+      "There is no scheduler"
+    ],
+    "answer": [
+      "The CPU can switch among them"
+    ],
+    "explain": "This improves CPU utilization vs waiting on a single job."
+  },
+  {
+    "type": "single",
+    "q": "A multiuser OS allows:",
+    "options": [
+      "Multiple users to access system resources",
+      "Exactly one user account ever",
+      "No passwords",
+      "Only batch punch cards"
+    ],
+    "answer": [
+      "Multiple users to access system resources"
+    ],
+    "explain": "Distinct from multitasking, which is about multiple apps seeming to run at once."
+  },
+  {
+    "type": "single",
+    "q": "A real-time OS (RTOS) is designed for systems where:",
+    "options": [
+      "Timing requirements are important (robots, medical, automotive, aircraft, embedded controllers)",
+      "Only office word processing matters",
+      "Jobs wait overnight in a batch queue",
+      "There is no notion of time"
+    ],
+    "answer": [
+      "Timing requirements are important (robots, medical, automotive, aircraft, embedded controllers)"
+    ],
+    "explain": "Timing constraints are the point of an RTOS."
+  },
+  {
+    "type": "single",
+    "q": "Embedded operating systems are designed for:",
+    "options": [
+      "Specialized devices such as smart TVs, printers, appliances, automotive systems, and IoT",
+      "Only warehouse mainframes",
+      "Only desktop Windows servers",
+      "Only peer-to-peer file sharing"
+    ],
+    "answer": [
+      "Specialized devices such as smart TVs, printers, appliances, automotive systems, and IoT"
+    ],
+    "explain": "Mobile OS examples: Android and iOS."
+  },
+  {
+    "type": "single",
+    "q": "A general-purpose processor is:",
+    "options": [
+      "The main CPU that performs many different types of tasks",
+      "A GPU/NIC/DSP that only does one specialized function",
+      "Always a cluster of phones",
+      "The BIOS chip only"
+    ],
+    "answer": [
+      "The main CPU that performs many different types of tasks"
+    ],
+    "explain": "Special-purpose processors handle graphics, networking, or signal processing."
+  },
+  {
+    "type": "single",
+    "q": "A multiprocessor system has:",
+    "options": [
+      "Two or more processors or cores that work together to execute programs",
+      "Exactly one ALU and no cores",
+      "No CPU at all",
+      "Only a printer spooler"
+    ],
+    "answer": [
+      "Two or more processors or cores that work together to execute programs"
+    ],
+    "explain": "Advantages: performance, throughput, parallel processing, reliability, multitasking, scalability."
+  },
+  {
+    "type": "single",
+    "q": "In symmetric multiprocessing (SMP):",
+    "options": [
+      "Multiple processors share the same memory and are treated relatively equally by the OS",
+      "One processor is always idle in standby forever",
+      "Processors never share memory",
+      "Only the GPU runs the kernel"
+    ],
+    "answer": [
+      "Multiple processors share the same memory and are treated relatively equally by the OS"
+    ],
+    "explain": "Asymmetric multiprocessing: processors may have different responsibilities."
+  },
+  {
+    "type": "single",
+    "q": "A clustered system is:",
+    "options": [
+      "Two or more independent computers working together as a single system",
+      "A single laptop with one core",
+      "A USB flash drive",
+      "A CLI command"
+    ],
+    "answer": [
+      "Two or more independent computers working together as a single system"
+    ],
+    "explain": "Features: shared storage (often SAN), high availability, failure protection (another node takes over)."
+  },
+  {
+    "type": "single",
+    "q": "In asymmetric clustering:",
+    "options": [
+      "One machine may remain in standby while another performs the main work",
+      "All nodes are always active doing useful work",
+      "There is never a standby node",
+      "Nodes cannot fail over"
+    ],
+    "answer": [
+      "One machine may remain in standby while another performs the main work"
+    ],
+    "explain": "Symmetric clustering: all nodes are active and perform useful work. HPC clusters do large computational tasks."
+  },
+  {
+    "type": "single",
+    "q": "Traditional computing primarily manages applications/resources on:",
+    "options": [
+      "A local computer (desktops, laptops, workstations, stand-alone PCs)",
+      "Only remote cloud VMs with no local disk",
+      "Only RTOS robots",
+      "Only P2P swarms"
+    ],
+    "answer": [
+      "A local computer (desktops, laptops, workstations, stand-alone PCs)"
+    ],
+    "explain": "Pros: easy, local resources, can work offline. Limit: resources of that one machine."
+  },
+  {
+    "type": "single",
+    "q": "A challenge of mobile computing is:",
+    "options": [
+      "Limited battery life, smaller screens, limited processing, network interruptions, security/privacy",
+      "It cannot use wireless connectivity",
+      "It is never portable",
+      "It has no touch interface"
+    ],
+    "answer": [
+      "Limited battery life, smaller screens, limited processing, network interruptions, security/privacy"
+    ],
+    "explain": "Characteristics: portable, wireless, battery-powered, touch, location awareness."
+  },
+  {
+    "type": "single",
+    "q": "In client-server computing:",
+    "options": [
+      "Clients request services from a server that provides resources (web, DB, file, email, app servers)",
+      "Every peer is equal and there is never a server",
+      "The BIOS is the only client",
+      "Clients never use a network"
+    ],
+    "answer": [
+      "Clients request services from a server that provides resources (web, DB, file, email, app servers)"
+    ],
+    "explain": "Pros: centralized management and security. Con: if the main server fails, many clients lose the service."
+  },
+  {
+    "type": "single",
+    "q": "Peer-to-peer computing means computers:",
+    "options": [
+      "Communicate and share resources directly without requiring a single central server",
+      "Must all talk only to one mainframe",
+      "Cannot exchange files",
+      "Always use IaaS first"
+    ],
+    "answer": [
+      "Communicate and share resources directly without requiring a single central server"
+    ],
+    "explain": "Pros: no single server, scalable, direct communication. Cons: harder to manage, security, availability, policies."
+  },
+  {
+    "type": "single",
+    "q": "Infrastructure as a Service (IaaS) provides:",
+    "options": [
+      "Computing infrastructure such as virtual machines, storage, and networking",
+      "Only a complete end-user app like Gmail with no infra control",
+      "Only a compiler",
+      "Only a microkernel"
+    ],
+    "answer": [
+      "Computing infrastructure such as virtual machines, storage, and networking"
+    ],
+    "explain": "PaaS = platform to build/deploy apps. SaaS = complete applications over the Internet."
+  },
+  {
+    "type": "single",
+    "q": "Software as a Service (SaaS) provides:",
+    "options": [
+      "Complete applications through the Internet",
+      "Bare-metal rack rental only",
+      "Only a SAN between cluster nodes",
+      "Assembly language kernels"
+    ],
+    "answer": [
+      "Complete applications through the Internet"
+    ],
+    "explain": "Cloud challenges: needs network, security/privacy, provider dependence, outages."
+  },
+  {
+    "type": "single",
+    "q": "A hard real-time system is one where:",
+    "options": [
+      "Missing a deadline can cause serious system failure (e.g., aircraft or certain medical control)",
+      "Missing a deadline is only a minor annoyance, like a video stutter",
+      "There are no deadlines",
+      "Only payroll batch jobs run"
+    ],
+    "answer": [
+      "Missing a deadline can cause serious system failure (e.g., aircraft or certain medical control)"
+    ],
+    "explain": "Soft real-time (video streaming, online gaming): missing a deadline is undesirable but not necessarily catastrophic."
+  },
+  {
+    "type": "match",
+    "q": "Classify each OS type.",
+    "items": [
+      "Payroll processed in job groups",
+      "Multiple programs in memory so CPU can switch",
+      "Multiple apps seem to run at once for a user",
+      "Many users share the machine",
+      "Deadlines matter for robots/aircraft",
+      "Many computers cooperate",
+      "OS inside a printer or IoT device"
+    ],
+    "choices": [
+      {
+        "v": "batch",
+        "l": "Batch"
+      },
+      {
+        "v": "mp",
+        "l": "Multiprogramming"
+      },
+      {
+        "v": "mt",
+        "l": "Multitasking"
+      },
+      {
+        "v": "mu",
+        "l": "Multiuser"
+      },
+      {
+        "v": "rt",
+        "l": "Real-time"
+      },
+      {
+        "v": "dist",
+        "l": "Distributed"
+      },
+      {
+        "v": "emb",
+        "l": "Embedded"
+      }
+    ],
+    "map": {
+      "Payroll processed in job groups": "batch",
+      "Multiple programs in memory so CPU can switch": "mp",
+      "Multiple apps seem to run at once for a user": "mt",
+      "Many users share the machine": "mu",
+      "Deadlines matter for robots/aircraft": "rt",
+      "Many computers cooperate": "dist",
+      "OS inside a printer or IoT device": "emb"
+    },
+    "explain": "Batch / multiprogramming / multitasking / multiuser / RTOS / distributed / embedded.",
+    "hint": "Classify each item."
+  }
+];
+
+    const shuffle = (arr) => [...arr].sort(() => Math.random() - 0.5);
+    const same = (a, b) => a.length === b.length && a.every((x) => b.includes(x));
+
+    let deck = [];
+    let i = 0;
+    let correct = 0;
+    let locked = false;
+    let missed = [];
+    let picked = new Set();
+
+    const panel = document.getElementById("panel");
+    const prog = document.getElementById("prog");
+    const count = document.getElementById("count");
+    const scoreline = document.getElementById("scoreline");
+
+    function start(pool) {
+      deck = shuffle(pool.map((q) => {
+        if (q.type === "match") return { ...q, items: shuffle(q.items) };
+        return { ...q, options: shuffle(q.options) };
+      }));
+      i = 0; correct = 0; missed = []; locked = false; picked = new Set();
+      render();
+    }
+
+    function render() {
+      if (i >= deck.length) return results();
+      const q = deck[i];
+      prog.style.width = ((i / deck.length) * 100) + "%";
+      count.textContent = "Question " + (i + 1) + " of " + deck.length;
+      scoreline.textContent = "Score " + correct;
+      locked = false; picked = new Set();
+
+      if (q.type === "match") {
+        const opts = (q.choices || []).map((c) => `<option value="${c.v}">${c.l}</option>`).join("");
+        panel.innerHTML = `<p class="q">${q.q}</p>
+          <p class="hint">${q.hint || "Classify each item."}</p>
+          <div class="match">${q.items.map((item, idx) => `
+            <div class="row">
+              <span>${item}</span>
+              <select data-item="${idx}">
+                <option value="">Choose…</option>
+                ${opts}
+              </select>
+            </div>`).join("")}</div>
+          <div class="actions"><button class="btn" id="check">Check</button></div>
+          <div class="fb" id="fb"></div>`;
+        document.getElementById("check").onclick = checkMatch;
+        return;
+      }
+
+      const need = q.need || (q.type === "multi" ? q.answer.length : 1);
+      panel.innerHTML = `<p class="q">${q.q}</p>
+        ${q.type === "multi" ? `<p class="hint">${q.hint || ("Select " + need + ", then check.")}</p>` : ""}
+        <div id="opts">${q.options.map((opt) => `<button class="opt" data-v="${encodeURIComponent(opt)}">${opt}</button>`).join("")}</div>
+        <div class="actions">
+          ${q.type === "multi" ? `<button class="btn" id="check" disabled>Check</button>` : ""}
+        </div>
+        <div class="fb" id="fb"></div>`;
+
+      panel.querySelectorAll(".opt").forEach((btn) => {
+        btn.onclick = () => {
+          if (locked) return;
+          const v = decodeURIComponent(btn.dataset.v);
+          if (q.type === "single") {
+            picked = new Set([v]);
+            finish(q);
+          } else {
+            if (picked.has(v)) picked.delete(v); else {
+              if (picked.size >= need) return;
+              picked.add(v);
+            }
+            panel.querySelectorAll(".opt").forEach((b) => {
+              b.classList.toggle("sel", picked.has(decodeURIComponent(b.dataset.v)));
+            });
+            document.getElementById("check").disabled = picked.size !== need;
+          }
+        };
+      });
+      const check = document.getElementById("check");
+      if (check) check.onclick = () => finish(q);
+    }
+
+    function checkMatch() {
+      if (locked) return;
+      const q = deck[i];
+      const selects = [...panel.querySelectorAll("select")];
+      if (selects.some((s) => !s.value)) return;
+      locked = true;
+      let ok = true;
+      selects.forEach((s, idx) => {
+        const item = q.items[idx];
+        const good = s.value === q.map[item];
+        if (!good) ok = false;
+        s.style.borderColor = good ? "var(--good)" : "var(--bad)";
+      });
+      after(ok, q, q.explain || "Review the classifications.");
+    }
+
+    function finish(q) {
+      if (locked) return;
+      locked = true;
+      const chosen = [...picked];
+      const ok = same(chosen, q.answer);
+      panel.querySelectorAll(".opt").forEach((b) => {
+        const v = decodeURIComponent(b.dataset.v);
+        b.disabled = true;
+        if (q.answer.includes(v)) b.classList.add("ok");
+        else if (picked.has(v)) b.classList.add("no");
+      });
+      after(ok, q, q.explain || ("Correct: " + q.answer.join(" · ")));
+    }
+
+    function after(ok, q, msg) {
+      if (ok) correct++; else missed.push({ q: q.q, msg });
+      const fb = document.getElementById("fb");
+      fb.className = "fb " + (ok ? "ok" : "no");
+      fb.textContent = ok ? "Correct. " + msg : "Not quite. " + msg;
+      scoreline.textContent = "Score " + correct;
+      const actions = panel.querySelector(".actions");      actions.innerHTML = `<button class="btn" id="next">${i + 1 === deck.length ? "See results" : "Next"}</button>`;
+      document.getElementById("next").onclick = () => { i++; render(); };
+    }
+
+    function results() {
+      prog.style.width = "100%";
+      count.textContent = "Round complete";
+      scoreline.textContent = "";
+      const pct = Math.round((correct / deck.length) * 100);
+      panel.innerHTML = `
+        <p class="q">You scored</p>
+        <div class="score">${correct} / ${deck.length}</div>
+        <p class="sub" style="margin:0">${pct}% · ${missed.length ? missed.length + " to review" : "Clean round."}</p>
+        ${missed.length ? `<ul class="miss">${missed.map((m) => `<li><b>${m.q}</b><br>${m.msg}</li>`).join("")}</ul>` : ""}        <div class="actions">
+          <a class="btn ghost" href="index.html">Exit module</a>
+          <button class="btn" id="again">Play again (shuffle)</button>
+          ${missed.length ? `<button class="btn ghost" id="missed">Replay missed only</button>` : ""}
+        </div>`;
+      document.getElementById("again").onclick = () => start(BANK);
+      const missBtn = document.getElementById("missed");
+      if (missBtn) {
+        missBtn.onclick = () => {
+          const ids = new Set(missed.map((m) => m.q));
+          start(BANK.filter((q) => ids.has(q.q)));
+        };
+      }
+    }
+
+    start(BANK);
+
+  </script>
+</body>
+</html>

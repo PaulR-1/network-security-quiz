@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OS Services reviewer</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --card: #1a2332;
+      --line: #2a3a4f;
+      --text: #e8eef6;
+      --muted: #8fa3b8;
+      --accent: #3d8bfd;
+      --good: #2fbf71;
+      --bad: #e85d5d;
+      --pick: #24324a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .wrap { max-width: 720px; margin: 0 auto; padding: 28px 20px 64px; }
+    h1 { font-size: 1.35rem; margin: 0 0 6px; font-weight: 650; }
+    .sub { color: var(--muted); margin: 0 0 22px; font-size: 0.95rem; }
+    .bar {
+      height: 6px;
+      background: var(--line);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+    .bar > i {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: var(--accent);
+      transition: width .2s ease;
+    }
+    .meta { display: flex; justify-content: space-between; color: var(--muted); font-size: 0.85rem; margin-bottom: 14px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 20px;
+    }
+    .q { font-size: 1.08rem; line-height: 1.45; margin: 0 0 16px; }
+    .hint { color: var(--muted); font-size: 0.82rem; margin: -8px 0 14px; }
+    .opt {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      width: 100%;
+      text-align: left;
+      background: var(--pick);
+      border: 1px solid var(--line);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 11px 12px;
+      margin: 0 0 8px;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+    .opt:hover { border-color: var(--accent); }
+    .opt.sel { border-color: var(--accent); background: #1d3358; }
+    .opt.ok { border-color: var(--good); background: #163528; }
+    .opt.no { border-color: var(--bad); background: #3a1e24; }
+    .opt:disabled { cursor: default; }
+    .match { display: grid; gap: 10px; }
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 180px;
+      gap: 10px;
+      align-items: center;
+    }
+    .row span { font-size: 0.95rem; }
+    select {
+      width: 100%;
+      background: var(--pick);
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px;
+    }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+    button.btn {
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+    }
+    button.btn.ghost {
+      background: transparent;
+      border: 1px solid var(--line);
+      color: var(--text);
+    }
+    button.btn:disabled { opacity: .45; cursor: default; }
+    .fb { margin-top: 12px; font-size: 0.92rem; }
+    .fb.ok { color: var(--good); }
+    .fb.no { color: #ff8b8b; }
+    .score { font-size: 2.2rem; font-weight: 700; margin: 8px 0; }
+    .miss { margin-top: 16px; }
+    .miss li { margin: 0 0 10px; color: var(--muted); font-size: 0.9rem; }
+    .miss b { color: var(--text); }
+
+    a.exit {
+      display: inline-block;
+      margin: 0 0 16px;
+      color: var(--muted);
+      text-decoration: none;
+      border: 1px solid var(--line);
+      padding: 7px 12px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+    }
+    a.exit:hover { color: var(--text); border-color: var(--accent); }
+    a.btn { text-decoration: none; display: inline-block; }
+    .dir { display: grid; gap: 12px; }
+    a.mod {
+      display: block;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 18px 20px;
+      color: var(--text);
+      text-decoration: none;
+    }
+    a.mod:hover { border-color: var(--accent); }
+    a.mod .n { color: var(--accent); font-size: 0.8rem; font-weight: 650; letter-spacing: .04em; }
+    a.mod h2 { margin: 6px 0 6px; font-size: 1.12rem; font-weight: 650; }
+    a.mod p { margin: 0; color: var(--muted); font-size: 0.92rem; line-height: 1.4; }
+
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="exit" href="index.html">Exit module</a>
+    <h1>OS Services reviewer</h1>
+    <p class="sub">From 2. OS Services. Shuffle, replay, or exit back to the directory.</p>
+    <div class="bar"><i id="prog"></i></div>
+    <div class="meta">
+      <span id="count"></span>
+      <span id="scoreline"></span>
+    </div>
+    <div class="card" id="panel"></div>
+  </div>
+  <script>
+    const BANK = [
+  {
+    "type": "multi",
+    "q": "Which OS services are described as helpful to the USER? (Select three)",
+    "options": [
+      "User Interface",
+      "Program Execution",
+      "File-System Manipulation",
+      "Resource Allocation",
+      "Logging / Accounting"
+    ],
+    "answer": [
+      "User Interface",
+      "Program Execution",
+      "File-System Manipulation"
+    ],
+    "need": 3,
+    "explain": "User-helpful: UI, program execution, I/O, file-system, communications, error detection. Efficient-operation: resource allocation, logging/accounting, protection and security."
+  },
+  {
+    "type": "single",
+    "q": "Resource allocation, logging/accounting, and protection/security are grouped as services that:",
+    "options": [
+      "Ensure efficient system operation",
+      "Exist only for touchscreen phones",
+      "Replace the need for a kernel",
+      "Are never used on servers"
+    ],
+    "answer": [
+      "Ensure efficient system operation"
+    ],
+    "explain": "They keep the machine shared, tracked, and safe."
+  },
+  {
+    "type": "single",
+    "q": "A disadvantage of a CLI is that:",
+    "options": [
+      "Commands must be remembered and typing mistakes can cause errors",
+      "It cannot automate tasks",
+      "It always needs more graphical resources than a GUI",
+      "Experienced users cannot use it quickly"
+    ],
+    "answer": [
+      "Commands must be remembered and typing mistakes can cause errors"
+    ],
+    "explain": "CLI pros: fast for experts, automation, admin, fewer GUI resources."
+  },
+  {
+    "type": "single",
+    "q": "Instead of typing mkdir Assignment, a GUI user can:",
+    "options": [
+      "Right-click → New Folder → Assignment",
+      "Only reboot the BIOS",
+      "Write a device driver",
+      "Disable the file system"
+    ],
+    "answer": [
+      "Right-click → New Folder → Assignment"
+    ],
+    "explain": "GUI uses mouse, keyboard, windows, folders, icons, menus."
+  },
+  {
+    "type": "single",
+    "q": "On a smartphone, swipe-up is an example of:",
+    "options": [
+      "Touch input → OS → application responds",
+      "A system call from the disk firmware only",
+      "Asymmetric clustering",
+      "Hard real-time aircraft control"
+    ],
+    "answer": [
+      "Touch input → OS → application responds"
+    ],
+    "explain": "Touch interfaces on phones, tablets, and touchscreen PCs."
+  },
+  {
+    "type": "single",
+    "q": "Program execution requires the OS to load a program into:",
+    "options": [
+      "RAM / memory so it can run",
+      "Only the DVD drive",
+      "The CMOS battery",
+      "A paper queue"
+    ],
+    "answer": [
+      "RAM / memory so it can run"
+    ],
+    "explain": "Then start it, manage the process, terminate it, and handle abnormal termination."
+  },
+  {
+    "type": "single",
+    "q": "Double-clicking Word conceptually does this order:",
+    "options": [
+      "Locate Word → load into memory → CPU executes → Word becomes a running process",
+      "Terminate first, then load",
+      "Skip the OS and write SSD firmware",
+      "Create a child kernel"
+    ],
+    "answer": [
+      "Locate Word → load into memory → CPU executes → Word becomes a running process"
+    ],
+    "explain": "The OS locates, loads, and runs it as a process."
+  },
+  {
+    "type": "single",
+    "q": "When an app reads a file from an SSD, the path is:",
+    "options": [
+      "Application → Operating System → Device Driver → SSD",
+      "Application → SSD with no OS",
+      "SSD → Compiler → User",
+      "BIOS → Printer only"
+    ],
+    "answer": [
+      "Application → Operating System → Device Driver → SSD"
+    ],
+    "explain": "Apps do not directly control the SSD hardware."
+  },
+  {
+    "type": "single",
+    "q": "Saving Activity1.docx is conceptually:",
+    "options": [
+      "Word → OS → File System → Storage Device",
+      "Printer → GPU → CMOS",
+      "Only the linker",
+      "Only the PCB"
+    ],
+    "answer": [
+      "Word → OS → File System → Storage Device"
+    ],
+    "explain": "Word requests; OS processes; file system organizes; storage stores it permanently."
+  },
+  {
+    "type": "single",
+    "q": "Shared memory communication means:",
+    "options": [
+      "Two or more processes use a common area of memory to exchange data",
+      "Processes may only send kernel-routed messages and never share RAM",
+      "Only email is allowed",
+      "Disks cannot store files"
+    ],
+    "answer": [
+      "Two or more processes use a common area of memory to exchange data"
+    ],
+    "explain": "Process A writes shared memory; Process B reads it."
+  },
+  {
+    "type": "single",
+    "q": "Message passing means processes:",
+    "options": [
+      "Communicate by sending and receiving messages through the operating system",
+      "Must share one array in user RAM with no OS help",
+      "Never exchange information",
+      "Only use USB sticks"
+    ],
+    "answer": [
+      "Communicate by sending and receiving messages through the operating system"
+    ],
+    "explain": "A sends a message; B receives it via the OS."
+  },
+  {
+    "type": "single",
+    "q": "Protection vs security in the lecture:",
+    "options": [
+      "Protection controls how processes/users access resources; security protects the system from unauthorized access",
+      "They are identical and never distinguished",
+      "Security only means disk defragmentation",
+      "Protection means cloud SaaS"
+    ],
+    "answer": [
+      "Protection controls how processes/users access resources; security protects the system from unauthorized access"
+    ],
+    "explain": "Example: a student may Read/Write Assignment.docx; another user may have no access."
+  },
+  {
+    "type": "single",
+    "q": "A system call is:",
+    "options": [
+      "A programming interface through which a program requests a service from the OS",
+      "A GUI icon pack",
+      "A type of HDD",
+      "A cluster standby node"
+    ],
+    "answer": [
+      "A programming interface through which a program requests a service from the OS"
+    ],
+    "explain": "Think of it as a program calling the OS for help."
+  },
+  {
+    "type": "single",
+    "q": "Applications commonly use an API rather than invoking system calls directly. An API is:",
+    "options": [
+      "A set of functions that lets an app talk to the OS without dealing with raw system calls",
+      "The PCB of a thread",
+      "A hard real-time deadline",
+      "A SAN"
+    ],
+    "answer": [
+      "A set of functions that lets an app talk to the OS without dealing with raw system calls"
+    ],
+    "explain": "Examples: Win32 (Windows), POSIX (Unix/Linux), Java API (via the JVM)."
+  },
+  {
+    "type": "single",
+    "q": "A system call is associated with:",
+    "options": [
+      "A number; the OS identifies which call was requested",
+      "A random MAC address only",
+      "The user's wallpaper",
+      "A cloud region name"
+    ],
+    "answer": [
+      "A number; the OS identifies which call was requested"
+    ],
+    "explain": "The system-call interface maps the request to the kernel, which performs the operation and returns a result."
+  },
+  {
+    "type": "single",
+    "q": "To open a file, the OS typically also needs parameters such as:",
+    "options": [
+      "Which file, what access mode, where the data is, and what operation is requested",
+      "Only the computer's color depth",
+      "The parent's PID in all cases",
+      "A SaaS invoice"
+    ],
+    "answer": [
+      "Which file, what access mode, where the data is, and what operation is requested"
+    ],
+    "explain": "System calls often need extra information beyond the call number."
+  },
+  {
+    "type": "single",
+    "q": "Process-control system calls include:",
+    "options": [
+      "Create/terminate process, wait, load and execute, get/set attributes, allocate/free memory, debug, manage locks",
+      "Only get time/date",
+      "Only attach a printer",
+      "Only set file permissions"
+    ],
+    "answer": [
+      "Create/terminate process, wait, load and execute, get/set attributes, allocate/free memory, debug, manage locks"
+    ],
+    "explain": "Those are the process-control family."
+  },
+  {
+    "type": "single",
+    "q": "Reposition as a file-management system call means:",
+    "options": [
+      "Move to a specific location in a file to read or write",
+      "Eject the CPU",
+      "Create a new user account",
+      "Compile C code"
+    ],
+    "answer": [
+      "Move to a specific location in a file to read or write"
+    ],
+    "explain": "File calls also include create, delete, open, close, read, write, get/set attributes."
+  },
+  {
+    "type": "single",
+    "q": "Device-management system calls can:",
+    "options": [
+      "Request/release a device, read/write, reposition, get/set attributes, attach/detach",
+      "Only compute PIDs",
+      "Only edit Vim configs",
+      "Only start the JVM"
+    ],
+    "answer": [
+      "Request/release a device, read/write, reposition, get/set attributes, attach/detach"
+    ],
+    "explain": "Printing: Word → OS → printer driver → printer."
+  },
+  {
+    "type": "single",
+    "q": "Get time/date and get available memory are examples of:",
+    "options": [
+      "Information-maintenance system calls",
+      "Only communication message-passing",
+      "Only protection ACLs",
+      "Only linker options"
+    ],
+    "answer": [
+      "Information-maintenance system calls"
+    ],
+    "explain": "They provide or modify system information."
+  },
+  {
+    "type": "single",
+    "q": "Protection system calls help the OS:",
+    "options": [
+      "Control who can access resources (get/set permissions, allow/deny access)",
+      "Increase GPU clock without drivers",
+      "Format the BIOS as NTFS",
+      "Disable all logging forever"
+    ],
+    "answer": [
+      "Control who can access resources (get/set permissions, allow/deny access)"
+    ],
+    "explain": "They protect files, memory, devices, and other resources."
+  },
+  {
+    "type": "single",
+    "q": "Difference: system service vs system call:",
+    "options": [
+      "A service is a function the OS provides; a system call is the mechanism a program uses to request that service",
+      "They are the same word for PCB",
+      "A system call is always a GUI",
+      "Services never use the kernel"
+    ],
+    "answer": [
+      "A service is a function the OS provides; a system call is the mechanism a program uses to request that service"
+    ],
+    "explain": "Need to read a file → file-management service → system call → kernel → storage."
+  },
+  {
+    "type": "single",
+    "q": "System programs are:",
+    "options": [
+      "Tools the OS provides to develop, manage, and run programs (file tools, status info, compilers, loaders, comms, background services, apps)",
+      "Only the silicon of the CPU",
+      "Cloud IaaS contracts",
+      "USB physical ports"
+    ],
+    "answer": [
+      "Tools the OS provides to develop, manage, and run programs (file tools, status info, compilers, loaders, comms, background services, apps)"
+    ],
+    "explain": "They make the machine usable beyond raw syscalls."
+  },
+  {
+    "type": "single",
+    "q": "Notepad, Vim, and Nano are examples of:",
+    "options": [
+      "File-modification / text-editor programs",
+      "Device drivers for GPUs",
+      "Long-term schedulers",
+      "SAN fabrics"
+    ],
+    "answer": [
+      "File-modification / text-editor programs"
+    ],
+    "explain": "Also search utilities and text-transformation tools."
+  },
+  {
+    "type": "single",
+    "q": "In the C program flow, the compiler:",
+    "options": [
+      "Translates source.c into object/executable machine-readable code",
+      "Places the executable into RAM (that is the loader)",
+      "Is the same as the kernel scheduler",
+      "Only prints the file"
+    ],
+    "answer": [
+      "Translates source.c into object/executable machine-readable code"
+    ],
+    "explain": "source.c → compiler → object/executable → loader → memory → execution."
+  },
+  {
+    "type": "single",
+    "q": "The linker:",
+    "options": [
+      "Combines object files and libraries into one executable",
+      "Only powers on the monitor",
+      "Is the ready queue",
+      "Stores the program counter"
+    ],
+    "answer": [
+      "Combines object files and libraries into one executable"
+    ],
+    "explain": "Compiler → object code; linker → executable; loader → memory for the CPU."
+  },
+  {
+    "type": "single",
+    "q": "Dynamically linked libraries (DLLs on Windows):",
+    "options": [
+      "Shared libraries loaded when needed so programs need not store the same library code repeatedly",
+      "Must be copied into every executable with no sharing",
+      "Replace the need for an OS",
+      "Are always compiled from Java only"
+    ],
+    "answer": [
+      "Shared libraries loaded when needed so programs need not store the same library code repeatedly"
+    ],
+    "explain": "Benefits: save storage, share code, easier updates, avoid duplication."
+  },
+  {
+    "type": "single",
+    "q": "Applications are OS-specific because OSes may differ in:",
+    "options": [
+      "System calls, file formats, APIs, hardware interfaces, and binary formats",
+      "Only the brand of mousepad",
+      "The speed of light",
+      "Whether atoms have electrons"
+    ],
+    "answer": [
+      "System calls, file formats, APIs, hardware interfaces, and binary formats"
+    ],
+    "explain": "The app is written to one OS's rules and services."
+  },
+  {
+    "type": "single",
+    "q": "Java can run on multiple OSes primarily because of:",
+    "options": [
+      "The Java Virtual Machine (JVM); the program runs on the JVM rather than depending directly on each OS",
+      "Compiling once to Windows PE only",
+      "Never using an interpreter or VM",
+      "Hard-coding Linux syscalls in bytecode"
+    ],
+    "answer": [
+      "The Java Virtual Machine (JVM); the program runs on the JVM rather than depending directly on each OS"
+    ],
+    "explain": "Also: interpreted languages (Python/Ruby) and compiling C separately per OS."
+  },
+  {
+    "type": "single",
+    "q": "User goals for OS design focus on:",
+    "options": [
+      "Convenient, easy to learn, responsive, reliable, fast",
+      "Only making the kernel as large as possible",
+      "Never responding to the user",
+      "Forbidding GUIs"
+    ],
+    "answer": [
+      "Convenient, easy to learn, responsive, reliable, fast"
+    ],
+    "explain": "System goals: easy to design/implement/maintain, flexible, reliable, efficient, as error-free as possible."
+  },
+  {
+    "type": "single",
+    "q": "Policy vs mechanism:",
+    "options": [
+      "Policy is what should be done; mechanism is how it is done",
+      "They are the same as GUI vs CLI",
+      "Policy is always C++ and mechanism is always Python",
+      "Mechanism decides user passwords only"
+    ],
+    "answer": [
+      "Policy is what should be done; mechanism is how it is done"
+    ],
+    "explain": "Example: policy = each process gets CPU every 100 ms; mechanism = hardware timer interrupts every 100 ms."
+  },
+  {
+    "type": "single",
+    "q": "Modern OS implementation commonly uses:",
+    "options": [
+      "A mix of assembly (low-level/hardware), C/C++ (main components), and higher-level languages (utilities/scripts)",
+      "Only visual flowchart tools with no code",
+      "Only SaaS config files",
+      "Only JavaScript in the kernel"
+    ],
+    "answer": [
+      "A mix of assembly (low-level/hardware), C/C++ (main components), and higher-level languages (utilities/scripts)"
+    ],
+    "explain": "Higher-level: easier to write, port, maintain; possible performance overhead."
+  },
+  {
+    "type": "single",
+    "q": "A monolithic kernel means:",
+    "options": [
+      "Most OS services run together inside one large kernel",
+      "Only essential functions stay in the kernel and the rest are user-space services",
+      "The OS is strictly 12 isolated layers",
+      "There is no kernel"
+    ],
+    "answer": [
+      "Most OS services run together inside one large kernel"
+    ],
+    "explain": "Pros: potentially fast, direct communication. Cons: large kernel, harder to maintain, kernel bugs can be serious."
+  },
+  {
+    "type": "single",
+    "q": "In the layered approach, each layer:",
+    "options": [
+      "Uses functions and services of the layer below it",
+      "May only call layers far above it",
+      "Never talks to any other layer",
+      "Runs only on GPUs"
+    ],
+    "answer": [
+      "Uses functions and services of the layer below it"
+    ],
+    "explain": "Pros: modular, easier debug/maintain/understand. Cons: hard to design layers, extra overhead."
+  },
+  {
+    "type": "single",
+    "q": "A microkernel keeps:",
+    "options": [
+      "Only the most essential functions in the kernel; other services run in user space",
+      "Every driver and GUI inside one giant kernel with no isolation",
+      "No kernel mode at all",
+      "Only the BIOS"
+    ],
+    "answer": [
+      "Only the most essential functions in the kernel; other services run in user space"
+    ],
+    "explain": "Pros: more reliable/secure, easier to extend/port, less kernel-mode code. Con: performance overhead of extra communication."
+  },
+  {
+    "type": "single",
+    "q": "Loadable kernel modules (LKMs):",
+    "options": [
+      "Can be added to or removed from the kernel while the system is running",
+      "Require rebuilding and reinstalling the entire OS for every driver",
+      "Exist only in batch payroll systems",
+      "Are user-space text editors"
+    ],
+    "answer": [
+      "Can be added to or removed from the kernel while the system is running"
+    ],
+    "explain": "Flexible, dynamic, load when needed, easier to extend."
+  },
+  {
+    "type": "single",
+    "q": "Hybrid OS structures combine designs to balance:",
+    "options": [
+      "Performance, security, and usability",
+      "Only the color of icons",
+      "Only hard real-time aircraft rules",
+      "Only P2P file names"
+    ],
+    "answer": [
+      "Performance, security, and usability"
+    ],
+    "explain": "Keep hot paths close to the kernel, isolate some services, still support many features."
+  },
+  {
+    "type": "single",
+    "q": "Building/booting an OS generally includes:",
+    "options": [
+      "Write source → configure for hardware → compile → install → boot (load OS into memory) → OS starts",
+      "Only purchase a monitor",
+      "Skip compile and paste Word docs into RAM",
+      "Never install onto storage"
+    ],
+    "answer": [
+      "Write source → configure for hardware → compile → install → boot (load OS into memory) → OS starts"
+    ],
+    "explain": "Boot loads the OS when the computer is turned on."
+  },
+  {
+    "type": "single",
+    "q": "OS debugging is not only crashes; it also includes:",
+    "options": [
+      "Finding bugs, investigating errors, performance tuning, examining logs and dumps, tracing activity",
+      "Only changing the wallpaper",
+      "Only replacing the mouse",
+      "Never looking at logs"
+    ],
+    "answer": [
+      "Finding bugs, investigating errors, performance tuning, examining logs and dumps, tracing activity"
+    ],
+    "explain": "Example: crash dumps for a blue screen; logs for failed logins."
+  },
+  {
+    "type": "single",
+    "q": "A log file may record:",
+    "options": [
+      "Errors, security events, system events, network events, and application activity",
+      "Only the contents of CPU cache forever",
+      "Only compiler AST dumps",
+      "Nothing useful for admins"
+    ],
+    "answer": [
+      "Errors, security events, system events, network events, and application activity"
+    ],
+    "explain": "Admins use logs to monitor and troubleshoot."
+  },
+  {
+    "type": "single",
+    "q": "Performance tuning looks for bottlenecks in:",
+    "options": [
+      "CPU, memory, disk, network usage, and process activity (e.g. Task Manager)",
+      "Only the physical color of RAM sticks",
+      "Only the PCB text section syntax",
+      "Only CLI fonts"
+    ],
+    "answer": [
+      "CPU, memory, disk, network usage, and process activity (e.g. Task Manager)"
+    ],
+    "explain": "Example: Chrome at 80% CPU; 100% disk during Windows Update."
+  },
+  {
+    "type": "match",
+    "q": "Match each API to its world.",
+    "items": [
+      "Win32 API",
+      "POSIX API",
+      "Java API"
+    ],
+    "choices": [
+      {
+        "v": "win",
+        "l": "Windows apps"
+      },
+      {
+        "v": "nix",
+        "l": "Unix/Linux-style systems"
+      },
+      {
+        "v": "jvm",
+        "l": "Programs via the JVM"
+      }
+    ],
+    "map": {
+      "Win32 API": "win",
+      "POSIX API": "nix",
+      "Java API": "jvm"
+    },
+    "explain": "Win32 → Windows; POSIX → Unix/Linux; Java API → JVM.",
+    "hint": "Classify each item."
+  },
+  {
+    "type": "match",
+    "q": "Match structure to the core idea.",
+    "items": [
+      "Monolithic",
+      "Layered",
+      "Microkernel",
+      "LKM / modules"
+    ],
+    "choices": [
+      {
+        "v": "mono",
+        "l": "Most services in one large kernel"
+      },
+      {
+        "v": "lay",
+        "l": "Each layer uses the one below"
+      },
+      {
+        "v": "micro",
+        "l": "Minimal kernel; services in user space"
+      },
+      {
+        "v": "mod",
+        "l": "Add/remove kernel pieces at runtime"
+      }
+    ],
+    "map": {
+      "Monolithic": "mono",
+      "Layered": "lay",
+      "Microkernel": "micro",
+      "LKM / modules": "mod"
+    },
+    "explain": "Those are the lecture's structure options, plus hybrids.",
+    "hint": "Classify each item."
+  }
+];
+
+    const shuffle = (arr) => [...arr].sort(() => Math.random() - 0.5);
+    const same = (a, b) => a.length === b.length && a.every((x) => b.includes(x));
+
+    let deck = [];
+    let i = 0;
+    let correct = 0;
+    let locked = false;
+    let missed = [];
+    let picked = new Set();
+
+    const panel = document.getElementById("panel");
+    const prog = document.getElementById("prog");
+    const count = document.getElementById("count");
+    const scoreline = document.getElementById("scoreline");
+
+    function start(pool) {
+      deck = shuffle(pool.map((q) => {
+        if (q.type === "match") return { ...q, items: shuffle(q.items) };
+        return { ...q, options: shuffle(q.options) };
+      }));
+      i = 0; correct = 0; missed = []; locked = false; picked = new Set();
+      render();
+    }
+
+    function render() {
+      if (i >= deck.length) return results();
+      const q = deck[i];
+      prog.style.width = ((i / deck.length) * 100) + "%";
+      count.textContent = "Question " + (i + 1) + " of " + deck.length;
+      scoreline.textContent = "Score " + correct;
+      locked = false; picked = new Set();
+
+      if (q.type === "match") {
+        const opts = (q.choices || []).map((c) => `<option value="${c.v}">${c.l}</option>`).join("");
+        panel.innerHTML = `<p class="q">${q.q}</p>
+          <p class="hint">${q.hint || "Classify each item."}</p>
+          <div class="match">${q.items.map((item, idx) => `
+            <div class="row">
+              <span>${item}</span>
+              <select data-item="${idx}">
+                <option value="">Choose…</option>
+                ${opts}
+              </select>
+            </div>`).join("")}</div>
+          <div class="actions"><button class="btn" id="check">Check</button></div>
+          <div class="fb" id="fb"></div>`;
+        document.getElementById("check").onclick = checkMatch;
+        return;
+      }
+
+      const need = q.need || (q.type === "multi" ? q.answer.length : 1);
+      panel.innerHTML = `<p class="q">${q.q}</p>
+        ${q.type === "multi" ? `<p class="hint">${q.hint || ("Select " + need + ", then check.")}</p>` : ""}
+        <div id="opts">${q.options.map((opt) => `<button class="opt" data-v="${encodeURIComponent(opt)}">${opt}</button>`).join("")}</div>
+        <div class="actions">
+          ${q.type === "multi" ? `<button class="btn" id="check" disabled>Check</button>` : ""}
+        </div>
+        <div class="fb" id="fb"></div>`;
+
+      panel.querySelectorAll(".opt").forEach((btn) => {
+        btn.onclick = () => {
+          if (locked) return;
+          const v = decodeURIComponent(btn.dataset.v);
+          if (q.type === "single") {
+            picked = new Set([v]);
+            finish(q);
+          } else {
+            if (picked.has(v)) picked.delete(v); else {
+              if (picked.size >= need) return;
+              picked.add(v);
+            }
+            panel.querySelectorAll(".opt").forEach((b) => {
+              b.classList.toggle("sel", picked.has(decodeURIComponent(b.dataset.v)));
+            });
+            document.getElementById("check").disabled = picked.size !== need;
+          }
+        };
+      });
+      const check = document.getElementById("check");
+      if (check) check.onclick = () => finish(q);
+    }
+
+    function checkMatch() {
+      if (locked) return;
+      const q = deck[i];
+      const selects = [...panel.querySelectorAll("select")];
+      if (selects.some((s) => !s.value)) return;
+      locked = true;
+      let ok = true;
+      selects.forEach((s, idx) => {
+        const item = q.items[idx];
+        const good = s.value === q.map[item];
+        if (!good) ok = false;
+        s.style.borderColor = good ? "var(--good)" : "var(--bad)";
+      });
+      after(ok, q, q.explain || "Review the classifications.");
+    }
+
+    function finish(q) {
+      if (locked) return;
+      locked = true;
+      const chosen = [...picked];
+      const ok = same(chosen, q.answer);
+      panel.querySelectorAll(".opt").forEach((b) => {
+        const v = decodeURIComponent(b.dataset.v);
+        b.disabled = true;
+        if (q.answer.includes(v)) b.classList.add("ok");
+        else if (picked.has(v)) b.classList.add("no");
+      });
+      after(ok, q, q.explain || ("Correct: " + q.answer.join(" · ")));
+    }
+
+    function after(ok, q, msg) {
+      if (ok) correct++; else missed.push({ q: q.q, msg });
+      const fb = document.getElementById("fb");
+      fb.className = "fb " + (ok ? "ok" : "no");
+      fb.textContent = ok ? "Correct. " + msg : "Not quite. " + msg;
+      scoreline.textContent = "Score " + correct;
+      const actions = panel.querySelector(".actions");      actions.innerHTML = `<button class="btn" id="next">${i + 1 === deck.length ? "See results" : "Next"}</button>`;
+      document.getElementById("next").onclick = () => { i++; render(); };
+    }
+
+    function results() {
+      prog.style.width = "100%";
+      count.textContent = "Round complete";
+      scoreline.textContent = "";
+      const pct = Math.round((correct / deck.length) * 100);
+      panel.innerHTML = `
+        <p class="q">You scored</p>
+        <div class="score">${correct} / ${deck.length}</div>
+        <p class="sub" style="margin:0">${pct}% · ${missed.length ? missed.length + " to review" : "Clean round."}</p>
+        ${missed.length ? `<ul class="miss">${missed.map((m) => `<li><b>${m.q}</b><br>${m.msg}</li>`).join("")}</ul>` : ""}        <div class="actions">
+          <a class="btn ghost" href="index.html">Exit module</a>
+          <button class="btn" id="again">Play again (shuffle)</button>
+          ${missed.length ? `<button class="btn ghost" id="missed">Replay missed only</button>` : ""}
+        </div>`;
+      document.getElementById("again").onclick = () => start(BANK);
+      const missBtn = document.getElementById("missed");
+      if (missBtn) {
+        missBtn.onclick = () => {
+          const ids = new Set(missed.map((m) => m.q));
+          start(BANK.filter((q) => ids.has(q.q)));
+        };
+      }
+    }
+
+    start(BANK);
+
+  </script>
+</body>
+</html>
