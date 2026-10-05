@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Android & Kotlin exam</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --card: #1a2332;
+      --line: #2a3a4f;
+      --text: #e8eef6;
+      --muted: #8fa3b8;
+      --accent: #3d8bfd;
+      --good: #2fbf71;
+      --bad: #e85d5d;
+      --pick: #24324a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .wrap { max-width: 720px; margin: 0 auto; padding: 28px 20px 64px; }
+    h1 { font-size: 1.35rem; margin: 0 0 6px; font-weight: 650; }
+    .sub { color: var(--muted); margin: 0 0 22px; font-size: 0.95rem; }
+    .bar {
+      height: 6px;
+      background: var(--line);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+    .bar > i {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: var(--accent);
+      transition: width .2s ease;
+    }
+    .meta { display: flex; justify-content: space-between; color: var(--muted); font-size: 0.85rem; margin-bottom: 14px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 20px;
+    }
+    .q { font-size: 1.08rem; line-height: 1.45; margin: 0 0 16px; }
+    .hint { color: var(--muted); font-size: 0.82rem; margin: -8px 0 14px; }
+    .opt {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      width: 100%;
+      text-align: left;
+      background: var(--pick);
+      border: 1px solid var(--line);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 11px 12px;
+      margin: 0 0 8px;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+    .opt:hover { border-color: var(--accent); }
+    .opt.sel { border-color: var(--accent); background: #1d3358; }
+    .opt.ok { border-color: var(--good); background: #163528; }
+    .opt.no { border-color: var(--bad); background: #3a1e24; }
+    .opt:disabled { cursor: default; }
+    .match { display: grid; gap: 10px; }
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 180px;
+      gap: 10px;
+      align-items: center;
+    }
+    .row span { font-size: 0.95rem; }
+    select {
+      width: 100%;
+      background: var(--pick);
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px;
+    }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+    button.btn {
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+    }
+    button.btn.ghost {
+      background: transparent;
+      border: 1px solid var(--line);
+      color: var(--text);
+    }
+    button.btn:disabled { opacity: .45; cursor: default; }
+    .fb { margin-top: 12px; font-size: 0.92rem; }
+    .fb.ok { color: var(--good); }
+    .fb.no { color: #ff8b8b; }
+    .score { font-size: 2.2rem; font-weight: 700; margin: 8px 0; }
+    .miss { margin-top: 16px; }
+    .miss li { margin: 0 0 10px; color: var(--muted); font-size: 0.9rem; }
+    .miss b { color: var(--text); }
+
+    a.exit {
+      display: inline-block;
+      margin: 0 0 16px;
+      color: var(--muted);
+      text-decoration: none;
+      border: 1px solid var(--line);
+      padding: 7px 12px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+    }
+    a.exit:hover { color: var(--text); border-color: var(--accent); }
+    a.btn { text-decoration: none; display: inline-block; }
+    .dir { display: grid; gap: 12px; }
+    a.mod {
+      display: block;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 18px 20px;
+      color: var(--text);
+      text-decoration: none;
+    }
+    a.mod:hover { border-color: var(--accent); }
+    a.mod .n { color: var(--accent); font-size: 0.8rem; font-weight: 650; letter-spacing: .04em; }
+    a.mod h2 { margin: 6px 0 6px; font-size: 1.12rem; font-weight: 650; }
+    a.mod p { margin: 0; color: var(--muted); font-size: 0.92rem; line-height: 1.4; }
+
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="exit" href="index.html">Exit module</a>
+    <h1>Android & Kotlin exam</h1>
+    <p class="sub">Questions and answers from the Android & Kotlin Programming Quiz Solutions PDF, including the lifecycle and syntax reference.</p>
+    <div class="bar"><i id="prog"></i></div>
+    <div class="meta">
+      <span id="count"></span>
+      <span id="scoreline"></span>
+    </div>
+    <div class="card" id="panel"></div>
+  </div>
+  <script>
+    const BANK = [
+  {
+    "type": "single",
+    "q": "Which declaration represents a Float value in Kotlin?",
+    "options": [
+      "val price = 25.5f",
+      "val price = 25",
+      "val price = \"25.5\"",
+      "val price = 25.5"
+    ],
+    "answer": [
+      "val price = 25.5f"
+    ],
+    "explain": "From the answer key: a decimal literal such as 25.5 defaults to Double. Append f or F for Float (25.5f). 25 is an Int. \"25.5\" is a String."
+  },
+  {
+    "type": "single",
+    "q": "Review: val num1 = edtNum1.text.toIntOrNull() ?: 0 and the same for num2. What change is required?",
+    "options": [
+      "EditText should first be converted to String before using .toInt()",
+      "edtNum1 and edtNum2 should use var",
+      "tvResult.text should not use .toString()",
+      "total should be declared before retrieving the values from the EditText fields"
+    ],
+    "answer": [
+      "EditText should first be converted to String before using .toInt()"
+    ],
+    "explain": "From the answer key: EditText.text returns an Editable, not a String. Call .toString() first: edtNum1.text.toString().toIntOrNull()."
+  },
+  {
+    "type": "single",
+    "q": "Which keyword is used for a value that cannot be changed after initialization?",
+    "options": [
+      "val",
+      "var",
+      "const val",
+      "Double"
+    ],
+    "answer": [
+      "val"
+    ],
+    "explain": "The PDF answer key lists val as a read-only (immutable) reference. var can be reassigned. const val is a compile-time constant. The option list for this item was cut off at a page break; val is the keyword the key defines as unchangeable after initialization."
+  },
+  {
+    "type": "single",
+    "q": "Where can you view log messages generated by an Android application during development?",
+    "options": [
+      "Logcat",
+      "GradleLog",
+      "EmulatorLog",
+      "LogMessage"
+    ],
+    "answer": [
+      "Logcat"
+    ],
+    "explain": "From the answer key: Logcat is the logging window in Android Studio. It shows system logs, stack traces, and messages from the Log class such as Log.d(), Log.i(), and Log.e()."
+  },
+  {
+    "type": "single",
+    "q": "Which lifecycle method indicates that the activity is visible but not yet interactive?",
+    "options": [
+      "onStart()",
+      "onCreate()",
+      "onStop()",
+      "onResume()"
+    ],
+    "answer": [
+      "onStart()"
+    ],
+    "explain": "From the answer key: onStart() runs when the Activity becomes visible, before foreground focus. onResume() is next, when it is fully interactive."
+  },
+  {
+    "type": "single",
+    "q": "On the PDF lifecycle table, onCreate() is:",
+    "options": [
+      "Not visible and not interactive — the Activity is created; set up layouts and static initialization",
+      "Visible and interactive",
+      "Partially visible and losing focus",
+      "Visible but not interactive"
+    ],
+    "answer": [
+      "Not visible and not interactive — the Activity is created; set up layouts and static initialization"
+    ],
+    "explain": "That is the answer key row for onCreate()."
+  },
+  {
+    "type": "single",
+    "q": "On the PDF lifecycle table, onResume() is:",
+    "options": [
+      "Visible and interactive — the Activity is in the foreground and ready for touch and focus",
+      "Not visible and not interactive",
+      "Visible but not interactive",
+      "Not visible because the Activity is hidden"
+    ],
+    "answer": [
+      "Visible and interactive — the Activity is in the foreground and ready for touch and focus"
+    ],
+    "explain": "That is the answer key row for onResume()."
+  },
+  {
+    "type": "single",
+    "q": "On the PDF lifecycle table, onPause() is:",
+    "options": [
+      "Partially visible and losing focus — another activity is coming into focus, so pause light tasks",
+      "Not visible; the Activity is being created",
+      "Visible and fully interactive",
+      "Not visible; release non-essential resources because the Activity is hidden"
+    ],
+    "answer": [
+      "Partially visible and losing focus — another activity is coming into focus, so pause light tasks"
+    ],
+    "explain": "That is the answer key row for onPause()."
+  },
+  {
+    "type": "single",
+    "q": "On the PDF lifecycle table, onStop() is:",
+    "options": [
+      "Not visible and not interactive — the Activity is hidden; release non-essential resources",
+      "Visible and interactive",
+      "Visible but not interactive",
+      "Partially visible and losing focus"
+    ],
+    "answer": [
+      "Not visible and not interactive — the Activity is hidden; release non-essential resources"
+    ],
+    "explain": "That is the answer key row for onStop()."
+  },
+  {
+    "type": "single",
+    "q": "In the PDF quick reference, var means:",
+    "options": [
+      "Mutable — it can be reassigned",
+      "Read-only immutable reference",
+      "Compile-time constant",
+      "A Float suffix"
+    ],
+    "answer": [
+      "Mutable — it can be reassigned"
+    ],
+    "explain": "val is read-only. var is mutable. const val is a compile-time constant."
+  },
+  {
+    "type": "single",
+    "q": "In the PDF quick reference, const val means:",
+    "options": [
+      "A compile-time constant",
+      "A value that can be reassigned",
+      "A Double literal",
+      "A Logcat filter"
+    ],
+    "answer": [
+      "A compile-time constant"
+    ],
+    "explain": "const val is the compile-time constant form."
+  },
+  {
+    "type": "single",
+    "q": "Which numeric literal is a Double by default?",
+    "options": [
+      "25.5",
+      "25.5f",
+      "25.5F",
+      "25L"
+    ],
+    "answer": [
+      "25.5"
+    ],
+    "explain": "The answer key: 25.5f or 25.5F is Float, 25.5 is Double, 25L is Long."
+  },
+  {
+    "type": "single",
+    "q": "Which numeric literal is a Long?",
+    "options": [
+      "25L",
+      "25.5f",
+      "25.5",
+      "25.5F"
+    ],
+    "answer": [
+      "25L"
+    ],
+    "explain": "The answer key lists 25L as Long."
+  }
+];
+
+    const shuffle = (arr) => [...arr].sort(() => Math.random() - 0.5);
+    const same = (a, b) => a.length === b.length && a.every((x) => b.includes(x));
+
+    let deck = [];
+    let i = 0;
+    let correct = 0;
+    let locked = false;
+    let missed = [];
+    let picked = new Set();
+
+    const panel = document.getElementById("panel");
+    const prog = document.getElementById("prog");
+    const count = document.getElementById("count");
+    const scoreline = document.getElementById("scoreline");
+
+    function start(pool) {
+      deck = shuffle(pool.map((q) => {
+        if (q.type === "match") return { ...q, items: shuffle(q.items) };
+        return { ...q, options: shuffle(q.options) };
+      }));
+      i = 0; correct = 0; missed = []; locked = false; picked = new Set();
+      render();
+    }
+
+    function render() {
+      if (i >= deck.length) return results();
+      const q = deck[i];
+      prog.style.width = ((i / deck.length) * 100) + "%";
+      count.textContent = "Question " + (i + 1) + " of " + deck.length;
+      scoreline.textContent = "Score " + correct;
+      locked = false; picked = new Set();
+
+      if (q.type === "match") {
+        const opts = (q.choices || []).map((c) => `<option value="${c.v}">${c.l}</option>`).join("");
+        panel.innerHTML = `<p class="q">${q.q}</p>
+          <p class="hint">${q.hint || "Classify each item."}</p>
+          <div class="match">${q.items.map((item, idx) => `
+            <div class="row">
+              <span>${item}</span>
+              <select data-item="${idx}">
+                <option value="">Choose…</option>
+                ${opts}
+              </select>
+            </div>`).join("")}</div>
+          <div class="actions"><button class="btn" id="check">Check</button></div>
+          <div class="fb" id="fb"></div>`;
+        document.getElementById("check").onclick = checkMatch;
+        return;
+      }
+
+      const need = q.need || (q.type === "multi" ? q.answer.length : 1);
+      panel.innerHTML = `<p class="q">${q.q}</p>
+        ${q.type === "multi" ? `<p class="hint">${q.hint || ("Select " + need + ", then check.")}</p>` : ""}
+        <div id="opts">${q.options.map((opt) => `<button class="opt" data-v="${encodeURIComponent(opt)}">${opt}</button>`).join("")}</div>
+        <div class="actions">
+          ${q.type === "multi" ? `<button class="btn" id="check" disabled>Check</button>` : ""}
+        </div>
+        <div class="fb" id="fb"></div>`;
+
+      panel.querySelectorAll(".opt").forEach((btn) => {
+        btn.onclick = () => {
+          if (locked) return;
+          const v = decodeURIComponent(btn.dataset.v);
+          if (q.type === "single") {
+            picked = new Set([v]);
+            finish(q);
+          } else {
+            if (picked.has(v)) picked.delete(v); else {
+              if (picked.size >= need) return;
+              picked.add(v);
+            }
+            panel.querySelectorAll(".opt").forEach((b) => {
+              b.classList.toggle("sel", picked.has(decodeURIComponent(b.dataset.v)));
+            });
+            document.getElementById("check").disabled = picked.size !== need;
+          }
+        };
+      });
+      const check = document.getElementById("check");
+      if (check) check.onclick = () => finish(q);
+    }
+
+    function checkMatch() {
+      if (locked) return;
+      const q = deck[i];
+      const selects = [...panel.querySelectorAll("select")];
+      if (selects.some((s) => !s.value)) return;
+      locked = true;
+      let ok = true;
+      selects.forEach((s, idx) => {
+        const item = q.items[idx];
+        const good = s.value === q.map[item];
+        if (!good) ok = false;
+        s.style.borderColor = good ? "var(--good)" : "var(--bad)";
+      });
+      after(ok, q, q.explain || "Review the classifications.");
+    }
+
+    function finish(q) {
+      if (locked) return;
+      locked = true;
+      const chosen = [...picked];
+      const ok = same(chosen, q.answer);
+      panel.querySelectorAll(".opt").forEach((b) => {
+        const v = decodeURIComponent(b.dataset.v);
+        b.disabled = true;
+        if (q.answer.includes(v)) b.classList.add("ok");
+        else if (picked.has(v)) b.classList.add("no");
+      });
+      after(ok, q, q.explain || ("Correct: " + q.answer.join(" · ")));
+    }
+
+    function after(ok, q, msg) {
+      if (ok) correct++; else missed.push({ q: q.q, msg });
+      const fb = document.getElementById("fb");
+      fb.className = "fb " + (ok ? "ok" : "no");
+      fb.textContent = ok ? "Correct. " + msg : "Not quite. " + msg;
+      scoreline.textContent = "Score " + correct;
+      const actions = panel.querySelector(".actions");
+      actions.innerHTML = `<button class="btn" id="next">${i + 1 === deck.length ? "See results" : "Next"}</button>`;
+      document.getElementById("next").onclick = () => { i++; render(); };
+    }
+
+    function results() {
+      prog.style.width = "100%";
+      count.textContent = "Round complete";
+      scoreline.textContent = "";
+      const pct = Math.round((correct / deck.length) * 100);
+      panel.innerHTML = `
+        <p class="q">You scored</p>
+        <div class="score">${correct} / ${deck.length}</div>
+        <p class="sub" style="margin:0">${pct}% · ${missed.length ? missed.length + " to review" : "Clean round."}</p>
+        ${missed.length ? `<ul class="miss">${missed.map((m) => `<li><b>${m.q}</b><br>${m.msg}</li>`).join("")}</ul>` : ""}
+        <div class="actions">
+          <a class="btn ghost" href="index.html">Exit module</a>
+          <button class="btn" id="again">Play again (shuffle)</button>
+          ${missed.length ? `<button class="btn ghost" id="missed">Replay missed only</button>` : ""}
+        </div>`;
+      document.getElementById("again").onclick = () => start(BANK);
+      const missBtn = document.getElementById("missed");
+      if (missBtn) {
+        missBtn.onclick = () => {
+          const ids = new Set(missed.map((m) => m.q));
+          start(BANK.filter((q) => ids.has(q.q)));
+        };
+      }
+    }
+
+    start(BANK);
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Android &amp; Kotlin reviewers</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --card: #1a2332;
+      --line: #2a3a4f;
+      --text: #e8eef6;
+      --muted: #8fa3b8;
+      --accent: #3d8bfd;
+      --good: #2fbf71;
+      --bad: #e85d5d;
+      --pick: #24324a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .wrap { max-width: 720px; margin: 0 auto; padding: 28px 20px 64px; }
+    h1 { font-size: 1.35rem; margin: 0 0 6px; font-weight: 650; }
+    .sub { color: var(--muted); margin: 0 0 22px; font-size: 0.95rem; }
+    .bar {
+      height: 6px;
+      background: var(--line);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+    .bar > i {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: var(--accent);
+      transition: width .2s ease;
+    }
+    .meta { display: flex; justify-content: space-between; color: var(--muted); font-size: 0.85rem; margin-bottom: 14px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 20px;
+    }
+    .q { font-size: 1.08rem; line-height: 1.45; margin: 0 0 16px; }
+    .hint { color: var(--muted); font-size: 0.82rem; margin: -8px 0 14px; }
+    .opt {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      width: 100%;
+      text-align: left;
+      background: var(--pick);
+      border: 1px solid var(--line);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 11px 12px;
+      margin: 0 0 8px;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+    .opt:hover { border-color: var(--accent); }
+    .opt.sel { border-color: var(--accent); background: #1d3358; }
+    .opt.ok { border-color: var(--good); background: #163528; }
+    .opt.no { border-color: var(--bad); background: #3a1e24; }
+    .opt:disabled { cursor: default; }
+    .match { display: grid; gap: 10px; }
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 180px;
+      gap: 10px;
+      align-items: center;
+    }
+    .row span { font-size: 0.95rem; }
+    select {
+      width: 100%;
+      background: var(--pick);
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px;
+    }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+    button.btn {
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+    }
+    button.btn.ghost {
+      background: transparent;
+      border: 1px solid var(--line);
+      color: var(--text);
+    }
+    button.btn:disabled { opacity: .45; cursor: default; }
+    .fb { margin-top: 12px; font-size: 0.92rem; }
+    .fb.ok { color: var(--good); }
+    .fb.no { color: #ff8b8b; }
+    .score { font-size: 2.2rem; font-weight: 700; margin: 8px 0; }
+    .miss { margin-top: 16px; }
+    .miss li { margin: 0 0 10px; color: var(--muted); font-size: 0.9rem; }
+    .miss b { color: var(--text); }
+
+    a.exit {
+      display: inline-block;
+      margin: 0 0 16px;
+      color: var(--muted);
+      text-decoration: none;
+      border: 1px solid var(--line);
+      padding: 7px 12px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+    }
+    a.exit:hover { color: var(--text); border-color: var(--accent); }
+    a.btn { text-decoration: none; display: inline-block; }
+    .dir { display: grid; gap: 12px; }
+    a.mod {
+      display: block;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 18px 20px;
+      color: var(--text);
+      text-decoration: none;
+    }
+    a.mod:hover { border-color: var(--accent); }
+    a.mod .n { color: var(--accent); font-size: 0.8rem; font-weight: 650; letter-spacing: .04em; }
+    a.mod h2 { margin: 6px 0 6px; font-size: 1.12rem; font-weight: 650; }
+    a.mod p { margin: 0; color: var(--muted); font-size: 0.92rem; line-height: 1.4; }
+
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Android &amp; Kotlin reviewers</h1>
+    <p class="sub">Pick a module. Each quiz shuffles every round. Use Exit module anytime to return here.</p>
+    <div class="dir">
+      <a class="mod" href="module4.html">
+        <div class="n">MODULE 4</div>
+        <h2>Android Lifecycle</h2>
+        <p>Activity phases from creation to destruction, and what onCreate, onStart, onResume, onPause, onStop, and onDestroy are for.</p>
+      </a>
+      <a class="mod" href="module5.html">
+        <div class="n">MODULE 5</div>
+        <h2>Kotlin variables, logic, and expressions</h2>
+        <p>val and var, data types, findViewById, explicit Intents, operators, if, and when.</p>
+      </a>
+      <a class="mod" href="exam.html">
+        <div class="n">EXAM</div>
+        <h2>All-inclusive answer key</h2>
+        <p>The assessment items and the lifecycle and Kotlin reference from the quiz solutions PDF.</p>
+      </a>
+    </div>
+  </div>
+</body>
+</html>
