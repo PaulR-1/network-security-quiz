@@ -259,6 +259,29 @@ button.btn:disabled { opacity: 0.45; cursor: default; box-shadow: none; }
   .card { box-shadow: 5px 5px 0 var(--red); }
 }
 
+input.cmd {
+  width: 100%;
+  display: block;
+  margin: 0;
+  font: 700 1.02rem/1.4 Consolas, "Courier New", monospace;
+  padding: 12px;
+  border: 3px solid var(--ink);
+  background: #fffdf6;
+  box-shadow: 3px 3px 0 var(--ink);
+  color: var(--ink);
+}
+code.k {
+  font-family: Consolas, "Courier New", monospace;
+  font-weight: 700;
+  background: var(--yellow);
+  border: 2px solid var(--ink);
+  padding: 0 5px;
+  overflow-wrap: anywhere;
+}
+.answer-line { margin: 12px 0 0; font-weight: 700; line-height: 1.45; }
+.explain { margin-top: 6px; font-size: 0.98rem; line-height: 1.45; }
+.explain p { margin: 0 0 8px; }
+
 @media (prefers-reduced-motion: reduce) {
   a.mod:hover, .opt:hover { transform: none; }
 }

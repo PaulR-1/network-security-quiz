@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Linux command writing drill</title>
+  <link rel="stylesheet" href="../theme.css" />
+</head>
+<body>
+  <div class="wrap">
+    <a class="exit" href="index.html">Linux exams</a>
+    <h1>Command writing drill</h1>
+    <p class="sub">Type each command. A command that does the same job is accepted. If you miss, the right command is shown, then why.</p>
+    <div class="bar"><i id="prog"></i></div>
+    <div class="meta">
+      <span id="count"></span>
+      <span id="scoreline"></span>
+    </div>
+    <div class="card" id="panel"></div>
+  </div>
+  <script>
+
+function loosen(s) {
+  const quotes = [];
+  const masked = s.replace(/"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'/g, (m) => {
+    quotes.push(m);
+    return "\u0000Q" + (quotes.length - 1) + "Q\u0000";
+  });
+  const tight = masked
+    .replace(/\s*>>\s*/g, "\u0000R\u0000")
+    .replace(/\s*>\s*/g, ">")
+    .replace(/\u0000R\u0000/g, ">>")
+    .replace(/\s*&&\s*/g, "&&")
+    .replace(/\s*;\s*/g, ";")
+    .replace(/\s*=\s*/g, "=")
+    .replace(/\s+/g, " ")
+    .trim();
+  return tight.replace(/\u0000Q(\d+)Q\u0000/g, (_, i) => quotes[+i]);
+}
+function norm(raw) {
+  let s = String(raw).replace(/^\s*[$#]\s*/, "").trim().replace(/\s+/g, " ");
+  s = loosen(s);
+  return s.split(" ").filter(Boolean).map((tok) => tok.replace(/([^/])\/+$/, "$1")).join(" ");
+}
+function accepted(input, forms) {
+  const n = norm(input);
+  return forms.some((f) => norm(f) === n);
+}
+
+const BANK = [{"q": "Type the command that prints the current working directory.", "answer": "pwd", "accept": ["pwd"], "why": "pwd prints the full path of the directory you are in. ls only lists names, and cd changes the directory instead of printing it."}, {"q": "Type the command that returns to your home directory.", "answer": "cd ~", "accept": ["cd", "cd ~", "cd ~/", "cd $HOME", "cd ${HOME}", "cd \"$HOME\"", "cd '$HOME'"], "why": "cd ~ returns to your home directory because ~ means that home. cd with no path does the same thing. cd .. goes to the parent, and cd / goes to the root."}, {"q": "Type the command that goes to the parent directory.", "answer": "cd ..", "accept": ["cd ..", "cd ../"], "why": "cd .. moves to the parent directory. Two dots mean the directory above this one. A single dot is the current directory, so cd . stays put."}, {"q": "Type the command that navigates directly to user leo's home directory.", "answer": "cd ~leo", "accept": ["cd ~leo", "cd ~leo/", "cd /home/leo", "cd /home/leo/"], "why": "cd ~leo opens leo's home directory. The tilde followed by a username is that user's home. cd ~ without a name opens your own home. cd /home/leo is the same place written as a full path."}, {"q": "Type the command that creates directories named LQ2, AOS, and IT2625 in one command.", "answer": "mkdir LQ2 AOS IT2625", "accept": ["mkdir LQ2 AOS IT2625", "mkdir LQ2 IT2625 AOS", "mkdir AOS LQ2 IT2625", "mkdir AOS IT2625 LQ2", "mkdir IT2625 LQ2 AOS", "mkdir IT2625 AOS LQ2"], "why": "mkdir can create several directories in one command by listing the names after it. Those names are LQ2, AOS, and IT2625. A second mkdir would be another command, which this question does not ask for."}, {"q": "Type the command that creates nested directories path/to/dir automatically.", "answer": "mkdir -p path/to/dir", "accept": ["mkdir -p path/to/dir", "mkdir --parents path/to/dir", "mkdir -p ./path/to/dir"], "why": "mkdir -p creates path/to/dir and any missing parent folders in that path. Without -p, mkdir fails when path or path/to does not already exist."}, {"q": "Type the command that removes the empty directory named olddir.", "answer": "rmdir olddir", "accept": ["rmdir olddir", "rmdir ./olddir"], "why": "rmdir removes olddir only when it is empty. rm -r is the command for a directory that still has files in it."}, {"q": "Type the command that recursively removes the non-empty directory named olddir.", "answer": "rm -r olddir", "accept": ["rm -r olddir", "rm -R olddir", "rm --recursive olddir", "rm -rf olddir", "rm -fr olddir", "rm -Rf olddir", "rm -fR olddir", "rm -r ./olddir", "rm -R ./olddir", "rm --recursive ./olddir"], "why": "rm -r removes olddir and everything inside it. rmdir refuses the directory when it is not empty. -r means recursive."}, {"q": "Assuming you are in g1, type the command that removes game2 and gg3 from the parent directory.", "answer": "rm -r ../game2 ../gg3", "accept": ["rm -r ../game2 ../gg3", "rm -r ../gg3 ../game2", "rm -R ../game2 ../gg3", "rm -R ../gg3 ../game2", "rm --recursive ../game2 ../gg3", "rm --recursive ../gg3 ../game2", "rm -rf ../game2 ../gg3", "rm -rf ../gg3 ../game2", "rm -fr ../game2 ../gg3", "rm -fr ../gg3 ../game2"], "why": "From inside g1, the parent is written with two dots. game2 and gg3 live in that parent, so the paths are ../game2 and ../gg3. -r is required because those directories are being removed. Names without ../ would be looked up inside g1."}, {"q": "Type the command that copies file1.txt to the parent directory and then lists the parent directory.", "answer": "cp file1.txt .. && ls ..", "accept": ["cp file1.txt .. && ls ..", "cp file1.txt ..; ls ..", "cp ./file1.txt .. && ls ..", "cp ./file1.txt ..; ls .."], "why": "cp file1.txt .. copies the file into the parent directory, and ls .. lists that parent so you can see the copy. && runs the listing only after the copy succeeds. A semicolon also runs the list afterward."}, {"q": "Assuming you are in home/user, type the command that enters g1 and creates file1.txt.", "answer": "cd g1 && touch file1.txt", "accept": ["cd g1 && touch file1.txt", "cd g1; touch file1.txt", "cd ./g1 && touch file1.txt", "cd ./g1; touch file1.txt"], "why": "From home/user, cd g1 enters g1, and touch file1.txt creates the empty file in that directory. touch g1/file1.txt would create the file without entering g1, so it misses the enter step."}, {"q": "Type the command that renames oldfile to newfile.", "answer": "mv oldfile newfile", "accept": ["mv oldfile newfile", "mv ./oldfile newfile", "mv ./oldfile ./newfile"], "why": "mv oldfile newfile renames the file. cp oldfile newfile would copy it and leave oldfile in place."}, {"q": "Type the command that deletes filename but prompts before deletion.", "answer": "rm -i filename", "accept": ["rm -i filename", "rm --interactive filename", "rm -i ./filename"], "why": "rm -i filename asks before it deletes. Without -i, rm deletes with no prompt. -r means recursive, which is not a prompt."}, {"q": "Type the command that creates a 0-byte file named newfile.txt.", "answer": "touch newfile.txt", "accept": ["touch newfile.txt", "touch ./newfile.txt"], "why": "touch newfile.txt creates a 0-byte file when that name does not exist yet. If the file already exists, touch updates its timestamp instead of emptying it."}, {"q": "Type the command that updates the access time of file.txt.", "answer": "touch -a file.txt", "accept": ["touch -a file.txt", "touch --time=access file.txt", "touch --time=atime file.txt"], "why": "touch -a updates the access time of file.txt. -m updates the modification time, which is the other timestamp."}, {"q": "Type the command that updates the modification time of file.txt.", "answer": "touch -m file.txt", "accept": ["touch -m file.txt", "touch --time=modify file.txt", "touch --time=mtime file.txt"], "why": "touch -m updates the modification time of file.txt. -a updates the access time instead."}, {"q": "Type the command that creates a hidden file named .hide.txt using cat.", "answer": "cat > .hide.txt", "accept": ["cat > .hide.txt", "cat >./.hide.txt"], "why": "A name that starts with a dot is hidden. cat > .hide.txt sends input into that new hidden file. >> would append, and a name without the dot would not be hidden."}, {"q": "Type the command that appends content to a file named file.txt using cat.", "answer": "cat >> file.txt", "accept": ["cat >> file.txt", "cat >> ./file.txt"], "why": "cat >> file.txt appends to file.txt. A single > would overwrite the file instead of adding to the end."}, {"q": "Type the command that shows the first 10 lines of filename.", "answer": "head -n 10 filename", "accept": ["head -n 10 filename", "head -n10 filename", "head -10 filename", "head filename", "head --lines=10 filename"], "why": "head reads from the start of the file. head -n 10 filename stops after the first 10 lines, and plain head does that too because 10 is the default. tail would read from the end."}, {"q": "Type the command that shows the last 20 lines of filename.", "answer": "tail -n 20 filename", "accept": ["tail -n 20 filename", "tail -n20 filename", "tail -20 filename", "tail --lines=20 filename"], "why": "tail reads from the end of the file. tail -n 20 filename keeps the last 20 lines. head -n 20 would keep the first 20."}, {"q": "Type the command that opens longfile.txt for scrolling up and down.", "answer": "less longfile.txt", "accept": ["less longfile.txt", "less ./longfile.txt"], "why": "less opens longfile.txt and lets you scroll up and down. more moves forward a screen at a time, and cat dumps the whole file."}, {"q": "Type the command that displays longfile.txt screenful by screenful using more.", "answer": "more longfile.txt", "accept": ["more longfile.txt", "more ./longfile.txt"], "why": "more longfile.txt shows the file one screen at a time. This question asks for more specifically. less is the one that scrolls freely in both directions."}, {"q": "Type the command that numbers non-empty lines of filename.", "answer": "cat -b filename", "accept": ["cat -b filename", "cat --number-nonblank filename"], "why": "cat -b numbers the non-empty lines and skips blank ones. cat -n numbers every line, including blanks, so it does not match this question."}, {"q": "Type the command that compares file1.txt and file2.txt for differences.", "answer": "diff file1.txt file2.txt", "accept": ["diff file1.txt file2.txt", "diff file2.txt file1.txt"], "why": "diff file1.txt file2.txt prints the lines that differ between the two files. The two filenames can be given in either order and still compare them. wc only counts."}, {"q": "Type the command that counts the lines in file.txt.", "answer": "wc -l file.txt", "accept": ["wc -l file.txt", "wc --lines file.txt"], "why": "wc -l counts lines. -c counts bytes, -m counts characters, and -w counts words."}, {"q": "Type the command that counts the bytes in file1.txt.", "answer": "wc -c file1.txt", "accept": ["wc -c file1.txt", "wc --bytes file1.txt"], "why": "wc -c counts bytes in file1.txt. -m counts characters, which is not the same count when a character uses more than one byte."}, {"q": "Type the command that counts the characters in filename.", "answer": "wc -m filename", "accept": ["wc -m filename", "wc --chars filename"], "why": "wc -m counts characters. -c counts bytes, and -l counts lines."}, {"q": "Type the command that shows the current user logged into the session.", "answer": "whoami", "accept": ["whoami"], "why": "whoami prints the username for this session. who lists every user who is logged on, and id prints user and group IDs."}, {"q": "Type the command that shows who is logged on along with date, time, and session information.", "answer": "who", "accept": ["who", "w"], "why": "who lists the users who are logged on, with the date, time, and session. w shows that login information too. whoami prints only your own username."}, {"q": "Type the command that shows the system date and time.", "answer": "date", "accept": ["date"], "why": "date prints the system date and time. cal prints a calendar, and date +%Y prints only the year."}, {"q": "Type the command that shows the current year as a four-digit year.", "answer": "date +%Y", "accept": ["date +%Y", "date '+%Y'", "date \"+%Y\"", "date +\"%Y\"", "date +'%Y'"], "why": "date +%Y formats the date as the four-digit year. %y would be the two-digit year. cal shows a calendar instead of that year number."}, {"q": "Type the command that shows the complete calendar for the current year.", "answer": "cal -y", "accept": ["cal -y", "cal --year"], "why": "cal -y prints every month of the current year. cal -3 prints three months, and cal -j prints Julian days."}, {"q": "Type the command that shows the previous, current, and next month.", "answer": "cal -3", "accept": ["cal -3", "cal --three"], "why": "cal -3 prints the previous month, the current month, and the next month. cal -y prints the whole year instead."}, {"q": "Type the command that shows the current month in Julian calendar format.", "answer": "cal -j", "accept": ["cal -j", "cal --julian"], "why": "cal -j prints the current month in Julian form, with days numbered through the year. cal -y is the full-year calendar, not the Julian one."}, {"q": "Type the command that displays the UTC time zone.", "answer": "date -u", "accept": ["date -u", "date --utc", "date --universal"], "why": "date -u prints the date and time in UTC. Without -u, date uses the local time zone."}, {"q": "Type the command that displays the date and time from datefile's timestamp.", "answer": "date -r datefile", "accept": ["date -r datefile", "date --reference=datefile", "date --reference datefile"], "why": "date -r datefile reads the timestamp stored on datefile and prints that date and time. Plain date reads the system clock instead."}, {"q": "Type the command that lists directory contents including hidden dotfiles.", "answer": "ls -a", "accept": ["ls -a", "ls -a .", "ls --all", "ls --all ."], "why": "ls -a lists names that start with a dot as well as the normal names. Plain ls hides those dotfiles."}, {"q": "Type the command that displays all file details and includes hidden files.", "answer": "ls -al", "accept": ["ls -al", "ls -la", "ls -a -l", "ls -l -a", "ls -al .", "ls -la .", "ls -a -l .", "ls -l -a ."], "why": "ls -al combines the long listing from -l with hidden names from -a. -la is the same two options in the other order. -n would show numbers for the user and group instead of names."}, {"q": "Type the command that shows a recursive listing including subdirectories.", "answer": "ls -R", "accept": ["ls -R", "ls -R .", "ls --recursive", "ls --recursive ."], "why": "ls -R lists this directory and then the directories inside it. -r is reverse order, which is a different option from -R."}, {"q": "Type the command that displays numeric UID and GID for file.txt.", "answer": "ls -n file.txt", "accept": ["ls -n file.txt", "ls -n ./file.txt"], "why": "ls -n file.txt prints the long listing with the numeric UID and GID. ls -l would print the account names instead of those numbers."}, {"q": "Type the command that displays numeric and alphabetic EUID, UID, and GID.", "answer": "id", "accept": ["id"], "why": "id prints the numeric and alphabetic EUID, UID, and GID. groups lists group names only, and whoami prints only the username."}, {"q": "Type the command that lists the current user's group memberships.", "answer": "groups", "accept": ["groups"], "why": "groups lists the groups the current user belongs to. id prints the identity numbers and names, which is a different report."}, {"q": "Type the command that gives user/owner execute permission to script.sh.", "answer": "chmod u+x script.sh", "accept": ["chmod u+x script.sh", "chmod u+x ./script.sh"], "why": "chmod u+x script.sh adds execute permission for the owner. u is the user who owns the file, and +x adds execute without rewriting the other permission bits. 755 would set a full mode, not only owner execute."}, {"q": "Type the command that gives myscript.sh permissions 755.", "answer": "chmod 755 myscript.sh", "accept": ["chmod 755 myscript.sh", "chmod 0755 myscript.sh", "chmod 755 ./myscript.sh"], "why": "chmod 755 myscript.sh sets rwx for the owner (7), and r-x for the group and for others (5 and 5). 7 is 4+2+1 for read, write, and execute."}, {"q": "Type the command that creates an alias ll for ls -l.", "answer": "alias ll=\"ls -l\"", "accept": ["alias ll=\"ls -l\"", "alias ll='ls -l'", "alias ll=\"ls -l \"", "alias ll='ls -l '"], "why": "alias ll=\"ls -l\" makes ll a shortcut for ls -l. The quotes keep ls and -l together as the alias value. alias with no name only displays aliases, and unalias removes one."}, {"q": "Type the command that removes the alias ll.", "answer": "unalias ll", "accept": ["unalias ll"], "why": "unalias ll deletes the ll shortcut. alias ll=... creates it, and alias alone only displays aliases."}, {"q": "Type the command that displays active aliases.", "answer": "alias", "accept": ["alias", "alias -p"], "why": "alias with no arguments prints the aliases that are currently defined. unalias would delete one instead of displaying them."}, {"q": "Type the command that displays the recent command history.", "answer": "history", "accept": ["history"], "why": "history prints the recent commands from this shell. It does not page through a file the way less does."}, {"q": "Type the command that shows the location of the ls binary, source, and manual page.", "answer": "whereis ls", "accept": ["whereis ls"], "why": "whereis ls reports where the ls binary, its source, and its manual page are. which would print only the binary that would run."}, {"q": "Type the command that searches from the current directory for files owned by user leo and lists them.", "answer": "find . -user leo -ls", "accept": ["find . -user leo -ls"], "why": "find . -user leo -ls starts at the current directory, keeps files owned by leo, and -ls prints a listing of those matches. Without -user leo it would list every file, and without the starting dot it would not be limited to the current directory."}, {"q": "Type the command that copies all .txt files to /aos using the wildcard.", "answer": "cp *.txt /aos", "accept": ["cp *.txt /aos", "cp *.txt /aos/"], "why": "cp *.txt /aos copies every file ending in .txt into /aos. The asterisk is the wildcard. A name without *.txt would copy one specific file."}, {"q": "Type the command that displays environment variables.", "answer": "env", "accept": ["env", "printenv"], "why": "env prints the environment variables for this session. date, history, and alias show other information, not that variable list."}, {"q": "Type the command that changes the primary shell prompt to myprompt>.", "answer": "PS1=\"myprompt> \"", "accept": ["PS1=\"myprompt> \"", "PS1=\"myprompt>\"", "PS1='myprompt> '", "PS1='myprompt>'", "export PS1=\"myprompt> \"", "export PS1=\"myprompt>\"", "export PS1='myprompt> '", "export PS1='myprompt>'"], "why": "PS1 is the primary prompt. Setting it to myprompt> changes the text the shell shows before each command. export EDITOR changes the editor variable, not the prompt."}, {"q": "Type the commands that enable vi mode through EDITOR.", "answer": "EDITOR=vi export EDITOR", "accept": ["EDITOR=vi export EDITOR", "EDITOR=vi; export EDITOR", "EDITOR=vi && export EDITOR", "export EDITOR=vi", "export EDITOR=\"vi\"", "export EDITOR='vi'"], "why": "EDITOR=vi chooses vi, and export EDITOR places that variable in the environment so other programs can read it. export EDITOR=vi does both steps at once. PS1 would change the prompt instead."}, {"q": "Type the command that pauses execution for 10 seconds.", "answer": "sleep 10", "accept": ["sleep 10", "sleep 10s"], "why": "sleep 10 pauses for 10 seconds. A number with no suffix is seconds. sleep 10m would be 10 minutes, and sleep 1m is one minute."}, {"q": "Type the command that pauses execution for 1 minute.", "answer": "sleep 1m", "accept": ["sleep 1m", "sleep 60", "sleep 60s"], "why": "sleep 1m pauses for one minute. The m suffix means minutes. sleep 60 is the same pause counted in seconds. sleep 1 would be one second."}, {"q": "Type the command that prints 1234567890 in large ASCII letters using banner.", "answer": "banner 1234567890", "accept": ["banner 1234567890", "banner \"1234567890\"", "banner '1234567890'"], "why": "banner 1234567890 prints those digits as large ASCII letters. echo would print them in normal text on one line."}, {"q": "Type the command that displays Hello CICS.", "answer": "echo \"Hello CICS\"", "accept": ["echo \"Hello CICS\"", "echo 'Hello CICS'", "echo Hello CICS"], "why": "echo \"Hello CICS\" writes that text to the terminal. banner would turn it into large ASCII letters, and redirection would send it into a file instead of displaying it."}, {"q": "Type the command that writes \"Tiger roar\" to yourfile.txt by using output redirection.", "answer": "echo \"Tiger roar\">yourfile.txt", "accept": ["echo \"Tiger roar\" > yourfile.txt", "echo 'Tiger roar' > yourfile.txt", "echo Tiger roar > yourfile.txt"], "why": "echo \"Tiger roar\" produces the text, and > writes that output into yourfile.txt, creating or overwriting the file. >> would append. Without the redirection, echo only displays the words."}, {"q": "Type the command that opens file.txt in pico.", "answer": "pico file.txt", "accept": ["pico file.txt", "pico ./file.txt"], "why": "pico file.txt opens file.txt in the pico editor. cat would display or redirect the file, and less would only page through it."}];
+
+const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+const shuffle = (arr) => [...arr].sort(() => Math.random() - 0.5);
+
+let deck = [];
+let i = 0;
+let correct = 0;
+let locked = false;
+let missed = [];
+
+const panel = document.getElementById("panel");
+const prog = document.getElementById("prog");
+const count = document.getElementById("count");
+const scoreline = document.getElementById("scoreline");
+
+function start(pool) {
+  deck = shuffle(pool);
+  i = 0; correct = 0; missed = []; locked = false;
+  render();
+}
+
+function render() {
+  if (i >= deck.length) return results();
+  const q = deck[i];
+  prog.style.width = ((i / deck.length) * 100) + "%";
+  count.textContent = "Question " + (i + 1) + " of " + deck.length;
+  scoreline.textContent = "Score " + correct;
+  locked = false;
+  panel.innerHTML = `<p class="q">${esc(q.q)}</p>
+    <label class="hint" for="cmd">Type the command</label>
+    <input id="cmd" class="cmd" autocomplete="off" autocapitalize="off" spellcheck="false" />
+    <div class="actions"><button class="btn" id="check" type="button">Check</button></div>
+    <div class="fb" id="fb"></div>`;
+  const input = document.getElementById("cmd");
+  input.focus();
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      document.getElementById("check").click();
+    }
+  });
+  document.getElementById("check").onclick = () => grade(q);
+}
+
+function grade(q) {
+  if (locked) return;
+  const input = document.getElementById("cmd");
+  const typed = input.value;
+  if (!typed.trim()) {
+    const fb = document.getElementById("fb");
+    fb.className = "fb no";
+    fb.textContent = "Type a command first.";
+    return;
+  }
+  locked = true;
+  input.disabled = true;
+  const ok = accepted(typed, q.accept);
+  const fb = document.getElementById("fb");
+  fb.className = "fb " + (ok ? "ok" : "no");
+  fb.textContent = ok ? "Correct." : "Not quite.";
+  if (ok) correct++;
+  else {
+    missed.push({ q: q.q, answer: q.answer, why: q.why });
+    const box = document.createElement("div");
+    box.id = "reasons";
+    fb.after(box);
+    box.innerHTML = `<p class="answer-line">Right answer: <code class="k">${esc(q.answer)}</code></p>
+      <p class="why-h">Why</p>
+      <div class="explain"><p>You entered <code class="k">${esc(typed.trim())}</code>. ${esc(q.why)}</p></div>`;
+  }
+  scoreline.textContent = "Score " + correct;
+  const actions = panel.querySelector(".actions");
+  const next = document.createElement("button");
+  next.className = "btn";
+  next.id = "next";
+  next.type = "button";
+  next.textContent = i + 1 === deck.length ? "See results" : "Next";
+  actions.replaceChildren(next);
+  next.focus();
+  next.onclick = () => { i++; render(); };
+}
+
+function results() {
+  prog.style.width = "100%";
+  count.textContent = "Round complete";
+  scoreline.textContent = "";
+  const pct = Math.round((correct / deck.length) * 100);
+  panel.innerHTML = `
+    <p class="q">You scored</p>
+    <div class="score">${correct} / ${deck.length}</div>
+    <p class="sub" style="margin:0">${pct}% · ${missed.length ? missed.length + " to review" : "Clean round."}</p>
+    ${missed.length ? `<ul class="miss">${missed.map((m) => `<li><b>${esc(m.q)}</b><br>Right answer: <code class="k">${esc(m.answer)}</code><br>${esc(m.why)}</li>`).join("")}</ul>` : ""}
+    <div class="actions">
+      <a class="btn ghost" href="index.html">Linux exams</a>
+      <button class="btn" id="again" type="button">Play again</button>
+      ${missed.length ? `<button class="btn ghost" id="missed" type="button">Replay missed only</button>` : ""}
+    </div>`;
+  document.getElementById("again").onclick = () => start(BANK);
+  const missBtn = document.getElementById("missed");
+  if (missBtn) {
+    missBtn.onclick = () => {
+      const ids = new Set(missed.map((m) => m.q));
+      start(BANK.filter((q) => ids.has(q.q)));
+    };
+  }
+}
+
+start(BANK);
+
+  </script>
+</body>
+</html>

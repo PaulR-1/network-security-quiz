@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Linux practice exam</title>
+  <link rel="stylesheet" href="../theme.css" />
+</head>
+<body>
+  <div class="wrap">
+    <a class="exit" href="index.html">Linux exams</a>
+    <h1>Practice exam</h1>
+    <p class="sub">50 questions from the Linux reviewer practice exam. If you miss, the right choice is shown, then why yours is wrong and why that one is right.</p>
+    <div class="bar"><i id="prog"></i></div>
+    <div class="meta">
+      <span id="count"></span>
+      <span id="scoreline"></span>
+    </div>
+    <div class="card" id="panel"></div>
+  </div>
+  <script>
+
+function loosen(s) {
+  const quotes = [];
+  const masked = s.replace(/"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'/g, (m) => {
+    quotes.push(m);
+    return "\u0000Q" + (quotes.length - 1) + "Q\u0000";
+  });
+  const tight = masked
+    .replace(/\s*>>\s*/g, "\u0000R\u0000")
+    .replace(/\s*>\s*/g, ">")
+    .replace(/\u0000R\u0000/g, ">>")
+    .replace(/\s*&&\s*/g, "&&")
+    .replace(/\s*;\s*/g, ";")
+    .replace(/\s*=\s*/g, "=")
+    .replace(/\s+/g, " ")
+    .trim();
+  return tight.replace(/\u0000Q(\d+)Q\u0000/g, (_, i) => quotes[+i]);
+}
+function norm(raw) {
+  let s = String(raw).replace(/^\s*[$#]\s*/, "").trim().replace(/\s+/g, " ");
+  s = loosen(s);
+  return s.split(" ").filter(Boolean).map((tok) => tok.replace(/([^/])\/+$/, "$1")).join(" ");
+}
+function accepted(input, forms) {
+  const n = norm(input);
+  return forms.some((f) => norm(f) === n);
+}
+
+const BANK = [{"q": "Which operating system architecture is described as multitasking?", "options": ["UNIX and Linux", "MS-DOS only", "Only Fedora", "Only SUSE"], "answer": "UNIX and Linux", "why": {"UNIX and Linux": "the reviewer describes UNIX and Linux as the multitasking architecture.", "MS-DOS only": "MS-DOS is the single-tasking system in this reviewer, not the multitasking architecture.", "Only Fedora": "Fedora is one Linux distribution, not the architecture the question is naming.", "Only SUSE": "SUSE is one Linux distribution, not the architecture the question is naming."}}, {"q": "How is MS-DOS described in the reviewer?", "options": ["Single-user, single-tasking, single-process", "Multi-user, multitasking, multiprocess", "Multi-user, single-tasking, multiprocess", "Single-user, multitasking, single-process"], "answer": "Single-user, single-tasking, single-process", "why": {"Single-user, single-tasking, single-process": "that is the reviewer's description of MS-DOS: one user, one task, and one process.", "Multi-user, multitasking, multiprocess": "that description fits UNIX and Linux, not MS-DOS.", "Multi-user, single-tasking, multiprocess": "MS-DOS is not described as multi-user or multiprocess.", "Single-user, multitasking, single-process": "MS-DOS is single-tasking, so the multitasking part does not fit."}}, {"q": "According to the reviewer, extended filesystems support filenames up to about how many characters?", "options": ["14", "64", "255", "1024"], "answer": "255", "why": {"255": "extended filesystems in this reviewer allow filenames of about 255 characters.", "14": "14 characters is the older traditional limit, not the extended filesystem limit.", "64": "64 is shorter than the about-255 limit for extended filesystems.", "1024": "1024 is far beyond the about-255 limit in this reviewer."}}, {"q": "Which character can be part of a filename according to the reviewer?", "options": ["Colon only", "Underscore", "Slash only", "Pipe only"], "answer": "Underscore", "why": {"Underscore": "an underscore is an ordinary character in a filename.", "Colon only": "a colon is not the filename character this reviewer is pointing to.", "Slash only": "a slash separates directories in a path, so it cannot sit inside a filename.", "Pipe only": "a pipe is shell syntax, not a character this reviewer allows inside a filename."}}, {"q": "What must be done when a filename contains spaces?", "options": ["Replace spaces with slashes", "Enclose the filename in quotes", "Use only uppercase letters", "Add a tilde before the name"], "answer": "Enclose the filename in quotes", "why": {"Enclose the filename in quotes": "quotes keep a name that contains spaces as one argument, so the shell does not split it.", "Replace spaces with slashes": "slashes would turn the name into a path with extra directories.", "Use only uppercase letters": "uppercase letters do not hold a space together. The shell still splits on the space.", "Add a tilde before the name": "a leading tilde means a home directory, not a way to keep spaces in a name."}}, {"q": "What makes a pathname absolute?", "options": ["It contains a dot", "It begins with /", "It ends with ..", "It contains a wildcard"], "answer": "It begins with /", "why": {"It begins with /": "an absolute pathname starts at the root, so it begins with /.", "It contains a dot": "a dot marks the current directory or a hidden name. That is still relative unless the path starts at root.", "It ends with ..": "ending in .. means the parent of whatever came before it. That does not make the path absolute.", "It contains a wildcard": "a wildcard matches names. It does not define an absolute path."}}, {"q": "Which is an example of a relative pathname from the reviewer?", "options": ["/home/user/docs", "/it2625/aos", "it2625/aos", "~/docs/"], "answer": "it2625/aos", "why": {"it2625/aos": "it2625/aos does not start at the root, so it is relative to the current directory.", "/home/user/docs": "this path begins with /, so it is absolute.", "/it2625/aos": "the leading / makes this absolute, even though the directory names match the relative example.", "~/docs/": "the tilde starts from your home directory, not from the current directory the way it2625/aos does."}}, {"q": "What does a single dot (.) represent?", "options": ["The root directory", "The parent directory", "The current working directory", "The home directory of another user"], "answer": "The current working directory", "why": {"The current working directory": "one dot means the directory you are in right now.", "The root directory": "the root directory is /, not a single dot.", "The parent directory": "the parent directory is two dots.", "The home directory of another user": "another user's home is a tilde plus that user's name, such as ~leo."}}, {"q": "What does two dots (..) represent?", "options": ["The current directory", "The parent directory", "The root directory only", "A hidden file"], "answer": "The parent directory", "why": {"The parent directory": "two dots mean the directory above the one you are in.", "The current directory": "the current directory is one dot.", "The root directory only": "the root is /. Two dots climb one level; they are not another name for root.", "A hidden file": "a hidden file starts with a dot in its name, such as .hide.txt. The path .. is the parent directory."}}, {"q": "What does tilde (~) refer to?", "options": ["The root directory", "The current user's home directory", "The parent directory", "A temporary directory"], "answer": "The current user's home directory", "why": {"The current user's home directory": "a tilde by itself is your home directory.", "The root directory": "the root directory is /.", "The parent directory": "the parent directory is two dots (..).", "A temporary directory": "a temporary directory is not what ~ means. ~ is home."}}, {"q": "What command prints the current working directory?", "options": ["pwd", "cd", "ls", "whereis"], "answer": "pwd", "why": {"pwd": "pwd prints the current working directory.", "cd": "cd changes the directory. It does not print it.", "ls": "ls lists names in a directory. It does not print the path you are in.", "whereis": "whereis locates a command's binary, source, and manual page."}}, {"q": "Which command goes directly to the current user's home directory?", "options": ["cd /", "cd ..", "cd ~", "cd ."], "answer": "cd ~", "why": {"cd ~": "cd ~ goes home because ~ means the current user's home directory.", "cd /": "cd / goes to the root directory.", "cd ..": "cd .. goes to the parent directory.", "cd .": "cd . stays in the current directory because one dot means here."}}, {"q": "Which command navigates to another user's home directory?", "options": ["cd ~username", "pwd username", "home username", "cd /username"], "answer": "cd ~username", "why": {"cd ~username": "cd ~username opens that user's home. The tilde plus the name is the form in this reviewer.", "pwd username": "pwd prints a directory. It does not take a username and move there.", "home username": "home username is not the navigation command in this material.", "cd /username": "cd /username looks under the root for a directory named username. That is not the ~username home shortcut."}}, {"q": "Which command creates directories?", "options": ["mkdir", "rmdir", "mv", "touch"], "answer": "mkdir", "why": {"mkdir": "mkdir creates directories.", "rmdir": "rmdir removes an empty directory.", "mv": "mv moves or renames. It does not create a directory.", "touch": "touch creates an empty file or updates a timestamp, not a directory."}}, {"q": "Which command creates nested parent directories automatically?", "options": ["mkdir -p path/to/dir", "mkdir -r path/to/dir", "rmdir -p path/to/dir", "touch -p path/to/dir"], "answer": "mkdir -p path/to/dir", "why": {"mkdir -p path/to/dir": "mkdir -p creates the full path and any missing parents along the way.", "mkdir -r path/to/dir": "mkdir does not use -r to create parents. -p is the option that does that.", "rmdir -p path/to/dir": "rmdir removes directories. It does not create a nested path.", "touch -p path/to/dir": "touch works on files. It does not create parent directories."}}, {"q": "How do you remove an empty directory?", "options": ["rm -r", "rmdir", "rm -i", "mv"], "answer": "rmdir", "why": {"rmdir": "rmdir removes a directory only when it is empty.", "rm -r": "rm -r removes a directory tree, including one that still has files. The empty-directory command is rmdir.", "rm -i": "rm -i prompts before deleting a file. It is not the empty-directory command.", "mv": "mv moves or renames. It does not remove the directory."}}, {"q": "How do you remove a non-empty directory recursively?", "options": ["rmdir -p", "rm -r", "touch -r", "cp -r"], "answer": "rm -r", "why": {"rm -r": "rm -r walks into the directory and removes it even when it still contains files.", "rmdir -p": "rmdir only works on empty directories. It is not the recursive removal command.", "touch -r": "touch -r copies a timestamp from a reference file. It does not delete anything.", "cp -r": "cp -r copies recursively. It leaves the original in place."}}, {"q": "What is the purpose of cp -r?", "options": ["Copy files and directories recursively", "Remove directories recursively", "Rename directories", "Display recursive listings"], "answer": "Copy files and directories recursively", "why": {"Copy files and directories recursively": "cp -r copies a directory and everything inside it.", "Remove directories recursively": "recursive removal is rm -r, not cp -r.", "Rename directories": "renaming is mv.", "Display recursive listings": "a recursive listing is ls -R. cp copies."}}, {"q": "Which command renames oldfile to newfile?", "options": ["cp oldfile newfile", "mv oldfile newfile", "rm oldfile newfile", "rename -p oldfile newfile"], "answer": "mv oldfile newfile", "why": {"mv oldfile newfile": "mv changes the name. After it runs, the old name is gone.", "cp oldfile newfile": "cp makes a copy, so oldfile is still there.", "rm oldfile newfile": "rm deletes. It does not rename a file to a new name.", "rename -p oldfile newfile": "this reviewer uses mv to rename, not rename -p."}}, {"q": "Which command removes a file while prompting before deletion?", "options": ["rm -r filename", "rm -i filename", "rmdir filename", "del -p filename"], "answer": "rm -i filename", "why": {"rm -i filename": "rm -i asks for confirmation before it deletes the file.", "rm -r filename": "rm -r is recursive removal, not a confirmation prompt.", "rmdir filename": "rmdir removes an empty directory, not a file, and it does not use the -i prompt.", "del -p filename": "del -p is not the Linux command in this material."}}, {"q": "What does touch newfile.txt do according to the reviewer?", "options": ["Creates a 0-byte file or updates its timestamp", "Deletes the file", "Displays file contents", "Copies the file"], "answer": "Creates a 0-byte file or updates its timestamp", "why": {"Creates a 0-byte file or updates its timestamp": "touch creates the file at 0 bytes when the name is new, and updates the timestamp when the file already exists.", "Deletes the file": "touch does not delete the file.", "Displays file contents": "touch does not print the file. cat, head, tail, more, and less are the viewing commands.", "Copies the file": "copying is cp. touch does not duplicate the file."}}, {"q": "What does touch -a file.txt change?", "options": ["The access time", "The file owner", "The file size", "The filename"], "answer": "The access time", "why": {"The access time": "touch -a changes the access time.", "The file owner": "the owner is changed with chown, not touch -a.", "The file size": "touch does not set the file size.", "The filename": "touch does not rename the file. mv does."}}, {"q": "What does touch -m file.txt change?", "options": ["The modification time", "The group ID", "The permissions only", "The directory location"], "answer": "The modification time", "why": {"The modification time": "touch -m changes the modification time.", "The group ID": "touch -m does not change the group ID.", "The permissions only": "permissions are changed with chmod, not touch -m.", "The directory location": "moving a file to another directory is mv."}}, {"q": "Which command appends content to a file using cat?", "options": ["cat \u003c file", "cat >> file", "cat -a file", "cat + file"], "answer": "cat >> file", "why": {"cat >> file": ">> appends what you type onto the end of the file.", "cat \u003c file": "\u003c reads the file as input. It does not append to it.", "cat -a file": "cat -a is not the append operator. Append is the >> redirection.", "cat + file": "cat + file is not the append syntax in this material."}}, {"q": "How are hidden files created according to the reviewer?", "options": ["Start the filename with a dot", "Start the filename with a tilde", "Use uppercase only", "Put the file in /root"], "answer": "Start the filename with a dot", "why": {"Start the filename with a dot": "a filename that starts with a dot is hidden from a plain ls.", "Start the filename with a tilde": "a leading tilde means home in a path. It is not how a hidden file is named.", "Use uppercase only": "uppercase letters do not hide a file.", "Put the file in /root": "putting a file in /root places it in the root user's directory. The leading dot is what hides the name."}}, {"q": "What does head -n 10 filename retrieve?", "options": ["The last 10 lines", "The first 10 lines", "10 characters", "10 bytes"], "answer": "The first 10 lines", "why": {"The first 10 lines": "head reads from the start of the file, and -n 10 stops after 10 lines.", "The last 10 lines": "the last 10 lines would be tail -n 10, not head.", "10 characters": "-n counts lines for head, not characters. Character count is wc -m.", "10 bytes": "head -n 10 is not a byte count. Bytes are wc -c."}}, {"q": "Which command retrieves the last 20 lines of a file?", "options": ["head -n 20 filename", "tail -n 20 filename", "cat -20 filename", "less -20 filename"], "answer": "tail -n 20 filename", "why": {"tail -n 20 filename": "tail reads from the end, and -n 20 keeps the last 20 lines.", "head -n 20 filename": "head -n 20 takes the first 20 lines.", "cat -20 filename": "cat -20 is not how this reviewer selects the last 20 lines.", "less -20 filename": "less pages through a file. It is not the last-20-lines command."}}, {"q": "Which utility allows scrolling both up and down through output?", "options": ["more", "less", "head", "tail"], "answer": "less", "why": {"less": "less lets you scroll forward and backward through the output.", "more": "more moves screenful by screenful, mainly forward. The both-directions utility is less.", "head": "head only prints the beginning of the file.", "tail": "tail only prints the end of the file."}}, {"q": "Which command numbers the non-empty lines of a file?", "options": ["cat -b filename", "wc -l filename", "ls -n filename", "cat -n filename"], "answer": "cat -b filename", "why": {"cat -b filename": "cat -b numbers only the non-empty lines and skips blanks.", "wc -l filename": "wc -l counts lines. It does not number them in the output.", "ls -n filename": "ls -n lists a file with numeric user and group IDs. It does not number lines.", "cat -n filename": "cat -n numbers every line, including empty ones. Non-empty lines are -b."}}, {"q": "Which command compares two files for differences?", "options": ["diff file1.txt file2.txt", "cmp -r file1.txt file2.txt", "compare file1.txt file2.txt", "wc file1.txt file2.txt"], "answer": "diff file1.txt file2.txt", "why": {"diff file1.txt file2.txt": "diff compares the two files and shows where they differ.", "cmp -r file1.txt file2.txt": "cmp -r is not the comparison command this reviewer uses for these two text files.", "compare file1.txt file2.txt": "compare is not the command in this reviewer.", "wc file1.txt file2.txt": "wc counts lines, words, or bytes. It does not show a difference listing."}}, {"q": "What does wc -l file.txt display?", "options": ["Character count", "Byte count", "Line count", "Word count only"], "answer": "Line count", "why": {"Line count": "wc -l prints the line count.", "Character count": "characters are wc -m.", "Byte count": "bytes are wc -c.", "Word count only": "words are wc -w. -l is lines, not words."}}, {"q": "What does wc -c file1.txt display?", "options": ["Bytes", "Characters only excluding spaces", "Lines", "Permissions"], "answer": "Bytes", "why": {"Bytes": "wc -c prints the byte count.", "Characters only excluding spaces": "wc -c counts bytes, not characters with spaces removed. Characters are wc -m.", "Lines": "lines are wc -l.", "Permissions": "permissions are shown by ls -l or changed by chmod, not by wc."}}, {"q": "What does wc -m filename display?", "options": ["Minutes", "Characters", "Memory blocks", "Modification time"], "answer": "Characters", "why": {"Characters": "wc -m prints the character count.", "Minutes": "the m does not mean minutes here. sleep uses m for minutes. wc -m is characters.", "Memory blocks": "wc does not report memory blocks.", "Modification time": "modification time is touch -m or the timestamp in ls -l, not wc -m."}}, {"q": "Which command shows the user currently logged on to the session?", "options": ["who", "whoami", "id", "groups"], "answer": "whoami", "why": {"whoami": "whoami prints the user of this session.", "who": "who lists users who are logged on, with time and session details, not only the current name.", "id": "id prints user and group IDs. It is more than the current login name.", "groups": "groups lists group memberships, not the login name."}}, {"q": "Which command shows who is logged on along with date, time, and session information?", "options": ["who or w", "whoami", "date -u", "groups"], "answer": "who or w", "why": {"who or w": "who, and also w, lists logged-on users with date, time, and session information.", "whoami": "whoami prints only the current user. It does not list the session table.", "date -u": "date -u prints the clock in UTC. It does not list logins.", "groups": "groups lists groups for the current user."}}, {"q": "Which command retrieves the system date and time?", "options": ["cal", "date", "history", "sleep"], "answer": "date", "why": {"date": "date prints the system date and time.", "cal": "cal prints a calendar, not the current clock time.", "history": "history prints past commands.", "sleep": "sleep pauses. It does not display the time."}}, {"q": "What does date +%Y display?", "options": ["The two-digit year", "The full four-digit year", "The month name", "The day of the week"], "answer": "The full four-digit year", "why": {"The full four-digit year": "%Y in a date format is the four-digit year.", "The two-digit year": "a two-digit year would be %y, not %Y.", "The month name": "the month name is not what %Y prints.", "The day of the week": "the day of the week is not what %Y prints."}}, {"q": "Which calendar command displays the complete current year?", "options": ["cal -3", "cal -j", "cal -y", "cal -l"], "answer": "cal -y", "why": {"cal -y": "cal -y prints all twelve months of the current year.", "cal -3": "cal -3 prints the previous, current, and next month only.", "cal -j": "cal -j prints the current month with Julian day numbers.", "cal -l": "cal -l is not the full-year option in this material. -y is."}}, {"q": "In an ls -l listing, what does the first symbol d indicate?", "options": ["Regular file", "Directory file", "Socket", "Symbolic link"], "answer": "Directory file", "why": {"Directory file": "in the first column of ls -l, d means a directory.", "Regular file": "a regular file is shown with - in that first column, not d.", "Socket": "a socket uses s, not d.", "Symbolic link": "a symbolic link uses l, not d."}}, {"q": "In an ls -l listing, what does the first symbol l indicate?", "options": ["Directory", "Named pipe", "Symbolic link", "Network special file"], "answer": "Symbolic link", "why": {"Symbolic link": "the first character l means a symbolic link.", "Directory": "a directory is d.", "Named pipe": "a named pipe is p.", "Network special file": "l in that column is a symbolic link, not a network special file."}}, {"q": "Which ls option includes hidden dotfiles?", "options": ["ls -R", "ls -a", "ls -n", "ls -l"], "answer": "ls -a", "why": {"ls -a": "ls -a includes names that start with a dot.", "ls -R": "ls -R lists subdirectories. It does not add hidden files by itself.", "ls -n": "ls -n shows numeric UID and GID.", "ls -l": "ls -l shows the long listing. Hidden names still need -a."}}, {"q": "What does ls -R do?", "options": ["Lists only hidden files", "Shows a recursive list including subdirectories", "Shows numeric IDs", "Lists file differences"], "answer": "Shows a recursive list including subdirectories", "why": {"Shows a recursive list including subdirectories": "ls -R descends into subdirectories and lists them too.", "Lists only hidden files": "hidden files are included with -a, not -R.", "Shows numeric IDs": "numeric IDs are ls -n.", "Lists file differences": "differences between files are diff, not ls -R."}}, {"q": "What access category represents the owner or creator of a file?", "options": ["g", "o", "u", "a"], "answer": "u", "why": {"u": "u is the user category, the owner of the file.", "g": "g is the group, not the owner.", "o": "o is other users, not the owner.", "a": "a means all categories: user, group, and other. The owner alone is u."}}, {"q": "What is the octal value for rwx?", "options": ["4", "5", "6", "7"], "answer": "7", "why": {"7": "r is 4, w is 2, and x is 1, so rwx is 4+2+1, which is 7.", "4": "4 is read only.", "5": "5 is read and execute, r-x, which is missing write.", "6": "6 is read and write, rw-, which is missing execute."}}, {"q": "With umask 022, what default permission results for a directory?", "options": ["755", "744", "644", "777"], "answer": "755", "why": {"755": "a new directory starts from 777, and umask 022 clears write for group and other, leaving 755.", "744": "744 would also remove execute for group and other. umask 022 does not clear execute.", "644": "644 is the file result for umask 022, not the directory result.", "777": "777 is the directory mode before umask 022 is applied."}}, {"q": "With umask 022, what default permission results for a file?", "options": ["755", "700", "644", "666"], "answer": "644", "why": {"644": "a new file starts from 666, with no execute bit, and umask 022 clears write for group and other, leaving 644.", "755": "755 is the directory result. Files do not receive execute from the base mode 666.", "700": "700 would clear the whole group and other fields. umask 022 only clears write for group and other.", "666": "666 is the file mode before umask 022 is applied."}}, {"q": "Which command displays numeric UID and GID for a file?", "options": ["id file.txt", "ls -n file.txt", "groups file.txt", "whoami file.txt"], "answer": "ls -n file.txt", "why": {"ls -n file.txt": "ls -n is a long listing that prints the numeric UID and GID.", "id file.txt": "id prints the current process IDs. This reviewer uses ls -n to show the file's numeric owner.", "groups file.txt": "groups lists group names for the current user. It does not print the file's UID and GID.", "whoami file.txt": "whoami prints the login name. It is not the numeric listing for the file."}}, {"q": "Which command displays numeric and alphabetic EUID, UID, and GID?", "options": ["groups", "id", "ls -n", "who"], "answer": "id", "why": {"id": "id prints the numeric and name forms of the effective UID, UID, and GID.", "groups": "groups prints group names only.", "ls -n": "ls -n prints numeric IDs on a file listing, not the EUID, UID, and GID summary.", "who": "who lists logged-on sessions."}}, {"q": "Which command lists the group memberships of the current user?", "options": ["groups", "id -g", "whoami", "env"], "answer": "groups", "why": {"groups": "groups lists the groups the current user belongs to.", "id -g": "id -g prints only the primary group ID, not the membership list.", "whoami": "whoami prints the username.", "env": "env prints environment variables."}}, {"q": "Which shell path is identified as the Bourne (Again) SHell?", "options": ["/usr/bin/csh", "/usr/bin/ksh", "/bin/bash", "/usr/old/bin/sh"], "answer": "/bin/bash", "why": {"/bin/bash": "bash, the Bourne Again Shell, is /bin/bash.", "/usr/bin/csh": "/usr/bin/csh is the C shell.", "/usr/bin/ksh": "/usr/bin/ksh is the Korn shell.", "/usr/old/bin/sh": "/usr/old/bin/sh is the older Bourne shell path in this material, not bash."}}];
+
+const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+const shuffle = (arr) => [...arr].sort(() => Math.random() - 0.5);
+
+let deck = [];
+let i = 0;
+let correct = 0;
+let locked = false;
+let missed = [];
+
+const panel = document.getElementById("panel");
+const prog = document.getElementById("prog");
+const count = document.getElementById("count");
+const scoreline = document.getElementById("scoreline");
+
+function start(pool) {
+  deck = shuffle(pool.map((q) => ({ ...q, options: shuffle(q.options) })));
+  i = 0; correct = 0; missed = []; locked = false;
+  render();
+}
+
+function render() {
+  if (i >= deck.length) return results();
+  const q = deck[i];
+  prog.style.width = ((i / deck.length) * 100) + "%";
+  count.textContent = "Question " + (i + 1) + " of " + deck.length;
+  scoreline.textContent = "Score " + correct;
+  locked = false;
+  panel.innerHTML = `<p class="q">${esc(q.q)}</p>
+    <p class="hint">Pick one answer.</p>
+    <div id="opts">${q.options.map((opt) => `<button class="opt" type="button" data-v="${encodeURIComponent(opt)}">${esc(opt)}</button>`).join("")}</div>
+    <div class="actions"></div>
+    <div class="fb" id="fb"></div>`;
+  panel.querySelectorAll(".opt").forEach((btn) => {
+    btn.onclick = () => {
+      if (locked) return;
+      finish(q, decodeURIComponent(btn.dataset.v));
+    };
+  });
+}
+
+function finish(q, picked) {
+  if (locked) return;
+  locked = true;
+  const ok = picked === q.answer;
+  panel.querySelectorAll(".opt").forEach((b) => {
+    const v = decodeURIComponent(b.dataset.v);
+    b.disabled = true;
+    if (v === q.answer) b.classList.add("ok");
+    else if (v === picked) b.classList.add("no");
+  });
+  const fb = document.getElementById("fb");
+  fb.className = "fb " + (ok ? "ok" : "no");
+  fb.textContent = ok ? "Correct." : "Not quite.";
+  if (ok) correct++;
+  else {
+    const why = q.why || {};
+    missed.push({ q: q.q, answer: q.answer, picked, whyWrong: why[picked] || "", whyRight: why[q.answer] || "" });
+    const box = document.createElement("div");
+    box.id = "reasons";
+    fb.after(box);
+    box.innerHTML = `<p class="answer-line">Right answer: <b>${esc(q.answer)}</b></p>
+      <p class="why-h">Why</p>
+      <div class="explain">
+        <p><b>${esc(picked)}</b> is wrong because ${esc(why[picked] || "")}</p>
+        <p><b>${esc(q.answer)}</b> is right because ${esc(why[q.answer] || "")}</p>
+      </div>`;
+  }
+  scoreline.textContent = "Score " + correct;
+  const actions = panel.querySelector(".actions");
+  const next = document.createElement("button");
+  next.className = "btn";
+  next.type = "button";
+  next.textContent = i + 1 === deck.length ? "See results" : "Next";
+  actions.replaceChildren(next);
+  next.focus();
+  next.onclick = () => { i++; render(); };
+}
+
+function results() {
+  prog.style.width = "100%";
+  count.textContent = "Round complete";
+  scoreline.textContent = "";
+  const pct = Math.round((correct / deck.length) * 100);
+  panel.innerHTML = `
+    <p class="q">You scored</p>
+    <div class="score">${correct} / ${deck.length}</div>
+    <p class="sub" style="margin:0">${pct}% · ${missed.length ? missed.length + " to review" : "Clean round."}</p>
+    ${missed.length ? `<ul class="miss">${missed.map((m) => `<li><b>${esc(m.q)}</b><br>Right answer: <b>${esc(m.answer)}</b><br>${esc(m.picked)} is wrong because ${esc(m.whyWrong)} ${esc(m.answer)} is right because ${esc(m.whyRight)}</li>`).join("")}</ul>` : ""}
+    <div class="actions">
+      <a class="btn ghost" href="index.html">Linux exams</a>
+      <button class="btn" id="again" type="button">Play again</button>
+      ${missed.length ? `<button class="btn ghost" id="missed" type="button">Replay missed only</button>` : ""}
+    </div>`;
+  document.getElementById("again").onclick = () => start(BANK);
+  const missBtn = document.getElementById("missed");
+  if (missBtn) {
+    missBtn.onclick = () => {
+      const ids = new Set(missed.map((m) => m.q));
+      start(BANK.filter((q) => ids.has(q.q)));
+    };
+  }
+}
+
+start(BANK);
+
+  </script>
+</body>
+</html>
