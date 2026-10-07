@@ -184,7 +184,8 @@ a[href="index.html"].exit {
 }
 .row span { font-size: 0.98rem; }
 
-select {
+select,
+input.blank {
   width: 100%;
   background: #fffdf6;
   color: var(--ink);
@@ -193,6 +194,10 @@ select {
   padding: 8px;
   font: 600 0.95rem Outfit, sans-serif;
 }
+select.ok,
+input.blank.ok { background: var(--lime); }
+select.no,
+input.blank.no { background: #ff5a45; }
 
 .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
 
