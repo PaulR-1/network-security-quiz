@@ -425,11 +425,12 @@ def read_entry(path: Path) -> dict:
         if child.name.startswith("web-"):
             note = read_web_note(child)
             if note:
+                note["id"] = child.name
                 descriptions.append(note)
             continue
         text = child.read_text(encoding="utf-8").strip()
         if text:
-            descriptions.append({"kind": "yours", "text": text})
+            descriptions.append({"kind": "yours", "id": child.name, "text": text})
     return {"slug": path.name, "command": command, "descriptions": descriptions}
 
 
@@ -478,12 +479,45 @@ def saved_links(path: Path) -> set[str]:
     return links
 
 
-def add_web_descriptions(slug: str) -> dict:
+def command_dir(slug: str) -> Path:
     if not re.fullmatch(r"[a-z0-9-]{1,80}", slug or ""):
         raise PracticeError("That folder was not found.", 404)
     path = (COMMANDS / slug).resolve()
     if path.parent != COMMANDS.resolve() or not (path / "command.txt").is_file():
         raise PracticeError("That folder was not found.", 404)
+    return path
+
+
+def update_description(slug: str, file_id: str, text: str) -> dict:
+    text = validate_description(text)
+    if not re.fullmatch(r"(?:description|description-\d+|web-\d+)\.txt", file_id or ""):
+        raise PracticeError("That description was not found.", 404)
+    with WRITE_LOCK:
+        path = command_dir(slug)
+        target = (path / file_id).resolve()
+        if target.parent != path or not target.is_file():
+            raise PracticeError("That description was not found.", 404)
+        if file_id.startswith("web-"):
+            note = read_web_note(target) or {}
+            if note.get("kind") == "web" and note.get("link"):
+                target.write_text(
+                    f"Source: {note.get('source') or 'Web'}\n"
+                    f"Link: {note['link']}\n"
+                    f"Title: {note.get('title') or 'Web note'}\n"
+                    f"\n"
+                    f"{text}\n",
+                    encoding="utf-8",
+                )
+            else:
+                target.write_text(text + "\n", encoding="utf-8")
+        else:
+            target.write_text(text + "\n", encoding="utf-8")
+        entry = read_entry(path)
+    return {"entry": entry}
+
+
+def add_web_descriptions(slug: str) -> dict:
+    path = command_dir(slug)
     command = (path / "command.txt").read_text(encoding="utf-8").strip()
     found = search_web(command)
     with WRITE_LOCK:
@@ -540,6 +574,14 @@ class Handler(SimpleHTTPRequestHandler):
                 return
             if parsed.path == "/api/commands/search":
                 result = add_web_descriptions(str(payload.get("slug", "")))
+                self.respond(200, result)
+                return
+            if parsed.path == "/api/commands/description":
+                result = update_description(
+                    str(payload.get("slug", "")),
+                    str(payload.get("id", "")),
+                    str(payload.get("text", "")),
+                )
                 self.respond(200, result)
                 return
             self.respond(404, {"error": "That action was not found."})

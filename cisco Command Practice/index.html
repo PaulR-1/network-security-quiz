@@ -26,9 +26,12 @@
       overflow-wrap: anywhere;
     }
     .path { margin: 0 0 10px; font-weight: 700; }
-    .notes { margin: 0; padding-left: 18px; }
-    .notes li { margin: 0 0 8px; line-height: 1.4; }
+    .notes { margin: 0; padding: 0; list-style: none; }
+    .notes li { margin: 0; padding: 10px 0; border-top: 2px solid var(--ink); line-height: 1.4; }
+    .note-text { margin: 0 0 8px; }
     .notes a { color: var(--ink); }
+    .notes textarea.cmd { min-height: 4.4rem; margin-bottom: 8px; }
+    button.edit { display: inline-block; margin-top: 8px; padding: 4px 10px; font-size: 0.85rem; box-shadow: 2px 2px 0 var(--ink); }
     .tag {
       display: inline-block;
       background: var(--red);
@@ -242,11 +245,13 @@
       return card;
     }
 
-    function renderNote(item) {
+    function renderNote(entry, item, index) {
       const li = document.createElement("li");
-      li.textContent = item.text;
+      const body = document.createElement("p");
+      body.className = "note-text";
+      body.textContent = item.text;
+      li.appendChild(body);
       if (item.kind === "web" && item.link && item.link.startsWith("https://")) {
-        li.appendChild(document.createTextNode(" "));
         const link = document.createElement("a");
         link.href = item.link;
         link.target = "_blank";
@@ -254,7 +259,71 @@
         link.textContent = item.source || "Source";
         li.appendChild(link);
       }
+      const edit = document.createElement("button");
+      edit.type = "button";
+      edit.className = "btn ghost edit";
+      edit.textContent = "Edit";
+      edit.addEventListener("click", () => startEdit(li, entry, item, index));
+      li.appendChild(edit);
       return li;
+    }
+
+    function startEdit(li, entry, item, index) {
+      const field = document.createElement("textarea");
+      field.className = "cmd";
+      field.rows = 3;
+      field.maxLength = 2000;
+      field.value = item.text;
+      const actions = document.createElement("div");
+      actions.className = "actions";
+      const save = document.createElement("button");
+      save.className = "btn";
+      save.type = "button";
+      save.textContent = "Save edit";
+      const cancel = document.createElement("button");
+      cancel.className = "btn ghost";
+      cancel.type = "button";
+      cancel.textContent = "Cancel";
+      save.addEventListener("click", () => commitEdit(entry, item, index, field, save));
+      cancel.addEventListener("click", () => render());
+      field.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" && !event.shiftKey) {
+          event.preventDefault();
+          commitEdit(entry, item, index, field, save);
+        }
+      });
+      actions.append(save, cancel);
+      li.replaceChildren(field, actions);
+      field.focus();
+    }
+
+    async function commitEdit(entry, item, index, field, button) {
+      const text = field.value.trim().replace(/\s+/g, " ");
+      if (!text) {
+        setStatus("Write a description first.", true);
+        field.focus();
+        return;
+      }
+      button.disabled = true;
+      try {
+        if (useServer) {
+          const result = await api("/api/commands/description", {
+            method: "POST",
+            body: JSON.stringify({ slug: entry.slug, id: item.id, text }),
+          });
+          replaceEntry(result.entry);
+        } else {
+          const current = saved.find((row) => row.slug === entry.slug);
+          if (!current || !current.descriptions[index]) throw new Error("That description was not found.");
+          current.descriptions[index].text = text;
+          writeStored();
+          render();
+        }
+        setStatus("Description updated.");
+      } catch (error) {
+        setStatus(error.message, true);
+        button.disabled = false;
+      }
     }
 
     function renderEntry(entry) {
@@ -279,7 +348,7 @@
 
       const notes = document.createElement("ul");
       notes.className = "notes";
-      entry.descriptions.forEach((item) => notes.appendChild(renderNote(item)));
+      entry.descriptions.forEach((item, index) => notes.appendChild(renderNote(entry, item, index)));
       card.appendChild(notes);
 
       const actions = document.createElement("div");
