@@ -212,21 +212,41 @@ def fetch_json(url: str, timeout: int = 12) -> dict:
 
 
 def stack_notes(site: str, label: str, origin: str, command: str) -> list[dict[str, str]]:
-    params = urllib.parse.urlencode(
-        {
-            "order": "desc",
-            "sort": "relevance",
-            "q": f"{command} cisco ios",
-            "site": site,
-            "pagesize": 8,
-        }
-    )
-    payload = fetch_json(f"https://api.stackexchange.com/2.3/search/excerpts?{params}")
+    items: list[dict] = []
+    last_error = ""
+    for query in (command, f"{command} cisco"):
+        params = urllib.parse.urlencode(
+            {
+                "order": "desc",
+                "sort": "relevance",
+                "q": query,
+                "site": site,
+                "pagesize": 8,
+            }
+        )
+        try:
+            payload = fetch_json(f"https://api.stackexchange.com/2.3/search/excerpts?{params}")
+        except (urllib.error.URLError, TimeoutError, json.JSONDecodeError, OSError) as exc:
+            last_error = str(exc) or "Search did not respond."
+            continue
+        if payload.get("error_message"):
+            last_error = str(payload["error_message"])
+            continue
+        items.extend(payload.get("items") or [])
+        if len(items) >= 4:
+            break
+    if not items and last_error:
+        raise PracticeError(last_error, 502)
     notes: list[dict[str, str]] = []
-    for item in payload.get("items", []):
+    seen: set[str] = set()
+    for item in items:
         title = clean_text(item.get("title") or "Cisco command note")
-        text, ranked = best_excerpt(command, clean_text(item.get("excerpt") or ""))
-        if len(text) < 40 or ranked < 6 or not mentions_command(command, text):
+        raw = clean_text(item.get("excerpt") or "")
+        cleaned = clip(tidy_excerpt(raw), 420)
+        text, ranked = best_excerpt(command, raw)
+        if ranked < 4 or not mentions_command(command, text):
+            text = cleaned
+        if len(text) < 30:
             continue
         if item.get("answer_id"):
             link = f"{origin}/a/{item['answer_id']}"
@@ -234,13 +254,17 @@ def stack_notes(site: str, label: str, origin: str, command: str) -> list[dict[s
             link = f"{origin}/questions/{item['question_id']}"
         else:
             continue
+        if link in seen:
+            continue
+        seen.add(link)
+        score = max(ranked, score_note(command, title, text), 5 if mentions_command(command, text) else 1)
         notes.append(
             {
                 "title": title,
                 "source": label,
                 "link": link,
                 "text": text,
-                "score": str(ranked),
+                "score": str(score),
             }
         )
     return notes
@@ -420,7 +444,7 @@ def read_entry(path: Path) -> dict:
     descriptions = []
     files = sorted(path.iterdir(), key=description_order)
     for child in files:
-        if not child.is_file() or child.name == "command.txt" or child.name.startswith("."):
+        if not child.is_file() or child.name in {"command.txt", "order.txt"} or child.name.startswith("."):
             continue
         if child.name.startswith("web-"):
             note = read_web_note(child)
@@ -431,7 +455,7 @@ def read_entry(path: Path) -> dict:
         text = child.read_text(encoding="utf-8").strip()
         if text:
             descriptions.append({"kind": "yours", "id": child.name, "text": text})
-    return {"slug": path.name, "command": command, "descriptions": descriptions}
+    return {"slug": path.name, "command": command, "descriptions": descriptions, "savedAt": saved_at(path)}
 
 
 def list_entries() -> list[dict]:
@@ -441,8 +465,22 @@ def list_entries() -> list[dict]:
     for path in sorted(COMMANDS.iterdir(), key=lambda item: item.name):
         if path.is_dir() and (path / "command.txt").is_file():
             entries.append(read_entry(path))
-    entries.sort(key=lambda item: item["command"].lower())
+    entries.sort(key=lambda item: item.get("savedAt") or 0, reverse=True)
     return entries
+
+
+def saved_at(path: Path) -> float:
+    order = path / "order.txt"
+    if order.is_file():
+        try:
+            return float(order.read_text(encoding="utf-8").strip())
+        except ValueError:
+            pass
+    return path.stat().st_mtime
+
+
+def touch_order(path: Path) -> None:
+    (path / "order.txt").write_text(f"{time.time()}\n", encoding="utf-8")
 
 
 def next_numbered(path: Path, prefix: str, start: int = 1) -> Path:
@@ -466,6 +504,7 @@ def save_command(command: str, description: str) -> dict:
         else:
             target = next_numbered(path, "description", start=2)
             target.write_text(description + "\n", encoding="utf-8")
+        touch_order(path)
         entry = read_entry(path)
     return {"created": created, "entry": entry}
 
@@ -486,6 +525,15 @@ def command_dir(slug: str) -> Path:
     if path.parent != COMMANDS.resolve() or not (path / "command.txt").is_file():
         raise PracticeError("That folder was not found.", 404)
     return path
+
+
+def update_command(slug: str, command: str) -> dict:
+    command = validate_command(command)
+    with WRITE_LOCK:
+        path = command_dir(slug)
+        (path / "command.txt").write_text(command + "\n", encoding="utf-8")
+        entry = read_entry(path)
+    return {"entry": entry}
 
 
 def update_description(slug: str, file_id: str, text: str) -> dict:
@@ -582,6 +630,10 @@ class Handler(SimpleHTTPRequestHandler):
                     str(payload.get("id", "")),
                     str(payload.get("text", "")),
                 )
+                self.respond(200, result)
+                return
+            if parsed.path == "/api/commands/command":
+                result = update_command(str(payload.get("slug", "")), str(payload.get("command", "")))
                 self.respond(200, result)
                 return
             self.respond(404, {"error": "That action was not found."})

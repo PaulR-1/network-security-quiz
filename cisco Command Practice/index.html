@@ -22,9 +22,11 @@
       font-size: 1.05rem;
       text-transform: none;
       letter-spacing: 0;
-      margin: 8px 0 4px;
+      margin: 0;
       overflow-wrap: anywhere;
     }
+    .command-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin: 8px 0 4px; }
+    .command-row .edit { margin-top: 0; flex: none; }
     .path { margin: 0 0 10px; font-weight: 700; }
     .notes { margin: 0; padding: 0; list-style: none; }
     .notes li { margin: 0; padding: 10px 0; border-top: 2px solid var(--ink); line-height: 1.4; }
@@ -230,6 +232,7 @@
         saved.push(entry);
       }
       entry.descriptions.push({ kind: "yours", text: description });
+      entry.savedAt = Date.now();
       writeStored();
       return { created, entry };
     }
@@ -335,9 +338,17 @@
       tag.textContent = "FOLDER";
       card.appendChild(tag);
 
+      const heading = document.createElement("div");
+      heading.className = "command-row";
       const title = document.createElement("h2");
       title.textContent = entry.command;
-      card.appendChild(title);
+      const editCommand = document.createElement("button");
+      editCommand.type = "button";
+      editCommand.className = "btn ghost edit";
+      editCommand.textContent = "Edit command";
+      editCommand.addEventListener("click", () => startCommandEdit(heading, entry));
+      heading.append(title, editCommand);
+      card.appendChild(heading);
 
       if (useServer) {
         const path = document.createElement("p");
@@ -372,12 +383,89 @@
       saved.forEach((entry) => list.appendChild(renderEntry(entry)));
     }
 
+    function sortSaved() {
+      saved.sort((a, b) => (b.savedAt || 0) - (a.savedAt || 0));
+    }
+
+    function stampMissingTimes() {
+      const now = Date.now();
+      saved.forEach((entry, index) => {
+        if (!entry.savedAt) entry.savedAt = now - (saved.length - index) * 1000;
+      });
+    }
+
     function replaceEntry(entry) {
       const index = saved.findIndex((item) => item.slug === entry.slug);
       if (index === -1) saved.push(entry);
-      else saved[index] = entry;
-      saved.sort((a, b) => a.command.localeCompare(b.command));
+      else {
+        if (!entry.savedAt) entry.savedAt = saved[index].savedAt || Date.now();
+        saved[index] = entry;
+      }
+      sortSaved();
       render();
+    }
+
+    function startCommandEdit(heading, entry) {
+      const field = document.createElement("input");
+      field.className = "cmd";
+      field.maxLength = 200;
+      field.value = entry.command;
+      field.setAttribute("aria-label", "Command");
+      const actions = document.createElement("div");
+      actions.className = "actions";
+      const save = document.createElement("button");
+      save.className = "btn";
+      save.type = "button";
+      save.textContent = "Save";
+      const cancel = document.createElement("button");
+      cancel.className = "btn ghost";
+      cancel.type = "button";
+      cancel.textContent = "Cancel";
+      save.addEventListener("click", () => commitCommandEdit(entry, field, save));
+      cancel.addEventListener("click", () => render());
+      field.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          commitCommandEdit(entry, field, save);
+        }
+      });
+      actions.append(save, cancel);
+      heading.replaceChildren(field, actions);
+      field.focus();
+    }
+
+    async function commitCommandEdit(entry, field, button) {
+      const command = field.value.trim().replace(/\s+/g, " ");
+      if (!command) {
+        setStatus("Type a command first.", true);
+        field.focus();
+        return;
+      }
+      if (!slugify(command)) {
+        setStatus("Use letters or numbers in the command.", true);
+        field.focus();
+        return;
+      }
+      button.disabled = true;
+      try {
+        if (useServer) {
+          const result = await api("/api/commands/command", {
+            method: "POST",
+            body: JSON.stringify({ slug: entry.slug, command }),
+          });
+          replaceEntry(result.entry);
+        } else {
+          const current = saved.find((row) => row.slug === entry.slug);
+          if (!current) throw new Error("That command was not found.");
+          current.command = command;
+          writeStored();
+          render();
+        }
+        setStatus("Command updated.");
+      } catch (error) {
+        setStatus(error.message, true);
+        button.disabled = false;
+      }
     }
 
     commandForm.addEventListener("submit", (event) => {
@@ -465,33 +553,49 @@
     }
 
     async function stackNotes(site, label, origin, command) {
-      const params = new URLSearchParams({
-        order: "desc",
-        sort: "relevance",
-        q: command + " cisco ios",
-        site,
-        pagesize: "8",
-      });
-      const response = await fetch("https://api.stackexchange.com/2.3/search/excerpts?" + params);
-      if (!response.ok) throw new Error("search failed");
-      const payload = await response.json();
-      return (payload.items || []).flatMap((item) => {
+      const items = [];
+      let lastError = "";
+      for (const query of [command, command + " cisco"]) {
+        const params = new URLSearchParams({
+          order: "desc",
+          sort: "relevance",
+          q: query,
+          site,
+          pagesize: "8",
+        });
+        const response = await fetch("https://api.stackexchange.com/2.3/search/excerpts?" + params);
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok || payload.error_message) {
+          lastError = payload.error_message || "Search returned " + response.status;
+          continue;
+        }
+        items.push(...(payload.items || []));
+        if (items.length >= 4) break;
+      }
+      if (!items.length && lastError) throw new Error(lastError);
+      const notes = [];
+      const seen = new Set();
+      items.forEach((item) => {
+        const cleaned = cleanHtml(item.excerpt || "").split(/\s+[–—]\s+/)[0].trim();
+        if (cleaned.length < 30) return;
         const picked = bestWindow(command, item.excerpt || "");
-        if (picked.score < 6) return [];
+        const text = picked.score >= 4 && mentions(command, picked.text) ? picked.text : cleaned.slice(0, 420);
         const link = item.answer_id
           ? origin + "/a/" + item.answer_id
           : item.question_id
             ? origin + "/questions/" + item.question_id
             : "";
-        if (!link) return [];
-        return [{
+        if (!link || seen.has(link)) return;
+        seen.add(link);
+        notes.push({
           title: cleanHtml(item.title || "Cisco command note"),
           source: label,
           link,
-          text: picked.text,
-          score: picked.score,
-        }];
+          text,
+          score: Math.max(picked.score, scoreText(command, text), mentions(command, text) ? 5 : 1),
+        });
       });
+      return notes;
     }
 
     async function wikiNotes(command) {
@@ -541,6 +645,7 @@
         }
       }
       if (!notes.length && failures) throw new Error("The search did not respond. Try again in a moment.");
+      if (!notes.length) return [];
       const seen = new Set();
       return notes
         .sort((a, b) => b.score - a.score)
@@ -602,7 +707,10 @@
         useServer = false;
         banner.hidden = true;
         saved = readStored();
+        stampMissingTimes();
+        writeStored();
       }
+      sortSaved();
       render();
     }
 
