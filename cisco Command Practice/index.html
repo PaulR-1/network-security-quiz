@@ -339,12 +339,12 @@
       title.textContent = entry.command;
       card.appendChild(title);
 
-      const path = document.createElement("p");
-      path.className = "path";
-      path.textContent = useServer
-        ? "cisco Command Practice/commands/" + entry.slug + "/"
-        : "Saved in this browser";
-      card.appendChild(path);
+      if (useServer) {
+        const path = document.createElement("p");
+        path.className = "path";
+        path.textContent = "cisco Command Practice/commands/" + entry.slug + "/";
+        card.appendChild(path);
+      }
 
       const notes = document.createElement("ul");
       notes.className = "notes";
@@ -435,8 +435,8 @@
         commandInput.value = "";
         const folder = "cisco Command Practice/commands/" + result.entry.slug + "/";
         setStatus(result.created
-          ? (useServer ? "Saved as " + folder : "Saved in this browser.")
-          : (useServer ? "Added another description in " + folder : "Added another description in this browser."));
+          ? (useServer ? "Saved as " + folder : "Saved.")
+          : (useServer ? "Added another description in " + folder : "Added another description."));
         commandInput.focus();
       } catch (error) {
         setStatus(error.message, true);
