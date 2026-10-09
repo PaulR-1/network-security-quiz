@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cisco command practice</title>
+  <link rel="stylesheet" href="../theme.css" />
+  <style>
+    label { display: block; font-weight: 700; margin: 0 0 8px; }
+    textarea.cmd { min-height: 5.2rem; resize: vertical; }
+    .stack { display: grid; gap: 14px; }
+    .section {
+      font-family: Anton, sans-serif;
+      font-weight: 400;
+      text-transform: uppercase;
+      font-size: 1.7rem;
+      letter-spacing: 0.02em;
+      margin: 26px 0 12px;
+    }
+    .folder h2 {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 1.05rem;
+      text-transform: none;
+      letter-spacing: 0;
+      margin: 8px 0 4px;
+      overflow-wrap: anywhere;
+    }
+    .path { margin: 0 0 10px; font-weight: 700; }
+    .notes { margin: 0; padding-left: 18px; }
+    .notes li { margin: 0 0 8px; line-height: 1.4; }
+    .notes a { color: var(--ink); }
+    .tag {
+      display: inline-block;
+      background: var(--red);
+      color: var(--card);
+      font-family: Anton, sans-serif;
+      letter-spacing: 0.04em;
+      font-size: 0.9rem;
+      padding: 2px 8px 0;
+    }
+    #describe {
+      border: 3px solid var(--ink);
+      background: var(--card);
+      color: var(--ink);
+      box-shadow: 8px 8px 0 var(--red);
+      padding: 18px;
+      width: min(520px, calc(100vw - 28px));
+    }
+    #describe::backdrop { background: rgba(20, 20, 20, 0.55); }
+    #describe h2 {
+      font-family: Anton, sans-serif;
+      font-weight: 400;
+      text-transform: uppercase;
+      font-size: 1.8rem;
+      color: var(--red);
+      margin: 0 0 8px;
+    }
+    #status:empty { display: none; }
+    #status {
+      margin: 12px 0 0;
+      padding: 8px 10px;
+      border: 3px solid var(--ink);
+      font-weight: 700;
+      background: var(--yellow);
+    }
+    #status.bad { background: #ff5a45; }
+    #banner {
+      margin: 0 0 14px;
+      padding: 10px 12px;
+      border: 3px solid var(--ink);
+      background: #ff5a45;
+      font-weight: 700;
+    }
+    #banner[hidden] { display: none; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="exit" href="../index.html">All reviewers</a>
+    <h1>Cisco commands</h1>
+    <p class="sub">Type an IOS command and press Enter. A description box pops up. Press Enter again and the command is saved as its own folder.</p>
+    <p id="banner" hidden>Saving folders needs the local server. From the repo folder, run python3 server.py and reload this page.</p>
+
+    <form id="command-form" class="card">
+      <label for="command">Command</label>
+      <input id="command" class="cmd" name="command" autocomplete="off" spellcheck="false" maxlength="200" placeholder="show ip interface brief" enterkeyhint="done" required />
+      <div class="actions">
+        <button class="btn" type="submit">Save command</button>
+      </div>
+    </form>
+
+    <p id="status" role="status" aria-live="polite"></p>
+
+    <h2 class="section">Saved folders</h2>
+    <div id="list" class="dir" aria-live="polite"></div>
+  </div>
+
+  <dialog id="describe" aria-labelledby="describe-title">
+    <form id="description-form">
+      <h2 id="describe-title">Add a description</h2>
+      <p>Command: <code class="k" id="pending-command"></code></p>
+      <p class="hint" id="pending-hint">Press Enter to save this as a folder.</p>
+      <label for="description">Description</label>
+      <textarea id="description" class="cmd" name="description" rows="3" maxlength="2000" placeholder="Lists each interface, its IP address, and whether it is up" required></textarea>
+      <div class="actions">
+        <button class="btn" type="submit">Save description</button>
+        <button class="btn ghost" id="cancel" type="button">Cancel</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script>
+    const commandForm = document.querySelector("#command-form");
+    const commandInput = document.querySelector("#command");
+    const descriptionForm = document.querySelector("#description-form");
+    const descriptionInput = document.querySelector("#description");
+    const dialog = document.querySelector("#describe");
+    const pendingCommand = document.querySelector("#pending-command");
+    const pendingHint = document.querySelector("#pending-hint");
+    const list = document.querySelector("#list");
+    const status = document.querySelector("#status");
+    const banner = document.querySelector("#banner");
+    const cancelButton = document.querySelector("#cancel");
+
+    const STORAGE_KEY = "cisco-command-practice-v1";
+    const SITES = [
+      ["networkengineering", "Network Engineering Stack Exchange", "https://networkengineering.stackexchange.com"],
+      ["serverfault", "Server Fault", "https://serverfault.com"],
+      ["superuser", "Super User", "https://superuser.com"],
+    ];
+    const EXPLAIN = ["used to", "displays", "lists ", "shows you", "show you", "status", "type ", "this command", "the command"];
+    const CONFIG = ["hostname ", "ip address", "no ip ", "interface vlan", "duplex ", "switchport ", "line vty", "yes nvram", "up down"];
+
+    let saved = [];
+    let pending = "";
+    let useServer = false;
+
+    function setStatus(message, bad) {
+      status.textContent = message || "";
+      status.classList.toggle("bad", Boolean(bad));
+    }
+
+    function slugify(command) {
+      return command.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 60);
+    }
+
+    function mentions(command, text) {
+      const phrase = command.toLowerCase().replace(/-/g, " ").replace(/\s+/g, " ").trim();
+      const blob = text.toLowerCase().replace(/-/g, " ").replace(/\s+/g, " ");
+      return phrase && blob.includes(phrase);
+    }
+
+    function cleanHtml(value) {
+      return (value || "")
+        .replace(/<[^>]+>/g, " ")
+        .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code)))
+        .replace(/&#x([0-9a-f]+);/gi, (_, code) => String.fromCharCode(parseInt(code, 16)))
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;|&apos;/g, "'")
+        .replace(/&amp;/g, "&")
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">")
+        .replace(/&nbsp;/g, " ")
+        .replace(/&hellip;/g, "...")
+        .replace(/\s+/g, " ")
+        .replace(/"([^"]*)"/g, (_, inner) => '"' + inner.replace(/\s+/g, " ").trim() + '"')
+        .trim();
+    }
+
+    function scoreText(command, text) {
+      const blob = text.toLowerCase();
+      let score = mentions(command, text) ? 5 : 0;
+      command.toLowerCase().split(/[^a-z0-9]+/).forEach((word) => {
+        if (word.length > 2 && !["show", "the", "and", "for", "ios", "cisco", "command"].includes(word) && blob.includes(word)) score += 2;
+      });
+      let explained = 0;
+      EXPLAIN.forEach((marker) => { if (blob.includes(marker)) explained += 2; });
+      score += explained;
+      if (!explained) score -= 5;
+      CONFIG.forEach((marker) => { if (blob.includes(marker)) score -= 4; });
+      if (blob.includes("codes:") || text.includes("----")) score -= 6;
+      return score;
+    }
+
+    function readStored() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function writeStored() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+    }
+
+    async function api(path, options) {
+      const response = await fetch(path, {
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        ...options,
+      });
+      const type = response.headers.get("content-type") || "";
+      if (!type.includes("json")) throw new Error("no api");
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || "That did not save.");
+      return data;
+    }
+
+    function saveInBrowser(command, description) {
+      const base = slugify(command);
+      if (!base) throw new Error("Use letters or numbers in the command.");
+      let slug = base;
+      let created = true;
+      for (let index = 1; index < 60; index += 1) {
+        slug = index === 1 ? base : base + "-" + index;
+        const existing = saved.find((item) => item.slug === slug);
+        if (!existing) break;
+        if (existing.command.toLowerCase() === command.toLowerCase()) {
+          created = false;
+          break;
+        }
+      }
+      let entry = saved.find((item) => item.slug === slug);
+      if (!entry) {
+        entry = { slug, command, descriptions: [] };
+        saved.push(entry);
+      }
+      entry.descriptions.push({ kind: "yours", text: description });
+      writeStored();
+      return { created, entry };
+    }
+
+    function emptyNote() {
+      const card = document.createElement("div");
+      card.className = "card";
+      const text = document.createElement("p");
+      text.className = "hint";
+      text.style.margin = "0";
+      text.textContent = "No commands yet. Type one above and press Enter.";
+      card.appendChild(text);
+      return card;
+    }
+
+    function renderNote(item) {
+      const li = document.createElement("li");
+      li.textContent = item.text;
+      if (item.kind === "web" && item.link && item.link.startsWith("https://")) {
+        li.appendChild(document.createTextNode(" "));
+        const link = document.createElement("a");
+        link.href = item.link;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.textContent = item.source || "Source";
+        li.appendChild(link);
+      }
+      return li;
+    }
+
+    function renderEntry(entry) {
+      const card = document.createElement("article");
+      card.className = "card folder";
+
+      const tag = document.createElement("div");
+      tag.className = "tag";
+      tag.textContent = "FOLDER";
+      card.appendChild(tag);
+
+      const title = document.createElement("h2");
+      title.textContent = entry.command;
+      card.appendChild(title);
+
+      const path = document.createElement("p");
+      path.className = "path";
+      path.textContent = useServer
+        ? "cisco Command Practice/commands/" + entry.slug + "/"
+        : "Saved in this browser";
+      card.appendChild(path);
+
+      const notes = document.createElement("ul");
+      notes.className = "notes";
+      entry.descriptions.forEach((item) => notes.appendChild(renderNote(item)));
+      card.appendChild(notes);
+
+      const actions = document.createElement("div");
+      actions.className = "actions";
+      const search = document.createElement("button");
+      search.className = "btn";
+      search.type = "button";
+      search.textContent = "Search the net for more descriptions";
+      search.addEventListener("click", () => searchWeb(entry.slug, search));
+      actions.appendChild(search);
+      card.appendChild(actions);
+      return card;
+    }
+
+    function render() {
+      list.replaceChildren();
+      if (!saved.length) {
+        list.appendChild(emptyNote());
+        return;
+      }
+      saved.forEach((entry) => list.appendChild(renderEntry(entry)));
+    }
+
+    function replaceEntry(entry) {
+      const index = saved.findIndex((item) => item.slug === entry.slug);
+      if (index === -1) saved.push(entry);
+      else saved[index] = entry;
+      saved.sort((a, b) => a.command.localeCompare(b.command));
+      render();
+    }
+
+    commandForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const command = commandInput.value.trim().replace(/\s+/g, " ");
+      if (!command) {
+        setStatus("Type a command first.", true);
+        commandInput.focus();
+        return;
+      }
+      pending = command;
+      pendingCommand.textContent = command;
+      const existing = saved.some((item) => item.command.toLowerCase() === command.toLowerCase());
+      pendingHint.textContent = existing
+        ? "This command already has a folder. Enter adds another description there."
+        : "Press Enter to save this as a folder.";
+      descriptionInput.value = "";
+      setStatus("Command kept. Add a description to finish the folder.");
+      dialog.showModal();
+      descriptionInput.focus();
+    });
+
+    descriptionInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        descriptionForm.requestSubmit();
+      }
+    });
+
+    cancelButton.addEventListener("click", () => dialog.close());
+
+    dialog.addEventListener("close", () => {
+      if (document.activeElement === document.body) commandInput.focus();
+    });
+
+    descriptionForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const description = descriptionInput.value.trim().replace(/\s+/g, " ");
+      if (!description) {
+        setStatus("Write a description first.", true);
+        descriptionInput.focus();
+        return;
+      }
+      const submit = descriptionForm.querySelector("button[type=submit]");
+      submit.disabled = true;
+      try {
+        const result = useServer
+          ? await api("/api/commands", {
+              method: "POST",
+              body: JSON.stringify({ command: pending, description }),
+            })
+          : saveInBrowser(pending, description);
+        replaceEntry(result.entry);
+        dialog.close();
+        commandInput.value = "";
+        const folder = "cisco Command Practice/commands/" + result.entry.slug + "/";
+        setStatus(result.created
+          ? (useServer ? "Saved as " + folder : "Saved in this browser.")
+          : (useServer ? "Added another description in " + folder : "Added another description in this browser."));
+        commandInput.focus();
+      } catch (error) {
+        setStatus(error.message, true);
+      } finally {
+        submit.disabled = false;
+      }
+    });
+
+    function bestWindow(command, text) {
+      const pieces = cleanHtml(text).split(/\s+\.\.\.\s+/).map((piece) => piece.trim()).filter(Boolean);
+      let best = { score: -99, text: cleanHtml(text).slice(0, 360) };
+      pieces.forEach((piece, index) => {
+        const windows = [piece];
+        const follow = pieces[index + 1] || "";
+        const followLow = follow.toLowerCase();
+        const explains = EXPLAIN.some((marker) => followLow.includes(marker));
+        const drifts = ["reload", "configure terminal", "copy running"].some((marker) => followLow.includes(marker));
+        if (follow && explains && !drifts) windows.push(piece + " " + follow);
+        windows.forEach((window) => {
+          if (window.length < 40 || !mentions(command, window)) return;
+          const score = scoreText(command, window);
+          if (score > best.score) best = { score, text: window.slice(0, 360) };
+        });
+      });
+      return best;
+    }
+
+    async function stackNotes(site, label, origin, command) {
+      const params = new URLSearchParams({
+        order: "desc",
+        sort: "relevance",
+        q: command + " cisco ios",
+        site,
+        pagesize: "8",
+      });
+      const response = await fetch("https://api.stackexchange.com/2.3/search/excerpts?" + params);
+      if (!response.ok) throw new Error("search failed");
+      const payload = await response.json();
+      return (payload.items || []).flatMap((item) => {
+        const picked = bestWindow(command, item.excerpt || "");
+        if (picked.score < 6) return [];
+        const link = item.answer_id
+          ? origin + "/a/" + item.answer_id
+          : item.question_id
+            ? origin + "/questions/" + item.question_id
+            : "";
+        if (!link) return [];
+        return [{
+          title: cleanHtml(item.title || "Cisco command note"),
+          source: label,
+          link,
+          text: picked.text,
+          score: picked.score,
+        }];
+      });
+    }
+
+    async function wikiNotes(command) {
+      const params = new URLSearchParams({
+        action: "query",
+        list: "search",
+        srsearch: command + " Cisco IOS",
+        srlimit: "3",
+        utf8: "1",
+        format: "json",
+        origin: "*",
+      });
+      const response = await fetch("https://en.wikipedia.org/w/api.php?" + params);
+      if (!response.ok) throw new Error("search failed");
+      const payload = await response.json();
+      const notes = [];
+      for (const hit of (payload.query && payload.query.search) || []) {
+        const snippet = cleanHtml(hit.snippet || "");
+        if (scoreText(command, snippet) < 6 || !mentions(command, snippet)) continue;
+        notes.push({
+          title: cleanHtml(hit.title || "Wikipedia"),
+          source: "Wikipedia",
+          link: "https://en.wikipedia.org/wiki/" + encodeURIComponent(String(hit.title || "").replace(/ /g, "_")),
+          text: snippet.slice(0, 360),
+          score: scoreText(command, snippet),
+        });
+      }
+      return notes;
+    }
+
+    async function searchInBrowser(command) {
+      let notes = [];
+      let failures = 0;
+      for (const [site, label, origin] of SITES) {
+        try {
+          notes = notes.concat(await stackNotes(site, label, origin, command));
+        } catch (error) {
+          failures += 1;
+        }
+        if (notes.length >= 8) break;
+      }
+      if (notes.length < 3) {
+        try {
+          notes = notes.concat(await wikiNotes(command));
+        } catch (error) {
+          failures += 1;
+        }
+      }
+      if (!notes.length && failures) throw new Error("The search did not respond. Try again in a moment.");
+      const seen = new Set();
+      return notes
+        .sort((a, b) => b.score - a.score)
+        .filter((note) => {
+          if (seen.has(note.link)) return false;
+          seen.add(note.link);
+          return true;
+        })
+        .slice(0, 8);
+    }
+
+    function addBrowserNotes(slug, found) {
+      const entry = saved.find((item) => item.slug === slug);
+      if (!entry) throw new Error("That folder was not found.");
+      const existing = new Set(entry.descriptions.map((item) => item.link).filter(Boolean));
+      let added = 0;
+      found.forEach((note) => {
+        if (added >= 3 || existing.has(note.link)) return;
+        entry.descriptions.push({ kind: "web", title: note.title, source: note.source, link: note.link, text: note.text });
+        existing.add(note.link);
+        added += 1;
+      });
+      writeStored();
+      const message = added
+        ? "Added " + added + (added === 1 ? " description from the web." : " descriptions from the web.")
+        : found.length
+          ? "Those descriptions are already in this folder."
+          : "No extra descriptions turned up for that command.";
+      return { added, message, entry };
+    }
+
+    async function searchWeb(slug, button) {
+      const original = button.textContent;
+      button.disabled = true;
+      button.textContent = "Searching...";
+      setStatus("Searching the net for more descriptions.");
+      try {
+        const result = useServer
+          ? await api("/api/commands/search", { method: "POST", body: JSON.stringify({ slug }) })
+          : addBrowserNotes(slug, await searchInBrowser((saved.find((item) => item.slug === slug) || {}).command || ""));
+        replaceEntry(result.entry);
+        setStatus(result.message);
+      } catch (error) {
+        setStatus(error.message, true);
+      } finally {
+        button.disabled = false;
+        button.textContent = original;
+      }
+    }
+
+    async function load() {
+      list.appendChild(emptyNote());
+      try {
+        const result = await api("/api/commands");
+        useServer = true;
+        banner.hidden = true;
+        saved = result.commands || [];
+      } catch (error) {
+        useServer = false;
+        banner.hidden = true;
+        saved = readStored();
+      }
+      render();
+    }
+
+    load();
+  </script>
+</body>
+</html>
