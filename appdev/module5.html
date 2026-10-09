@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kotlin logic and expressions</title>
+  <link rel="stylesheet" href="../theme.css" />
+  <style>
+    .row { grid-template-columns: 1fr minmax(9.5rem, 15rem); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="exit" href="index.html">All modules</a>
+    <h1>Kotlin logic and expressions</h1>
+    <p class="sub">Variables, val and var, types, operators, if / else, and when. From the ICS26011 reviewer. Questions shuffle. Every answer shows why.</p>
+    <div class="bar"><i id="prog"></i></div>
+    <div class="meta">
+      <span id="count"></span>
+      <span id="scoreline"></span>
+    </div>
+    <div class="card" id="panel"></div>
+  </div>
+  <script>
+    const BANK = [{"type": "single", "q": "What is a variable in this module?", "options": ["A value stored in memory that can be referred to by a name", "A ViewGroup that holds child widgets", "An XML attribute that sets text size", "The onStart lifecycle callback"], "answer": ["A value stored in memory that can be referred to by a name"], "why": {"A value stored in memory that can be referred to by a name": "That is the module's definition of a variable.", "A ViewGroup that holds child widgets": "A container for widgets is a ViewGroup.", "An XML attribute that sets text size": "Text size is android:textSize. A variable is a named value in memory.", "The onStart lifecycle callback": "onStart is an Activity callback, not a named value in memory."}, "explain": "A variable is a named value stored in memory.", "source": "Module 5, variables"}, {"type": "single", "q": "What limit does the module put on variable names?", "options": ["The programmer may choose them as long as they do not break Kotlin naming rules or use restricted keywords", "They must be Android dessert code names", "They must be android:id values from the XML file", "They can only be val or var, with no other characters"], "answer": ["The programmer may choose them as long as they do not break Kotlin naming rules or use restricted keywords"], "why": {"The programmer may choose them as long as they do not break Kotlin naming rules or use restricted keywords": "The module allows chosen names that respect naming rules and reserved keywords.", "They must be Android dessert code names": "Dessert names are the version table. Variable names follow Kotlin rules.", "They must be android:id values from the XML file": "android:id identifies a View. A Kotlin variable name follows naming rules.", "They can only be val or var, with no other characters": "val and var are the keywords that declare variables. The name itself is chosen by the programmer."}, "explain": "You choose the name, provided it follows Kotlin naming rules and avoids restricted keywords.", "source": "Module 5, naming"}, {"type": "single", "q": "Why does the module recommend a consistent naming convention?", "options": ["So names stay understandable and consistent throughout the program", "So Android will call onCreate", "So match_parent can see the variable", "So the name can be used as a Google Play package"], "answer": ["So names stay understandable and consistent throughout the program"], "why": {"So names stay understandable and consistent throughout the program": "That is the reason given for a consistent convention.", "So Android will call onCreate": "Android calls onCreate because of the lifecycle, not because of variable names.", "So match_parent can see the variable": "match_parent is a layout size. Naming is about readable code.", "So the name can be used as a Google Play package": "The package name is project configuration. A naming convention keeps variables understandable."}, "explain": "A consistent convention keeps variable names understandable through the program.", "source": "Module 5, naming convention"}, {"type": "match", "q": "Match each Kotlin type with what it stores.", "hint": "Name the type.", "items": ["Integers and whole numbers", "Larger whole-number values", "Floating-point numbers with decimal precision", "Floating-point numbers when greater precision than Float is needed", "Only true or false", "A single alphanumeric character", "Text and keyboard characters"], "choices": [{"v": "int", "l": "Int"}, {"v": "long", "l": "Long"}, {"v": "float", "l": "Float"}, {"v": "double", "l": "Double"}, {"v": "bool", "l": "Boolean"}, {"v": "char", "l": "Char"}, {"v": "string", "l": "String"}], "map": {"Integers and whole numbers": "int", "Larger whole-number values": "long", "Floating-point numbers with decimal precision": "float", "Floating-point numbers when greater precision than Float is needed": "double", "Only true or false": "bool", "A single alphanumeric character": "char", "Text and keyboard characters": "string"}, "explain": "Int and Long are whole numbers, Float and Double are decimal, Boolean is true or false, Char is one character, and String is text.", "source": "Module 5, data types"}, {"type": "single", "q": "What does val mean?", "options": ["A read-only value that cannot be changed during execution. Use it when the value does not need to change", "A mutable variable that can be updated", "A layout width that wraps the content", "A lifecycle callback"], "answer": ["A read-only value that cannot be changed during execution. Use it when the value does not need to change"], "why": {"A read-only value that cannot be changed during execution. Use it when the value does not need to change": "The val row says it cannot be changed during execution and is for values that do not need to change.", "A mutable variable that can be updated": "A value that can be updated is var.", "A layout width that wraps the content": "Wrapping the content is wrap_content.", "A lifecycle callback": "val is a Kotlin declaration keyword, not a lifecycle callback."}, "explain": "val is read-only after initialization. Use it when the value does not need to change.", "source": "Module 5, val"}, {"type": "single", "q": "What does var mean?", "options": ["A mutable variable whose value can be changed during execution", "A value that cannot be reassigned after initialization", "An XML id", "The logical NOT operator"], "answer": ["A mutable variable whose value can be changed during execution"], "why": {"A mutable variable whose value can be changed during execution": "The var row says the value can be changed, and to use it when the value needs to be updated.", "A value that cannot be reassigned after initialization": "A value that cannot be reassigned is val.", "An XML id": "An XML id is android:id. var declares a mutable Kotlin variable.", "The logical NOT operator": "Logical NOT is !."}, "explain": "var can be changed during execution. Use it when the value needs to be updated.", "source": "Module 5, var"}, {"type": "match", "q": "Classify each declaration from the module.", "hint": "Choose val or var.", "items": ["val battleOfHastings = 1066", "val pi = 3.14f", "val beerIsTasty = true", "val appName = \"Express Yourself\"", "var worldRecord100m = 9.63f", "var millisecondsSince1970 = 1544693462311", "var isItRaining = false", "var contactName = \"Geralt\""], "choices": [{"v": "val", "l": "val, read-only"}, {"v": "var", "l": "var, mutable"}], "map": {"val battleOfHastings = 1066": "val", "val pi = 3.14f": "val", "val beerIsTasty = true": "val", "val appName = \"Express Yourself\"": "val", "var worldRecord100m = 9.63f": "var", "var millisecondsSince1970 = 1544693462311": "var", "var isItRaining = false": "var", "var contactName = \"Geralt\"": "var"}, "explain": "battleOfHastings, pi, beerIsTasty, and appName are val. The record, the millisecond count, the rain flag, and contactName are var.", "source": "Module 5, examples"}, {"type": "single", "q": "Which module example is a read-only decimal value?", "options": ["val pi = 3.14f", "var worldRecord100m = 9.63f", "var isItRaining = false", "val appName = \"Express Yourself\""], "answer": ["val pi = 3.14f"], "why": {"val pi = 3.14f": "The module lists val pi = 3.14f among the read-only examples, and the value is a decimal.", "var worldRecord100m = 9.63f": "9.63f is a decimal, but this example is var, so it can change.", "var isItRaining = false": "false is a Boolean, and this example is var.", "val appName = \"Express Yourself\"": "appName is val, but the value is text, not a decimal."}, "explain": "val pi = 3.14f is the read-only decimal in the module's examples.", "source": "Module 5, pi example"}, {"type": "match", "q": "Match each operator with its behavior in the module.", "hint": "Pick the operator.", "items": ["Assigns a value", "Adds numbers, or concatenates strings", "Subtracts", "Divides", "Multiplies", "Increases a numeric value", "Decreases a numeric value"], "choices": [{"v": "assign", "l": "="}, {"v": "plus", "l": "+"}, {"v": "minus", "l": "-"}, {"v": "div", "l": "/"}, {"v": "mul", "l": "*"}, {"v": "inc", "l": "++"}, {"v": "dec", "l": "--"}], "map": {"Assigns a value": "assign", "Adds numbers, or concatenates strings": "plus", "Subtracts": "minus", "Divides": "div", "Multiplies": "mul", "Increases a numeric value": "inc", "Decreases a numeric value": "dec"}, "explain": "= assigns, + adds or concatenates, and ++ and -- increment and decrement.", "source": "Module 5, arithmetic operators"}, {"type": "single", "q": "What does + do with strings in this module?", "options": ["Concatenation", "Equality comparison", "Logical AND", "Assignment"], "answer": ["Concatenation"], "why": {"Concatenation": "The operator table says + is addition for numbers and concatenation for strings.", "Equality comparison": "Equality comparison is ==.", "Logical AND": "Logical AND is &&.", "Assignment": "Assignment is =."}, "explain": "With strings, + concatenates. With numbers, it adds.", "source": "Module 5, string +"}, {"type": "match", "q": "Match each comparison or logical operator with its meaning.", "hint": "Pick the operator.", "items": ["Equality comparison, with a true or false result", "Not equal", "Greater than", "Less than", "Greater than or equal to", "Less than or equal to", "Logical NOT, the opposite Boolean", "Logical AND", "Logical OR"], "choices": [{"v": "eq", "l": "=="}, {"v": "neq", "l": "!="}, {"v": "gt", "l": ">"}, {"v": "lt", "l": "\u003c"}, {"v": "gte", "l": ">="}, {"v": "lte", "l": "\u003c="}, {"v": "not", "l": "!"}, {"v": "and", "l": "&&"}, {"v": "or", "l": "||"}], "map": {"Equality comparison, with a true or false result": "eq", "Not equal": "neq", "Greater than": "gt", "Less than": "lt", "Greater than or equal to": "gte", "Less than or equal to": "lte", "Logical NOT, the opposite Boolean": "not", "Logical AND": "and", "Logical OR": "or"}, "explain": "== compares, ! is NOT, && is AND, and || is OR.", "source": "Module 5, comparison and logic"}, {"type": "single", "q": "What does if do?", "options": ["Evaluates a condition and runs code based on whether that condition is true or false", "Checks one value against many branches and replaces switch", "Declares a mutable variable", "Starts another Activity"], "answer": ["Evaluates a condition and runs code based on whether that condition is true or false"], "why": {"Evaluates a condition and runs code based on whether that condition is true or false": "That is the module's description of if.", "Checks one value against many branches and replaces switch": "Checking many possible values, as a replacement for switch, is when.", "Declares a mutable variable": "A mutable declaration is var.", "Starts another Activity": "Starting another Activity is startActivity with an Intent."}, "explain": "if evaluates a condition and runs code according to true or false.", "source": "Module 5, if"}, {"type": "single", "q": "What does if / else add?", "options": ["One path when the condition is true and another path when it is false", "A match against many values, in place of switch", "A read-only declaration", "A layout constraint"], "answer": ["One path when the condition is true and another path when it is false"], "why": {"One path when the condition is true and another path when it is false": "The module says if / else provides those two paths.", "A match against many values, in place of switch": "Many branches in place of switch is when.", "A read-only declaration": "A read-only declaration is val.", "A layout constraint": "Constraints belong to ConstraintLayout, not if / else."}, "explain": "if / else gives one path for true and another path for false.", "source": "Module 5, if / else"}, {"type": "single", "q": "What is when?", "options": ["A check of one value against multiple possible values. The module presents it as Kotlin's replacement for switch", "A two-path branch with only true and false", "The assignment operator", "The callback Android runs when an Activity is created"], "answer": ["A check of one value against multiple possible values. The module presents it as Kotlin's replacement for switch"], "why": {"A check of one value against multiple possible values. The module presents it as Kotlin's replacement for switch": "That is the when row: multiple values, and the replacement for switch in other languages.", "A two-path branch with only true and false": "A true path and a false path are if / else. when handles multiple possible values.", "The assignment operator": "Assignment is =.", "The callback Android runs when an Activity is created": "The create callback is onCreate. when is a Kotlin conditional."}, "explain": "when checks a value against multiple possibilities and is Kotlin's replacement for switch.", "source": "Module 5, when"}];
+
+    const shuffle = (arr) => [...arr].sort(() => Math.random() - 0.5);
+    const same = (a, b) => a.length === b.length && a.every((x) => b.includes(x));
+    let deck = [];
+    let i = 0;
+    let correct = 0;
+    let locked = false;
+    let missed = [];
+    let picked = new Set();
+    const panel = document.getElementById("panel");
+    const prog = document.getElementById("prog");
+    const count = document.getElementById("count");
+    const scoreline = document.getElementById("scoreline");
+    function start(pool) {
+      deck = shuffle(pool.map((q) => {
+        if (q.type === "match") return { ...q, items: shuffle(q.items) };
+        return { ...q, options: shuffle(q.options) };
+      }));
+      i = 0; correct = 0; missed = []; locked = false; picked = new Set();
+      render();
+    }
+    function render() {
+      if (i >= deck.length) return results();
+      const q = deck[i];
+      prog.style.width = ((i / deck.length) * 100) + "%";
+      count.textContent = "Question " + (i + 1) + " of " + deck.length;
+      scoreline.textContent = "Score " + correct;
+      locked = false; picked = new Set();
+      if (q.type === "match") {
+        const opts = (q.choices || []).map((c) => `<option value="${c.v}">${esc(c.l)}</option>`).join("");
+        panel.innerHTML = `<p class="q">${esc(q.q)}</p>
+          <p class="hint">${esc(q.hint || "Classify each item.")}</p>
+          <div class="match">${q.items.map((item, idx) => `
+            <div class="row">
+              <span>${esc(item)}</span>
+              <select data-item="${idx}">
+                <option value="">Choose…</option>
+                ${opts}
+              </select>
+            </div>`).join("")}</div>
+          <div class="actions"><button class="btn" id="check" type="button">Check</button></div>
+          <div class="fb" id="fb"></div>`;
+        document.getElementById("check").onclick = checkMatch;
+        return;
+      }
+      const need = q.answer.length;
+      panel.innerHTML = `<p class="q">${esc(q.q)}</p>
+        ${q.type === "multi" ? `<p class="hint">Select ${need}, then check.</p>` : `<p class="hint">Pick one answer.</p>`}
+        <div id="opts">${q.options.map((opt) => `<button class="opt" type="button" data-v="${encodeURIComponent(opt)}">${esc(opt)}</button>`).join("")}</div>
+        <div class="actions">
+          ${q.type === "multi" ? `<button class="btn" id="check" type="button" disabled>Check</button>` : ""}
+        </div>
+        <div class="fb" id="fb"></div>`;
+      panel.querySelectorAll(".opt").forEach((btn) => {
+        btn.onclick = () => {
+          if (locked) return;
+          const v = decodeURIComponent(btn.dataset.v);
+          if (q.type === "single") {
+            picked = new Set([v]);
+            finish(q);
+          } else {
+            if (picked.has(v)) picked.delete(v); else {
+              if (picked.size >= need) return;
+              picked.add(v);
+            }
+            panel.querySelectorAll(".opt").forEach((b) => {
+              b.classList.toggle("sel", picked.has(decodeURIComponent(b.dataset.v)));
+            });
+            document.getElementById("check").disabled = picked.size !== need;
+          }
+        };
+      });
+      const check = document.getElementById("check");
+      if (check) check.onclick = () => finish(q);
+    }
+    function checkMatch() {
+      if (locked) return;
+      const q = deck[i];
+      const selects = [...panel.querySelectorAll("select")];
+      if (selects.some((s) => !s.value)) {
+        const fb = document.getElementById("fb");
+        fb.className = "fb no";
+        fb.textContent = "Choose a category for every row.";
+        return;
+      }
+      locked = true;
+      let ok = true;
+      selects.forEach((s, idx) => {
+        const item = q.items[idx];
+        const good = s.value === q.map[item];
+        if (!good) ok = false;
+        s.classList.add(good ? "ok" : "no");
+      });
+      after(ok, q, q.explain || "Review the classifications.");
+    }
+    function finish(q) {
+      if (locked) return;
+      locked = true;
+      const chosen = [...picked];
+      const ok = same(chosen, q.answer);
+      panel.querySelectorAll(".opt").forEach((b) => {
+        const v = decodeURIComponent(b.dataset.v);
+        b.disabled = true;
+        if (q.answer.includes(v)) b.classList.add("ok");
+        else if (picked.has(v)) b.classList.add("no");
+      });
+      after(ok, q, q.explain || ("Correct: " + q.answer.join(" · ")));
+    }
+    const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+    function reasonBlock(q) {
+      if (q.type === "match") {
+        const labels = {};
+        (q.choices || []).forEach((c) => { labels[c.v] = c.l; });
+        const lines = (q.items || []).map((item) => `<li><b>${esc(item)}</b> — ${esc(labels[q.map[item]] || q.map[item])}</li>`).join("");
+        return `<p class="why-h">WHY THIS IS RIGHT</p><ul class="why">${lines}</ul><p>${esc(q.explain || "")}</p>`;
+      }
+      const why = q.why || {};
+      const right = (q.answer || []).map((a) => `<li><b>${esc(a)}</b> — ${esc(why[a] || q.explain || "")}</li>`).join("");
+      const wrong = (q.options || []).filter((o) => !(q.answer || []).includes(o)).map((o) => `<li><b>${esc(o)}</b> — ${esc(why[o] || "")}</li>`).join("");
+      return `<p class="why-h">WHY THIS IS RIGHT</p><ul class="why">${right}</ul>` +
+        (wrong ? `<p class="why-h">WHY THE OTHERS ARE WRONG</p><ul class="why">${wrong}</ul>` : "");
+    }
+    function after(ok, q, msg) {
+      if (ok) correct++; else missed.push({ q: q.q, msg });
+      const fb = document.getElementById("fb");
+      fb.className = "fb " + (ok ? "ok" : "no");
+      fb.textContent = ok ? "Correct." : "Not quite.";
+      let box = document.getElementById("reasons");
+      if (!box) {
+        box = document.createElement("div");
+        box.id = "reasons";
+        fb.after(box);
+      }
+      box.innerHTML = reasonBlock(q);
+      scoreline.textContent = "Score " + correct;
+      const actions = panel.querySelector(".actions");
+      const next = document.createElement("button");
+      next.className = "btn";
+      next.type = "button";
+      next.id = "next";
+      next.textContent = i + 1 === deck.length ? "See results" : "Next";
+      actions.replaceChildren(next);
+      next.onclick = () => { i++; render(); };
+    }
+    function results() {
+      prog.style.width = "100%";
+      count.textContent = "Round complete";
+      scoreline.textContent = "";
+      const pct = Math.round((correct / deck.length) * 100);
+      panel.innerHTML = `
+        <p class="q">You scored</p>
+        <div class="score">${correct} / ${deck.length}</div>
+        <p class="sub" style="margin:0">${pct}% · ${missed.length ? missed.length + " to review" : "Clean round."}</p>
+        ${missed.length ? `<ul class="miss">${missed.map((m) => `<li><b>${esc(m.q)}</b><br>${esc(m.msg)}</li>`).join("")}</ul>` : ""}
+        <div class="actions">
+          <a class="btn ghost" href="index.html">All modules</a>
+          <button class="btn" id="again" type="button">Play again (shuffle)</button>
+          ${missed.length ? `<button class="btn ghost" id="missed" type="button">Replay missed only</button>` : ""}
+        </div>`;
+      document.getElementById("again").onclick = () => start(BANK);
+      const missBtn = document.getElementById("missed");
+      if (missBtn) {
+        missBtn.onclick = () => {
+          const ids = new Set(missed.map((m) => m.q));
+          start(BANK.filter((q) => ids.has(q.q)));
+        };
+      }
+    }
+    start(BANK);
+
+  </script>
+</body>
+</html>

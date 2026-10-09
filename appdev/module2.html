@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Android Studio and UI controls</title>
+  <link rel="stylesheet" href="../theme.css" />
+  <style>
+    .row { grid-template-columns: 1fr minmax(9.5rem, 15rem); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="exit" href="index.html">All modules</a>
+    <h1>Android Studio and UI controls</h1>
+    <p class="sub">Project structure, the Layout Editor, and TextView, EditText, Button, and ImageView. From the ICS26011 reviewer. Questions shuffle. Every answer shows why.</p>
+    <div class="bar"><i id="prog"></i></div>
+    <div class="meta">
+      <span id="count"></span>
+      <span id="scoreline"></span>
+    </div>
+    <div class="card" id="panel"></div>
+  </div>
+  <script>
+    const BANK = [{"type": "single", "q": "How does Module 2 introduce Kotlin?", "options": ["As the language for the course, learned by building a basic app and running it on an emulator", "As a replacement for XML layouts, with no emulator step", "As the Android operating system itself", "As a dessert code name for Android 4.4"], "answer": ["As the language for the course, learned by building a basic app and running it on an emulator"], "why": {"As the language for the course, learned by building a basic app and running it on an emulator": "The module introduces Kotlin as the mobile language and follows a learning-by-doing path onto an emulator.", "As a replacement for XML layouts, with no emulator step": "XML still describes the interface. The module has you build an app and run it on an emulator.", "As the Android operating system itself": "Android is the operating system. Kotlin is the language the module uses to write the app.", "As a dessert code name for Android 4.4": "KitKat is the 4.4 code name. Kotlin is the programming language in this module."}, "explain": "Module 2 uses Kotlin and has you learn it by building a basic app and running it on an emulator.", "source": "Module 2, Kotlin"}, {"type": "single", "q": "What does the module say the Android project structure contains?", "options": ["Package name, Activity names, the main Activity, version support, hardware features, and permissions", "Only watch-face styles and Android TV search", "Digital Wellbeing, Focus Mode, and Live Caption", "Lifecycle callbacks and no permission information"], "answer": ["Package name, Activity names, the main Activity, version support, hardware features, and permissions"], "why": {"Package name, Activity names, the main Activity, version support, hardware features, and permissions": "That is the configuration list in the project-structure section.", "Only watch-face styles and Android TV search": "Those are platform topics. The project structure holds package, Activity, version, hardware, and permission information.", "Digital Wellbeing, Focus Mode, and Live Caption": "Those are later Android version features, not the project-structure list.", "Lifecycle callbacks and no permission information": "The list includes permissions, the main Activity, version support, and hardware features."}, "explain": "The project holds the package name, Activity names, entry Activity, version and hardware support, permissions, and related configuration.", "source": "Module 2, project structure"}, {"type": "single", "q": "What is the Layout Editor?", "options": ["The Android Studio environment for creating and editing the visual user interface", "The window that only shows Git history", "The callback Android runs when the Activity is destroyed", "The store centered on Google Play"], "answer": ["The Android Studio environment for creating and editing the visual user interface"], "why": {"The Android Studio environment for creating and editing the visual user interface": "That is the module's definition of the Layout Editor.", "The window that only shows Git history": "Version control is a tool window. The Layout Editor edits the visual UI.", "The callback Android runs when the Activity is destroyed": "That is onDestroy. The Layout Editor edits the interface.", "The store centered on Google Play": "Google Play distributes apps. The Layout Editor builds the visual UI in Android Studio."}, "explain": "The Layout Editor is where you create and edit the application's visual user interface.", "source": "Module 2, Layout Editor"}, {"type": "multi", "q": "Which of these are input controls listed in the module? (Select 4)", "options": ["Buttons", "SeekBars", "CheckBoxes", "ToggleButtons", "onDestroy()", "Google Play"], "answer": ["Buttons", "SeekBars", "CheckBoxes", "ToggleButtons"], "why": {"Buttons": "Buttons are in the module's list of input controls.", "SeekBars": "SeekBars are in the module's list of input controls.", "CheckBoxes": "CheckBoxes are in the module's list of input controls.", "ToggleButtons": "ToggleButtons are in the module's list of input controls.", "onDestroy()": "onDestroy is a lifecycle callback, not an input control.", "Google Play": "Google Play is the distribution ecosystem, not a UI input control."}, "explain": "Input controls are interactive UI components. The list includes Buttons, text fields, SeekBars, CheckBoxes, zoom buttons, and ToggleButtons.", "source": "Module 2, UI Controls"}, {"type": "single", "q": "What is a TextView in this module?", "options": ["A control that displays text. The basic configuration is not editable, though the underlying class can edit text", "An editable field whose basic job is rich text entry", "A push-button that performs an action", "A container that scrolls vertically"], "answer": ["A control that displays text. The basic configuration is not editable, though the underlying class can edit text"], "why": {"A control that displays text. The basic configuration is not editable, though the underlying class can edit text": "The module says a TextView displays text, and that the basic configuration is not editable while the class itself is capable of text editing.", "An editable field whose basic job is rich text entry": "That description is EditText, the editable subclass of TextView.", "A push-button that performs an action": "That is a Button.", "A container that scrolls vertically": "That is a ScrollView, not a TextView."}, "explain": "A TextView displays text. Its basic configuration is not editable, even though the underlying class can edit text.", "source": "Module 2, TextView"}, {"type": "match", "q": "Match each TextView attribute with what the module says it does.", "hint": "Pick the attribute.", "items": ["Uniquely identifies the control", "Text to display", "Automatically capitalizes user-entered text", "Specifies the font family", "Controls text size", "Sets bold, italic, or bold-italic", "Aligns text inside the TextView", "Limits how many lines are displayed", "Adds an ellipsis when text is wider than the view"], "choices": [{"v": "id", "l": "android:id"}, {"v": "text", "l": "android:text"}, {"v": "cap", "l": "android:capitalize"}, {"v": "font", "l": "android:fontFamily"}, {"v": "size", "l": "android:textSize"}, {"v": "style", "l": "android:textStyle"}, {"v": "gravity", "l": "android:gravity"}, {"v": "lines", "l": "android:maxLines"}, {"v": "ellip", "l": "android:ellipsize"}], "map": {"Uniquely identifies the control": "id", "Text to display": "text", "Automatically capitalizes user-entered text": "cap", "Specifies the font family": "font", "Controls text size": "size", "Sets bold, italic, or bold-italic": "style", "Aligns text inside the TextView": "gravity", "Limits how many lines are displayed": "lines", "Adds an ellipsis when text is wider than the view": "ellip"}, "explain": "These are the TextView attributes in the module, from android:id through android:ellipsize.", "source": "Module 2, TextView attributes"}, {"type": "multi", "q": "Which ellipsize positions does the module name? (Select 3)", "options": ["start", "middle", "end", "match_parent"], "answer": ["start", "middle", "end"], "why": {"start": "start is one of the ellipsize options in the TextView table.", "middle": "middle is one of the ellipsize options in the TextView table.", "end": "end is one of the ellipsize options in the TextView table.", "match_parent": "match_parent is a layout width or height value, not an ellipsize position."}, "explain": "android:ellipsize can use start, middle, or end when the text is wider than the view.", "source": "Module 2, android:ellipsize"}, {"type": "single", "q": "What is an EditText?", "options": ["An editable subclass of TextView with rich text-entry capabilities", "A TextView configuration that cannot be edited at all", "An image control loaded from a URI", "A card container with elevation"], "answer": ["An editable subclass of TextView with rich text-entry capabilities"], "why": {"An editable subclass of TextView with rich text-entry capabilities": "The module defines EditText as that editable subclass.", "A TextView configuration that cannot be edited at all": "The basic TextView configuration is not editable. EditText is the editable subclass.", "An image control loaded from a URI": "That is an ImageView.", "A card container with elevation": "That is a CardView."}, "explain": "EditText is an editable subclass of TextView for rich text entry.", "source": "Module 2, EditText"}, {"type": "single", "q": "What is android:hint on an EditText?", "options": ["Placeholder text shown when the field is empty", "The unique id used from Kotlin", "The kind of data expected, such as a password", "A drawable drawn under the text"], "answer": ["Placeholder text shown when the field is empty"], "why": {"Placeholder text shown when the field is empty": "The attribute table defines android:hint as the placeholder displayed when the field is empty.", "The unique id used from Kotlin": "The identifier is android:id. android:hint is the empty-field placeholder.", "The kind of data expected, such as a password": "The expected data type is android:inputType.", "A drawable drawn under the text": "Drawables around the text use android:drawableLeft, Right, Top, or Bottom."}, "explain": "android:hint is the placeholder shown while the EditText is empty.", "source": "Module 2, android:hint"}, {"type": "single", "q": "What does android:autoText do?", "options": ["Automatically corrects some common spelling errors", "Capitalizes text the way android:capitalize does on a TextView", "Hides the field without removing its layout space", "Sets the font family"], "answer": ["Automatically corrects some common spelling errors"], "why": {"Automatically corrects some common spelling errors": "The EditText table says android:autoText specifies input behavior with automatic correction of some common spelling errors.", "Capitalizes text the way android:capitalize does on a TextView": "Capitalizing user-entered text is android:capitalize. autoText is the spelling-correction behavior.", "Hides the field without removing its layout space": "Hiding a view while keeping its space is the INVISIBLE visibility value.", "Sets the font family": "The font family is android:fontFamily."}, "explain": "android:autoText turns on automatic correction of some common spelling errors.", "source": "Module 2, android:autoText"}, {"type": "single", "q": "What does android:inputType specify?", "options": ["The kind of data expected, such as text, number, or password", "Whether the text is bold, italic, or both", "How many lines the field may show", "The placeholder shown when the field is empty"], "answer": ["The kind of data expected, such as text, number, or password"], "why": {"The kind of data expected, such as text, number, or password": "That is the EditText table's definition, including those examples.", "Whether the text is bold, italic, or both": "Bold and italic are android:textStyle.", "How many lines the field may show": "The line limit is android:maxLines.", "The placeholder shown when the field is empty": "The empty-field placeholder is android:hint."}, "explain": "android:inputType sets the expected data, such as text, number, or password.", "source": "Module 2, android:inputType"}, {"type": "single", "q": "What do android:drawableLeft, Right, Top, and Bottom do on an EditText?", "options": ["Place a drawable relative to the entered or displayed text", "Set the field's initial visibility", "Choose text, number, or password input", "Tint the drawable of an ImageView"], "answer": ["Place a drawable relative to the entered or displayed text"], "why": {"Place a drawable relative to the entered or displayed text": "The EditText table says those attributes place a drawable relative to the text.", "Set the field's initial visibility": "Initial visibility is android:visibility.", "Choose text, number, or password input": "That choice is android:inputType.", "Tint the drawable of an ImageView": "Image tint is android:tint. These drawable attributes sit around EditText text."}, "explain": "Those attributes place a drawable to the left, right, top, or bottom of the text.", "source": "Module 2, EditText drawables"}, {"type": "single", "q": "What is a Button in this module?", "options": ["A push-button the user can press or click to perform an action", "A read-only text display", "A two-dimensional grid of data", "The Activity callback that runs when the screen is created"], "answer": ["A push-button the user can press or click to perform an action"], "why": {"A push-button the user can press or click to perform an action": "That is the module's definition of a Button.", "A read-only text display": "A read-only display is the basic TextView. A Button performs an action when pressed.", "A two-dimensional grid of data": "That is a GridView.", "The Activity callback that runs when the screen is created": "That is onCreate. A Button is a push-button control."}, "explain": "A Button is a push-button the user presses to perform an action.", "source": "Module 2, Button"}, {"type": "single", "q": "What is android:background on a Button?", "options": ["The drawable used as the Button background", "The text printed on the Button", "The alignment of that text inside the Button", "The font family of the label"], "answer": ["The drawable used as the Button background"], "why": {"The drawable used as the Button background": "The Button table defines android:background as that drawable.", "The text printed on the Button": "The label is android:text.", "The alignment of that text inside the Button": "Alignment inside the Button is android:gravity.", "The font family of the label": "The font is android:fontFamily."}, "explain": "android:background is the drawable used as the Button background.", "source": "Module 2, Button attributes"}, {"type": "single", "q": "What does an ImageView display?", "options": ["An image from resources or a URI, which can be scaled or cropped", "Only placeholder text for an empty field", "A vertically scrolling column of widgets", "The IDE status and warnings"], "answer": ["An image from resources or a URI, which can be scaled or cropped"], "why": {"An image from resources or a URI, which can be scaled or cropped": "The module says an ImageView displays an image from resources or a URI and can scale or crop it.", "Only placeholder text for an empty field": "Placeholder text is android:hint on an EditText.", "A vertically scrolling column of widgets": "Vertical scrolling is a ScrollView.", "The IDE status and warnings": "Status and warnings belong to the Android Studio status bar."}, "explain": "An ImageView displays an image from resources or a URI, and the image can be scaled or cropped.", "source": "Module 2, ImageView"}, {"type": "single", "q": "Which attribute sets an ImageView's image source?", "options": ["android:src", "android:hint", "android:text", "android:id"], "answer": ["android:src"], "why": {"android:src": "The ImageView table says android:src specifies the image source.", "android:hint": "android:hint is the empty EditText placeholder.", "android:text": "android:text is the text shown on a text control or Button.", "android:id": "android:id identifies the view. It does not choose the image."}, "explain": "android:src specifies the ImageView's image source.", "source": "Module 2, android:src"}, {"type": "single", "q": "What is android:contentDescription for?", "options": ["Text for accessibility", "A tint applied over the image", "How the image is scaled, such as centerCrop", "The click handler in Kotlin"], "answer": ["Text for accessibility"], "why": {"Text for accessibility": "The ImageView table says android:contentDescription provides text for accessibility.", "A tint applied over the image": "The tint is android:tint.", "How the image is scaled, such as centerCrop": "Scaling and positioning are android:scaleType.", "The click handler in Kotlin": "A click handler is setOnClickListener. contentDescription is accessibility text."}, "explain": "android:contentDescription provides accessibility text for the ImageView.", "source": "Module 2, android:contentDescription"}, {"type": "single", "q": "What does android:scaleType control?", "options": ["How the image is resized and positioned, such as fitXY, centerCrop, and centerInside", "The accessibility text", "A color tint over the image", "Whether the ImageView is hidden"], "answer": ["How the image is resized and positioned, such as fitXY, centerCrop, and centerInside"], "why": {"How the image is resized and positioned, such as fitXY, centerCrop, and centerInside": "The module names android:scaleType for resizing and positioning and gives those examples.", "The accessibility text": "Accessibility text is android:contentDescription.", "A color tint over the image": "The tint is android:tint.", "Whether the ImageView is hidden": "Visibility is android:visibility, not scaleType."}, "explain": "android:scaleType controls how the image is resized and positioned. The module names fitXY, centerCrop, and centerInside.", "source": "Module 2, android:scaleType"}, {"type": "multi", "q": "Which scaleType values does the module name? (Select 3)", "options": ["fitXY", "centerCrop", "centerInside", "match_parent"], "answer": ["fitXY", "centerCrop", "centerInside"], "why": {"fitXY": "fitXY is one of the scaleType examples in the ImageView table.", "centerCrop": "centerCrop is one of the scaleType examples in the ImageView table.", "centerInside": "centerInside is one of the scaleType examples in the ImageView table.", "match_parent": "match_parent is a layout size value, not a scaleType name in this module."}, "explain": "The named scaleType examples are fitXY, centerCrop, and centerInside.", "source": "Module 2, scaleType values"}, {"type": "single", "q": "What is centerCrop, according to the quick review?", "options": ["It fills the ImageView while preserving aspect ratio, and the excess may be cropped", "It shows the empty-field placeholder", "It hides the view and frees its layout space", "It sets the text size in scale-independent pixels"], "answer": ["It fills the ImageView while preserving aspect ratio, and the excess may be cropped"], "why": {"It fills the ImageView while preserving aspect ratio, and the excess may be cropped": "The quick review defines centerCrop that way.", "It shows the empty-field placeholder": "The empty-field placeholder is android:hint.", "It hides the view and frees its layout space": "Hiding a view and freeing its space is GONE.", "It sets the text size in scale-independent pixels": "Text size uses sp. centerCrop is an ImageView scale type."}, "explain": "centerCrop fills the ImageView, keeps the aspect ratio, and may crop the excess.", "source": "Quick review, centerCrop"}, {"type": "single", "q": "What does android:tint do on an ImageView?", "options": ["Applies a tint to the image", "Provides accessibility text", "Chooses the image file or URI", "Limits the image to one line of text"], "answer": ["Applies a tint to the image"], "why": {"Applies a tint to the image": "The ImageView table says android:tint applies a tint to the image.", "Provides accessibility text": "Accessibility text is android:contentDescription.", "Chooses the image file or URI": "The image source is android:src.", "Limits the image to one line of text": "android:maxLines limits text lines. It is not the image tint."}, "explain": "android:tint applies a tint to the ImageView image.", "source": "Module 2, android:tint"}];
+
+    const shuffle = (arr) => [...arr].sort(() => Math.random() - 0.5);
+    const same = (a, b) => a.length === b.length && a.every((x) => b.includes(x));
+    let deck = [];
+    let i = 0;
+    let correct = 0;
+    let locked = false;
+    let missed = [];
+    let picked = new Set();
+    const panel = document.getElementById("panel");
+    const prog = document.getElementById("prog");
+    const count = document.getElementById("count");
+    const scoreline = document.getElementById("scoreline");
+    function start(pool) {
+      deck = shuffle(pool.map((q) => {
+        if (q.type === "match") return { ...q, items: shuffle(q.items) };
+        return { ...q, options: shuffle(q.options) };
+      }));
+      i = 0; correct = 0; missed = []; locked = false; picked = new Set();
+      render();
+    }
+    function render() {
+      if (i >= deck.length) return results();
+      const q = deck[i];
+      prog.style.width = ((i / deck.length) * 100) + "%";
+      count.textContent = "Question " + (i + 1) + " of " + deck.length;
+      scoreline.textContent = "Score " + correct;
+      locked = false; picked = new Set();
+      if (q.type === "match") {
+        const opts = (q.choices || []).map((c) => `<option value="${c.v}">${esc(c.l)}</option>`).join("");
+        panel.innerHTML = `<p class="q">${esc(q.q)}</p>
+          <p class="hint">${esc(q.hint || "Classify each item.")}</p>
+          <div class="match">${q.items.map((item, idx) => `
+            <div class="row">
+              <span>${esc(item)}</span>
+              <select data-item="${idx}">
+                <option value="">Choose…</option>
+                ${opts}
+              </select>
+            </div>`).join("")}</div>
+          <div class="actions"><button class="btn" id="check" type="button">Check</button></div>
+          <div class="fb" id="fb"></div>`;
+        document.getElementById("check").onclick = checkMatch;
+        return;
+      }
+      const need = q.answer.length;
+      panel.innerHTML = `<p class="q">${esc(q.q)}</p>
+        ${q.type === "multi" ? `<p class="hint">Select ${need}, then check.</p>` : `<p class="hint">Pick one answer.</p>`}
+        <div id="opts">${q.options.map((opt) => `<button class="opt" type="button" data-v="${encodeURIComponent(opt)}">${esc(opt)}</button>`).join("")}</div>
+        <div class="actions">
+          ${q.type === "multi" ? `<button class="btn" id="check" type="button" disabled>Check</button>` : ""}
+        </div>
+        <div class="fb" id="fb"></div>`;
+      panel.querySelectorAll(".opt").forEach((btn) => {
+        btn.onclick = () => {
+          if (locked) return;
+          const v = decodeURIComponent(btn.dataset.v);
+          if (q.type === "single") {
+            picked = new Set([v]);
+            finish(q);
+          } else {
+            if (picked.has(v)) picked.delete(v); else {
+              if (picked.size >= need) return;
+              picked.add(v);
+            }
+            panel.querySelectorAll(".opt").forEach((b) => {
+              b.classList.toggle("sel", picked.has(decodeURIComponent(b.dataset.v)));
+            });
+            document.getElementById("check").disabled = picked.size !== need;
+          }
+        };
+      });
+      const check = document.getElementById("check");
+      if (check) check.onclick = () => finish(q);
+    }
+    function checkMatch() {
+      if (locked) return;
+      const q = deck[i];
+      const selects = [...panel.querySelectorAll("select")];
+      if (selects.some((s) => !s.value)) {
+        const fb = document.getElementById("fb");
+        fb.className = "fb no";
+        fb.textContent = "Choose a category for every row.";
+        return;
+      }
+      locked = true;
+      let ok = true;
+      selects.forEach((s, idx) => {
+        const item = q.items[idx];
+        const good = s.value === q.map[item];
+        if (!good) ok = false;
+        s.classList.add(good ? "ok" : "no");
+      });
+      after(ok, q, q.explain || "Review the classifications.");
+    }
+    function finish(q) {
+      if (locked) return;
+      locked = true;
+      const chosen = [...picked];
+      const ok = same(chosen, q.answer);
+      panel.querySelectorAll(".opt").forEach((b) => {
+        const v = decodeURIComponent(b.dataset.v);
+        b.disabled = true;
+        if (q.answer.includes(v)) b.classList.add("ok");
+        else if (picked.has(v)) b.classList.add("no");
+      });
+      after(ok, q, q.explain || ("Correct: " + q.answer.join(" · ")));
+    }
+    const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+    function reasonBlock(q) {
+      if (q.type === "match") {
+        const labels = {};
+        (q.choices || []).forEach((c) => { labels[c.v] = c.l; });
+        const lines = (q.items || []).map((item) => `<li><b>${esc(item)}</b> — ${esc(labels[q.map[item]] || q.map[item])}</li>`).join("");
+        return `<p class="why-h">WHY THIS IS RIGHT</p><ul class="why">${lines}</ul><p>${esc(q.explain || "")}</p>`;
+      }
+      const why = q.why || {};
+      const right = (q.answer || []).map((a) => `<li><b>${esc(a)}</b> — ${esc(why[a] || q.explain || "")}</li>`).join("");
+      const wrong = (q.options || []).filter((o) => !(q.answer || []).includes(o)).map((o) => `<li><b>${esc(o)}</b> — ${esc(why[o] || "")}</li>`).join("");
+      return `<p class="why-h">WHY THIS IS RIGHT</p><ul class="why">${right}</ul>` +
+        (wrong ? `<p class="why-h">WHY THE OTHERS ARE WRONG</p><ul class="why">${wrong}</ul>` : "");
+    }
+    function after(ok, q, msg) {
+      if (ok) correct++; else missed.push({ q: q.q, msg });
+      const fb = document.getElementById("fb");
+      fb.className = "fb " + (ok ? "ok" : "no");
+      fb.textContent = ok ? "Correct." : "Not quite.";
+      let box = document.getElementById("reasons");
+      if (!box) {
+        box = document.createElement("div");
+        box.id = "reasons";
+        fb.after(box);
+      }
+      box.innerHTML = reasonBlock(q);
+      scoreline.textContent = "Score " + correct;
+      const actions = panel.querySelector(".actions");
+      const next = document.createElement("button");
+      next.className = "btn";
+      next.type = "button";
+      next.id = "next";
+      next.textContent = i + 1 === deck.length ? "See results" : "Next";
+      actions.replaceChildren(next);
+      next.onclick = () => { i++; render(); };
+    }
+    function results() {
+      prog.style.width = "100%";
+      count.textContent = "Round complete";
+      scoreline.textContent = "";
+      const pct = Math.round((correct / deck.length) * 100);
+      panel.innerHTML = `
+        <p class="q">You scored</p>
+        <div class="score">${correct} / ${deck.length}</div>
+        <p class="sub" style="margin:0">${pct}% · ${missed.length ? missed.length + " to review" : "Clean round."}</p>
+        ${missed.length ? `<ul class="miss">${missed.map((m) => `<li><b>${esc(m.q)}</b><br>${esc(m.msg)}</li>`).join("")}</ul>` : ""}
+        <div class="actions">
+          <a class="btn ghost" href="index.html">All modules</a>
+          <button class="btn" id="again" type="button">Play again (shuffle)</button>
+          ${missed.length ? `<button class="btn ghost" id="missed" type="button">Replay missed only</button>` : ""}
+        </div>`;
+      document.getElementById("again").onclick = () => start(BANK);
+      const missBtn = document.getElementById("missed");
+      if (missBtn) {
+        missBtn.onclick = () => {
+          const ids = new Set(missed.map((m) => m.q));
+          start(BANK.filter((q) => ids.has(q.q)));
+        };
+      }
+    }
+    start(BANK);
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Activity lifecycle</title>
+  <link rel="stylesheet" href="../theme.css" />
+  <style>
+    .row { grid-template-columns: 1fr minmax(9.5rem, 15rem); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="exit" href="index.html">All modules</a>
+    <h1>Activity lifecycle</h1>
+    <p class="sub">The phase order and what onCreate, onStart, onResume, onPause, onStop, and onDestroy are for. From the ICS26011 reviewer. Questions shuffle. Every answer shows why.</p>
+    <div class="bar"><i id="prog"></i></div>
+    <div class="meta">
+      <span id="count"></span>
+      <span id="scoreline"></span>
+    </div>
+    <div class="card" id="panel"></div>
+  </div>
+  <script>
+    const BANK = [{"type": "single", "q": "What is the Android lifecycle?", "options": ["The series of states an Activity or Fragment goes through from creation to destruction", "The list of dessert code names from Cupcake to Vanilla Ice Cream", "The XML file that holds Buttons and EditTexts", "The Kotlin when expression"], "answer": ["The series of states an Activity or Fragment goes through from creation to destruction"], "why": {"The series of states an Activity or Fragment goes through from creation to destruction": "The module defines the lifecycle as that series of states.", "The list of dessert code names from Cupcake to Vanilla Ice Cream": "Code names are the version timeline. The lifecycle is the Activity or Fragment state series.", "The XML file that holds Buttons and EditTexts": "XML defines the visual interface. The lifecycle is the state series.", "The Kotlin when expression": "when is a conditional. The lifecycle is creation through destruction."}, "explain": "The lifecycle is the series of states an Activity or Fragment goes through from creation to destruction.", "source": "Module 4, definition"}, {"type": "single", "q": "How does Android interact with an app's Activity?", "options": ["By calling functions in the Activity class, even when the programmer does not visibly call them", "Only when the programmer calls onCreate, onStart, and onResume in order from main", "By rewriting the XML layout on every frame", "By sending the app a Google Play download"], "answer": ["By calling functions in the Activity class, even when the programmer does not visibly call them"], "why": {"By calling functions in the Activity class, even when the programmer does not visibly call them": "The module says Android calls those functions at the right time, even if the programmer does not visibly call them.", "Only when the programmer calls onCreate, onStart, and onResume in order from main": "The module says these are not ordinary functions you call yourself in a normal sequence. Android calls them.", "By rewriting the XML layout on every frame": "XML defines the interface. Android drives the Activity by calling lifecycle functions.", "By sending the app a Google Play download": "Google Play distributes apps. Lifecycle interaction is Android calling Activity functions."}, "explain": "Android calls lifecycle functions on the Activity even when your own code does not visibly call them.", "source": "Module 4, interaction"}, {"type": "single", "q": "What does overriding onCreate do?", "options": ["It supplies the version of that function Android should run when the create event occurs", "It stops Android from ever calling onCreate", "It replaces the XML layout with a Kotlin when expression", "It marks the Activity INVISIBLE"], "answer": ["It supplies the version of that function Android should run when the create event occurs"], "why": {"It supplies the version of that function Android should run when the create event occurs": "The module says an override supplies the version Android executes for that lifecycle event.", "It stops Android from ever calling onCreate": "Overriding does not block the call. It supplies the body Android runs.", "It replaces the XML layout with a Kotlin when expression": "when is a conditional. An onCreate override is the create callback Android runs.", "It marks the Activity INVISIBLE": "INVISIBLE is a view visibility value, not what an override means."}, "explain": "Overriding onCreate gives Android the function body to run when the Activity is created.", "source": "Module 4, override"}, {"type": "single", "q": "Why does the module say lifecycle knowledge matters?", "options": ["So you know when to save data, pause work, release resources, and restore information if something such as a phone call interrupts the user", "So you can skip onCreate and start the app in onDestroy", "So the Layout Editor can assign dessert code names", "So wrap_content can expand to the parent"], "answer": ["So you know when to save data, pause work, release resources, and restore information if something such as a phone call interrupts the user"], "why": {"So you know when to save data, pause work, release resources, and restore information if something such as a phone call interrupts the user": "The module's example is a user typing a reminder when a phone call interrupts the app.", "So you can skip onCreate and start the app in onDestroy": "onDestroy is the end of the lifecycle, not a shortcut around onCreate.", "So the Layout Editor can assign dessert code names": "Code names are version history. Lifecycle knowledge is about interruptions and state changes.", "So wrap_content can expand to the parent": "wrap_content and match_parent are layout sizes, not the reason the lifecycle is taught."}, "explain": "The phone-call example is about saving data, pausing work, releasing resources, and restoring information when the app is interrupted.", "source": "Module 4, why it matters"}, {"type": "match", "q": "Match each simplified lifecycle phase with its callback.", "hint": "Name the callback.", "items": ["Being created: initialize the Activity and prepare the UI", "Starting: becoming visible, not yet interactive", "Resuming: ready for interaction, including after a pause", "Pausing: losing foreground focus", "Stopping: no longer visible", "Being destroyed: final cleanup"], "choices": [{"v": "create", "l": "onCreate"}, {"v": "start", "l": "onStart"}, {"v": "resume", "l": "onResume"}, {"v": "pause", "l": "onPause"}, {"v": "stop", "l": "onStop"}, {"v": "destroy", "l": "onDestroy"}], "map": {"Being created: initialize the Activity and prepare the UI": "create", "Starting: becoming visible, not yet interactive": "start", "Resuming: ready for interaction, including after a pause": "resume", "Pausing: losing foreground focus": "pause", "Stopping: no longer visible": "stop", "Being destroyed: final cleanup": "destroy"}, "explain": "The running phase sits between onResume and onPause. The callbacks follow the phase table.", "source": "Module 4, phases"}, {"type": "single", "q": "What is onCreate commonly used for?", "options": ["Initialization, UI setup, setContentView(), and preparing graphics or sound", "Releasing resources because the Activity is no longer visible", "The final dismantling of the Activity", "Only reloading data after the user returns from a pause"], "answer": ["Initialization, UI setup, setContentView(), and preparing graphics or sound"], "why": {"Initialization, UI setup, setContentView(), and preparing graphics or sound": "The callback table lists those as the common work when the Activity is created.", "Releasing resources because the Activity is no longer visible": "Releasing resources when the Activity is no longer visible is onStop.", "The final dismantling of the Activity": "Final dismantling is onDestroy.", "Only reloading data after the user returns from a pause": "The module's reload example belongs to onResume."}, "explain": "onCreate is where the Activity is initialized, the UI is set up with setContentView(), and graphics or sound can be prepared.", "source": "Module 4, onCreate"}, {"type": "single", "q": "What is true of onStart?", "options": ["The Activity is becoming visible to the user but is not yet interactive", "The Activity is in the foreground and ready for interaction", "The Activity is no longer visible", "The Activity is being destroyed"], "answer": ["The Activity is becoming visible to the user but is not yet interactive"], "why": {"The Activity is becoming visible to the user but is not yet interactive": "The module describes onStart as the starting phase: visible, not yet interactive.", "The Activity is in the foreground and ready for interaction": "Ready for interaction is onResume, the running side of the lifecycle.", "The Activity is no longer visible": "No longer visible is onStop.", "The Activity is being destroyed": "Destruction is onDestroy."}, "explain": "onStart runs as the Activity becomes visible, before it is interactive.", "source": "Module 4, onStart"}, {"type": "single", "q": "What does the module say about onResume?", "options": ["The Activity is becoming active. It can also be reached after a pause, and it is an example place to reload saved user data", "It runs only once, before onCreate", "It means the Activity is no longer visible", "It is the final cleanup callback"], "answer": ["The Activity is becoming active. It can also be reached after a pause, and it is an example place to reload saved user data"], "why": {"The Activity is becoming active. It can also be reached after a pause, and it is an example place to reload saved user data": "The phase table says onResume can be reached after a paused state, and the callback notes use reloading saved user data as the example.", "It runs only once, before onCreate": "The flow is onCreate, then onStart, then onResume. onResume can also run again after a pause.", "It means the Activity is no longer visible": "No longer visible is onStop.", "It is the final cleanup callback": "Final cleanup is onDestroy."}, "explain": "onResume makes the Activity active and can run again after a pause. The module's example is reloading saved user data.", "source": "Module 4, onResume"}, {"type": "single", "q": "What belongs in onPause?", "options": ["Pause tasks that need not continue, stop animations, save unsaved data, and release resources that do not need to stay active", "Call setContentView() for the first time", "Write the final destruction cleanup", "Inflate the layout before the Activity exists"], "answer": ["Pause tasks that need not continue, stop animations, save unsaved data, and release resources that do not need to stay active"], "why": {"Pause tasks that need not continue, stop animations, save unsaved data, and release resources that do not need to stay active": "The callback table assigns those jobs to onPause, when the Activity is losing foreground focus.", "Call setContentView() for the first time": "setContentView() is named under onCreate.", "Write the final destruction cleanup": "Final cleanup is onDestroy.", "Inflate the layout before the Activity exists": "The Activity is already past creation by the time it pauses."}, "explain": "onPause is the place to pause work, stop animations, save unsaved data, and release resources that do not need to keep running.", "source": "Module 4, onPause"}, {"type": "single", "q": "When does onStop run, and what can it do?", "options": ["When the Activity is no longer visible. It can release resources or write information to persistent storage", "When the Activity is visible but not yet interactive", "When the Activity is first created", "Only when a Button's android:hint is empty"], "answer": ["When the Activity is no longer visible. It can release resources or write information to persistent storage"], "why": {"When the Activity is no longer visible. It can release resources or write information to persistent storage": "That is the onStop row: no longer visible, release or persist.", "When the Activity is visible but not yet interactive": "Visible but not interactive is onStart.", "When the Activity is first created": "Creation is onCreate.", "Only when a Button's android:hint is empty": "android:hint is an EditText placeholder. onStop is the not-visible callback."}, "explain": "onStop runs when the Activity is no longer visible. Use it to release resources or persist information.", "source": "Module 4, onStop"}, {"type": "single", "q": "What is onDestroy?", "options": ["The final opportunity to dismantle the Activity in an orderly way before it is removed", "The callback that makes the Activity interactive", "The callback that only saves a pause-time draft", "The Layout Editor's preview mode"], "answer": ["The final opportunity to dismantle the Activity in an orderly way before it is removed"], "why": {"The final opportunity to dismantle the Activity in an orderly way before it is removed": "The module describes onDestroy as that final cleanup.", "The callback that makes the Activity interactive": "Becoming interactive is onResume.", "The callback that only saves a pause-time draft": "Saving unsaved data as focus is lost is onPause. onDestroy is final dismantling.", "The Layout Editor's preview mode": "The Layout Editor edits the UI. onDestroy is the last lifecycle callback."}, "explain": "onDestroy is the final chance to dismantle the Activity in an orderly way.", "source": "Module 4, onDestroy"}, {"type": "single", "q": "Which flow matches the module?", "options": ["onCreate → onStart → onResume → Running → onPause → onStop → onDestroy", "onCreate → onResume → onStart → Running → onStop → onPause → onDestroy", "onStart → onCreate → onPause → onResume → onDestroy → onStop", "onResume → onCreate → onStart → onDestroy → onPause → onStop"], "answer": ["onCreate → onStart → onResume → Running → onPause → onStop → onDestroy"], "why": {"onCreate → onStart → onResume → Running → onPause → onStop → onDestroy": "That is the flow the module says to memorize.", "onCreate → onResume → onStart → Running → onStop → onPause → onDestroy": "onStart comes before onResume, and onPause comes before onStop.", "onStart → onCreate → onPause → onResume → onDestroy → onStop": "Creation is first, and destruction is last. Pause comes before stop.", "onResume → onCreate → onStart → onDestroy → onPause → onStop": "The module starts at onCreate and ends at onDestroy."}, "explain": "Memorize onCreate, onStart, onResume, Running, onPause, onStop, onDestroy.", "source": "Module 4, flow"}, {"type": "single", "q": "Who calls the lifecycle methods during normal state changes?", "options": ["Android, in response to Activity state changes. They are not ordinary functions you call yourself in sequence", "The Layout Editor, once per XML attribute", "findViewById(), after every click", "The programmer, from a while loop in the order shown"], "answer": ["Android, in response to Activity state changes. They are not ordinary functions you call yourself in sequence"], "why": {"Android, in response to Activity state changes. They are not ordinary functions you call yourself in sequence": "The module's important idea is that Android calls them. You do not drive that sequence by hand.", "The Layout Editor, once per XML attribute": "The Layout Editor edits the interface. Android calls lifecycle methods.", "findViewById(), after every click": "findViewById retrieves a View. It does not walk the lifecycle.", "The programmer, from a while loop in the order shown": "The module says not to treat them as ordinary functions you call in a normal sequence."}, "explain": "Android calls lifecycle methods when the Activity state changes. You do not call that sequence yourself.", "source": "Module 4, who calls them"}];
+
+    const shuffle = (arr) => [...arr].sort(() => Math.random() - 0.5);
+    const same = (a, b) => a.length === b.length && a.every((x) => b.includes(x));
+    let deck = [];
+    let i = 0;
+    let correct = 0;
+    let locked = false;
+    let missed = [];
+    let picked = new Set();
+    const panel = document.getElementById("panel");
+    const prog = document.getElementById("prog");
+    const count = document.getElementById("count");
+    const scoreline = document.getElementById("scoreline");
+    function start(pool) {
+      deck = shuffle(pool.map((q) => {
+        if (q.type === "match") return { ...q, items: shuffle(q.items) };
+        return { ...q, options: shuffle(q.options) };
+      }));
+      i = 0; correct = 0; missed = []; locked = false; picked = new Set();
+      render();
+    }
+    function render() {
+      if (i >= deck.length) return results();
+      const q = deck[i];
+      prog.style.width = ((i / deck.length) * 100) + "%";
+      count.textContent = "Question " + (i + 1) + " of " + deck.length;
+      scoreline.textContent = "Score " + correct;
+      locked = false; picked = new Set();
+      if (q.type === "match") {
+        const opts = (q.choices || []).map((c) => `<option value="${c.v}">${esc(c.l)}</option>`).join("");
+        panel.innerHTML = `<p class="q">${esc(q.q)}</p>
+          <p class="hint">${esc(q.hint || "Classify each item.")}</p>
+          <div class="match">${q.items.map((item, idx) => `
+            <div class="row">
+              <span>${esc(item)}</span>
+              <select data-item="${idx}">
+                <option value="">Choose…</option>
+                ${opts}
+              </select>
+            </div>`).join("")}</div>
+          <div class="actions"><button class="btn" id="check" type="button">Check</button></div>
+          <div class="fb" id="fb"></div>`;
+        document.getElementById("check").onclick = checkMatch;
+        return;
+      }
+      const need = q.answer.length;
+      panel.innerHTML = `<p class="q">${esc(q.q)}</p>
+        ${q.type === "multi" ? `<p class="hint">Select ${need}, then check.</p>` : `<p class="hint">Pick one answer.</p>`}
+        <div id="opts">${q.options.map((opt) => `<button class="opt" type="button" data-v="${encodeURIComponent(opt)}">${esc(opt)}</button>`).join("")}</div>
+        <div class="actions">
+          ${q.type === "multi" ? `<button class="btn" id="check" type="button" disabled>Check</button>` : ""}
+        </div>
+        <div class="fb" id="fb"></div>`;
+      panel.querySelectorAll(".opt").forEach((btn) => {
+        btn.onclick = () => {
+          if (locked) return;
+          const v = decodeURIComponent(btn.dataset.v);
+          if (q.type === "single") {
+            picked = new Set([v]);
+            finish(q);
+          } else {
+            if (picked.has(v)) picked.delete(v); else {
+              if (picked.size >= need) return;
+              picked.add(v);
+            }
+            panel.querySelectorAll(".opt").forEach((b) => {
+              b.classList.toggle("sel", picked.has(decodeURIComponent(b.dataset.v)));
+            });
+            document.getElementById("check").disabled = picked.size !== need;
+          }
+        };
+      });
+      const check = document.getElementById("check");
+      if (check) check.onclick = () => finish(q);
+    }
+    function checkMatch() {
+      if (locked) return;
+      const q = deck[i];
+      const selects = [...panel.querySelectorAll("select")];
+      if (selects.some((s) => !s.value)) {
+        const fb = document.getElementById("fb");
+        fb.className = "fb no";
+        fb.textContent = "Choose a category for every row.";
+        return;
+      }
+      locked = true;
+      let ok = true;
+      selects.forEach((s, idx) => {
+        const item = q.items[idx];
+        const good = s.value === q.map[item];
+        if (!good) ok = false;
+        s.classList.add(good ? "ok" : "no");
+      });
+      after(ok, q, q.explain || "Review the classifications.");
+    }
+    function finish(q) {
+      if (locked) return;
+      locked = true;
+      const chosen = [...picked];
+      const ok = same(chosen, q.answer);
+      panel.querySelectorAll(".opt").forEach((b) => {
+        const v = decodeURIComponent(b.dataset.v);
+        b.disabled = true;
+        if (q.answer.includes(v)) b.classList.add("ok");
+        else if (picked.has(v)) b.classList.add("no");
+      });
+      after(ok, q, q.explain || ("Correct: " + q.answer.join(" · ")));
+    }
+    const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+    function reasonBlock(q) {
+      if (q.type === "match") {
+        const labels = {};
+        (q.choices || []).forEach((c) => { labels[c.v] = c.l; });
+        const lines = (q.items || []).map((item) => `<li><b>${esc(item)}</b> — ${esc(labels[q.map[item]] || q.map[item])}</li>`).join("");
+        return `<p class="why-h">WHY THIS IS RIGHT</p><ul class="why">${lines}</ul><p>${esc(q.explain || "")}</p>`;
+      }
+      const why = q.why || {};
+      const right = (q.answer || []).map((a) => `<li><b>${esc(a)}</b> — ${esc(why[a] || q.explain || "")}</li>`).join("");
+      const wrong = (q.options || []).filter((o) => !(q.answer || []).includes(o)).map((o) => `<li><b>${esc(o)}</b> — ${esc(why[o] || "")}</li>`).join("");
+      return `<p class="why-h">WHY THIS IS RIGHT</p><ul class="why">${right}</ul>` +
+        (wrong ? `<p class="why-h">WHY THE OTHERS ARE WRONG</p><ul class="why">${wrong}</ul>` : "");
+    }
+    function after(ok, q, msg) {
+      if (ok) correct++; else missed.push({ q: q.q, msg });
+      const fb = document.getElementById("fb");
+      fb.className = "fb " + (ok ? "ok" : "no");
+      fb.textContent = ok ? "Correct." : "Not quite.";
+      let box = document.getElementById("reasons");
+      if (!box) {
+        box = document.createElement("div");
+        box.id = "reasons";
+        fb.after(box);
+      }
+      box.innerHTML = reasonBlock(q);
+      scoreline.textContent = "Score " + correct;
+      const actions = panel.querySelector(".actions");
+      const next = document.createElement("button");
+      next.className = "btn";
+      next.type = "button";
+      next.id = "next";
+      next.textContent = i + 1 === deck.length ? "See results" : "Next";
+      actions.replaceChildren(next);
+      next.onclick = () => { i++; render(); };
+    }
+    function results() {
+      prog.style.width = "100%";
+      count.textContent = "Round complete";
+      scoreline.textContent = "";
+      const pct = Math.round((correct / deck.length) * 100);
+      panel.innerHTML = `
+        <p class="q">You scored</p>
+        <div class="score">${correct} / ${deck.length}</div>
+        <p class="sub" style="margin:0">${pct}% · ${missed.length ? missed.length + " to review" : "Clean round."}</p>
+        ${missed.length ? `<ul class="miss">${missed.map((m) => `<li><b>${esc(m.q)}</b><br>${esc(m.msg)}</li>`).join("")}</ul>` : ""}
+        <div class="actions">
+          <a class="btn ghost" href="index.html">All modules</a>
+          <button class="btn" id="again" type="button">Play again (shuffle)</button>
+          ${missed.length ? `<button class="btn ghost" id="missed" type="button">Replay missed only</button>` : ""}
+        </div>`;
+      document.getElementById("again").onclick = () => start(BANK);
+      const missBtn = document.getElementById("missed");
+      if (missBtn) {
+        missBtn.onclick = () => {
+          const ids = new Set(missed.map((m) => m.q));
+          start(BANK.filter((q) => ids.has(q.q)));
+        };
+      }
+    }
+    start(BANK);
+
+  </script>
+</body>
+</html>

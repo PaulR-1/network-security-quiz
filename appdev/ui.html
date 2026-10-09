@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>UI code and navigation</title>
+  <link rel="stylesheet" href="../theme.css" />
+  <style>
+    .row { grid-template-columns: 1fr minmax(9.5rem, 15rem); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="exit" href="index.html">All modules</a>
+    <h1>UI code and navigation</h1>
+    <p class="sub">XML versus Kotlin, findViewById, Toast, explicit and implicit Intents, and the Login to Profile flow. From the ICS26011 reviewer. Questions shuffle. Every answer shows why.</p>
+    <div class="bar"><i id="prog"></i></div>
+    <div class="meta">
+      <span id="count"></span>
+      <span id="scoreline"></span>
+    </div>
+    <div class="card" id="panel"></div>
+  </div>
+  <script>
+    const BANK = [{"type": "single", "q": "What does the XML layout define?", "options": ["The visual interface: Views, attributes, dimensions, text, positioning, and other UI properties", "Click behavior, calculations, and navigation", "The Activity lifecycle order", "The dessert code name of the phone"], "answer": ["The visual interface: Views, attributes, dimensions, text, positioning, and other UI properties"], "why": {"The visual interface: Views, attributes, dimensions, text, positioning, and other UI properties": "The consolidated table assigns the visual interface to the XML layout.", "Click behavior, calculations, and navigation": "Behavior, events, calculations, and navigation are the Kotlin side.", "The Activity lifecycle order": "The lifecycle is Android calling Activity callbacks. XML describes the interface.", "The dessert code name of the phone": "Code names are the version table. XML describes Views and attributes."}, "explain": "XML defines the visual interface: Views, attributes, dimensions, text, and positioning.", "source": "UI concepts, XML"}, {"type": "single", "q": "What does Kotlin do in the XML-and-Kotlin split?", "options": ["Implements behavior and logic, handles events, reads input, calculates, and controls navigation", "Declares the visual tree, dimensions, and positioning", "Stores the app on Google Play", "Replaces android:id so views cannot be found"], "answer": ["Implements behavior and logic, handles events, reads input, calculates, and controls navigation"], "why": {"Implements behavior and logic, handles events, reads input, calculates, and controls navigation": "That is the Kotlin row in the consolidated table.", "Declares the visual tree, dimensions, and positioning": "The visual tree and positioning belong to the XML layout.", "Stores the app on Google Play": "Google Play is the distribution ecosystem. Kotlin is the behavior in the app.", "Replaces android:id so views cannot be found": "android:id exists so Kotlin can reference a View. Kotlin does not replace that id."}, "explain": "Kotlin implements behavior: events, input, calculations, and navigation.", "source": "UI concepts, Kotlin"}, {"type": "single", "q": "What does setContentView() do?", "options": ["Connects an Activity to an XML layout", "Reads an EditText as a String", "Sends a key-value pair to another Activity", "Ends the current Activity so Back cannot return"], "answer": ["Connects an Activity to an XML layout"], "why": {"Connects an Activity to an XML layout": "The table says setContentView() connects an Activity to an XML layout.", "Reads an EditText as a String": "Reading the field is editText.text.toString().", "Sends a key-value pair to another Activity": "Sending data on an Intent is putExtra.", "Ends the current Activity so Back cannot return": "Ending the current Activity is finish()."}, "explain": "setContentView() connects the Activity to an XML layout.", "source": "UI concepts, setContentView"}, {"type": "single", "q": "What does setContentView(R.layout.activity_main) connect?", "options": ["The Activity to the XML layout named activity_main", "The Activity to activity_profile", "A Button click to a Toast", "An ImageView to centerCrop"], "answer": ["The Activity to the XML layout named activity_main"], "why": {"The Activity to the XML layout named activity_main": "The code table says that call connects the Activity to the layout named activity_main.", "The Activity to activity_profile": "activity_profile is the other layout in the Login → Profile sample. This call names activity_main.", "A Button click to a Toast": "A click is setOnClickListener. This call attaches the layout.", "An ImageView to centerCrop": "centerCrop is a scaleType. This call attaches activity_main."}, "explain": "setContentView(R.layout.activity_main) connects the Activity to the layout named activity_main.", "source": "UI concepts, activity_main"}, {"type": "single", "q": "What does findViewById() do?", "options": ["Retrieves a View from the XML layout so Kotlin can work with it", "Creates the XML file", "Declares a read-only Kotlin value with no View involved", "Destroys the Activity"], "answer": ["Retrieves a View from the XML layout so Kotlin can work with it"], "why": {"Retrieves a View from the XML layout so Kotlin can work with it": "The table says findViewById() retrieves a View from the XML layout.", "Creates the XML file": "The XML file defines the interface. findViewById retrieves a View that is already in it.", "Declares a read-only Kotlin value with no View involved": "val declares a read-only value. findViewById is how code obtains a View.", "Destroys the Activity": "Destruction is onDestroy, or finish() for the current Activity. findViewById looks up a View."}, "explain": "findViewById() retrieves a View from the XML layout so Kotlin can use it.", "source": "UI concepts, findViewById"}, {"type": "single", "q": "What does findViewById\u003cButton>(R.id.btnLogin) return?", "options": ["The Button whose XML id is btnLogin", "The EditText named etUsername", "The profile TextView", "Every View in the layout"], "answer": ["The Button whose XML id is btnLogin"], "why": {"The Button whose XML id is btnLogin": "The code table says it finds the Button whose XML ID is btnLogin.", "The EditText named etUsername": "etUsername is a different id. This call looks up R.id.btnLogin.", "The profile TextView": "The profile text id in the sample is tvUsername.", "Every View in the layout": "The call looks up one id, btnLogin, as a Button."}, "explain": "findViewById\u003cButton>(R.id.btnLogin) finds the Button whose XML id is btnLogin.", "source": "UI concepts, btnLogin"}, {"type": "single", "q": "What does android:id=\"@+id/btnLogin\" do?", "options": ["Assigns an id to an XML View so Kotlin can find and use it", "Starts ProfileActivity", "Reads the typed username", "Sets the Button's click block"], "answer": ["Assigns an id to an XML View so Kotlin can find and use it"], "why": {"Assigns an id to an XML View so Kotlin can find and use it": "The code table says that attribute assigns an id so Kotlin can find the View.", "Starts ProfileActivity": "Starting the next Activity is startActivity with an Intent.", "Reads the typed username": "Reading the field is text.toString().", "Sets the Button's click block": "The click block is setOnClickListener."}, "explain": "android:id=\"@+id/btnLogin\" assigns the id Kotlin later looks up.", "source": "UI concepts, @+id"}, {"type": "single", "q": "What does editText.text.toString() do?", "options": ["Reads the user's EditText input as a String", "Shows a temporary Toast", "Connects the Activity to a layout", "Compares two values for equality"], "answer": ["Reads the user's EditText input as a String"], "why": {"Reads the user's EditText input as a String": "The code table says it reads the EditText input as a String.", "Shows a temporary Toast": "A temporary message is Toast.makeText(...).show().", "Connects the Activity to a layout": "Connecting the layout is setContentView().", "Compares two values for equality": "Equality comparison is ==. toString() here reads the field."}, "explain": "editText.text.toString() reads the EditText as a String.", "source": "UI concepts, toString"}, {"type": "single", "q": "What does button.setOnClickListener { ... } do?", "options": ["Runs the enclosed code when the Button is clicked", "Runs the block once when the Activity is created, with no click", "Declares a when branch", "Sets android:hint"], "answer": ["Runs the enclosed code when the Button is clicked"], "why": {"Runs the enclosed code when the Button is clicked": "The code table says the listener runs the enclosed code when the Button is clicked.", "Runs the block once when the Activity is created, with no click": "Work at creation belongs in onCreate. This listener waits for the click.", "Declares a when branch": "when is a conditional. This is a click listener.", "Sets android:hint": "android:hint is XML placeholder text. The listener runs Kotlin when the Button is clicked."}, "explain": "setOnClickListener runs the enclosed code when the Button is clicked.", "source": "UI concepts, click listener"}, {"type": "single", "q": "What does Toast.makeText(...).show() do?", "options": ["Creates and displays a temporary message", "Opens another Activity and passes a username", "Saves the Activity in onPause", "Sets the layout width to match_parent"], "answer": ["Creates and displays a temporary message"], "why": {"Creates and displays a temporary message": "The code table says it creates and displays a temporary message.", "Opens another Activity and passes a username": "Opening another Activity and passing data is an Intent with putExtra and startActivity.", "Saves the Activity in onPause": "onPause is where you pause and save. A Toast is a temporary message.", "Sets the layout width to match_parent": "match_parent is a layout size. A Toast is a temporary message."}, "explain": "Toast.makeText(...).show() creates and displays a temporary message.", "source": "UI concepts, Toast"}, {"type": "single", "q": "How do Toast.LENGTH_SHORT and Toast.LENGTH_LONG differ?", "options": ["LENGTH_SHORT is the short duration and LENGTH_LONG is the longer duration", "LENGTH_SHORT hides the View and LENGTH_LONG keeps its space", "LENGTH_LONG is a Kotlin Long variable", "They choose fitXY versus centerCrop"], "answer": ["LENGTH_SHORT is the short duration and LENGTH_LONG is the longer duration"], "why": {"LENGTH_SHORT is the short duration and LENGTH_LONG is the longer duration": "The code table assigns the short duration to LENGTH_SHORT and the longer duration to LENGTH_LONG.", "LENGTH_SHORT hides the View and LENGTH_LONG keeps its space": "Hiding with or without space is GONE versus INVISIBLE. These constants are Toast durations.", "LENGTH_LONG is a Kotlin Long variable": "Long is a Kotlin number type. LENGTH_LONG is the longer Toast duration.", "They choose fitXY versus centerCrop": "fitXY and centerCrop are scaleType values, not Toast durations."}, "explain": "Toast.LENGTH_SHORT is the short duration. Toast.LENGTH_LONG is the longer one.", "source": "UI concepts, Toast duration"}, {"type": "single", "q": "What does Intent(context, DestinationActivity::class.java) create?", "options": ["An Intent that moves from the current Activity to DestinationActivity", "An implicit Intent that names no destination", "A Toast with LENGTH_SHORT", "A val that cannot change"], "answer": ["An Intent that moves from the current Activity to DestinationActivity"], "why": {"An Intent that moves from the current Activity to DestinationActivity": "The code table says that constructor creates an Intent to move from the current Activity to another Activity.", "An implicit Intent that names no destination": "This constructor names DestinationActivity::class.java, so the destination is identified.", "A Toast with LENGTH_SHORT": "A Toast is Toast.makeText. This constructor builds an Intent.", "A val that cannot change": "val is a Kotlin declaration. This constructor builds an Intent."}, "explain": "That constructor creates an Intent aimed at a specific destination Activity.", "source": "UI concepts, Intent constructor"}, {"type": "single", "q": "What is an explicit Intent?", "options": ["An Intent whose destination component is named directly, such as LoginActivity to ProfileActivity", "An Intent that describes an action and lets Android choose a component", "A layout constraint between two Views", "A when branch with no destination"], "answer": ["An Intent whose destination component is named directly, such as LoginActivity to ProfileActivity"], "why": {"An Intent whose destination component is named directly, such as LoginActivity to ProfileActivity": "The navigation table says an explicit Intent directly identifies the destination, with that Login-to-Profile example.", "An Intent that describes an action and lets Android choose a component": "An action with no named destination is an implicit Intent.", "A layout constraint between two Views": "Constraints belong to ConstraintLayout. An explicit Intent names an Activity.", "A when branch with no destination": "when is a conditional. An explicit Intent names the destination component."}, "explain": "An explicit Intent names the destination, such as LoginActivity opening ProfileActivity.", "source": "UI concepts, explicit Intent"}, {"type": "single", "q": "What is an implicit Intent?", "options": ["An Intent that describes an action without naming the destination, so Android can choose a component", "An Intent that sets ProfileActivity::class.java as the destination", "A call to setContentView", "A GONE view"], "answer": ["An Intent that describes an action without naming the destination, so Android can choose a component"], "why": {"An Intent that describes an action without naming the destination, so Android can choose a component": "The table says an implicit Intent describes an action without directly naming the destination component.", "An Intent that sets ProfileActivity::class.java as the destination": "Naming ProfileActivity::class.java is the explicit form used in the sample.", "A call to setContentView": "setContentView connects a layout. An implicit Intent describes an action.", "A GONE view": "GONE is visibility. An implicit Intent leaves the destination for Android to resolve."}, "explain": "An implicit Intent describes an action and does not name the destination component.", "source": "UI concepts, implicit Intent"}, {"type": "single", "q": "What does intent.putExtra(key, value) do?", "options": ["Adds data to an Intent as a key-value pair so another Activity can receive it", "Reads a String extra back out of the Intent", "Shows the value in a Toast only", "Declares the XML id"], "answer": ["Adds data to an Intent as a key-value pair so another Activity can receive it"], "why": {"Adds data to an Intent as a key-value pair so another Activity can receive it": "The table says putExtra sends data from one Activity to another as a key-value pair.", "Reads a String extra back out of the Intent": "Reading a String extra is getStringExtra.", "Shows the value in a Toast only": "A Toast is a temporary message. putExtra attaches data to the Intent.", "Declares the XML id": "The XML id is android:id. putExtra attaches data to an Intent."}, "explain": "putExtra adds a key-value pair to the Intent for the next Activity.", "source": "UI concepts, putExtra"}, {"type": "single", "q": "What does intent.getStringExtra(key) do?", "options": ["Retrieves a String extra that was sent with the matching key", "Puts a new extra onto the outgoing Intent", "Converts any EditText to a String without an Intent", "Finishes the current Activity"], "answer": ["Retrieves a String extra that was sent with the matching key"], "why": {"Retrieves a String extra that was sent with the matching key": "The table says getStringExtra retrieves a String extra using the matching key.", "Puts a new extra onto the outgoing Intent": "Adding an extra is putExtra.", "Converts any EditText to a String without an Intent": "Reading a field directly is text.toString(). getStringExtra reads an Intent extra.", "Finishes the current Activity": "Ending the Activity is finish()."}, "explain": "getStringExtra retrieves a String extra by its key.", "source": "UI concepts, getStringExtra"}, {"type": "single", "q": "What does startActivity(intent) do?", "options": ["Starts the Activity specified by the Intent", "Connects a layout and does not open another screen", "Deletes the extra named username", "Hides a View with GONE"], "answer": ["Starts the Activity specified by the Intent"], "why": {"Starts the Activity specified by the Intent": "The table says startActivity launches the Activity described by the Intent.", "Connects a layout and does not open another screen": "Connecting a layout is setContentView. startActivity opens the Activity in the Intent.", "Deletes the extra named username": "The sample stores username with putExtra. startActivity opens the destination.", "Hides a View with GONE": "GONE is a visibility value. startActivity launches an Activity."}, "explain": "startActivity(intent) opens the Activity the Intent describes.", "source": "UI concepts, startActivity"}, {"type": "single", "q": "What does finish() do in the Login → Profile sample?", "options": ["Ends the current Activity so Back does not return to Login after navigating away", "Saves the username into the Intent", "Reloads activity_main", "Runs onStart and stays on Login"], "answer": ["Ends the current Activity so Back does not return to Login after navigating away"], "why": {"Ends the current Activity so Back does not return to Login after navigating away": "The table says finish() ends the current Activity and can prevent Back from returning to Login.", "Saves the username into the Intent": "The username is added with putExtra.", "Reloads activity_main": "activity_main is attached with setContentView. finish() ends the Activity.", "Runs onStart and stays on Login": "onStart makes an Activity visible. finish() ends Login so Back does not return to it."}, "explain": "finish() ends Login so the Back button does not return to it after opening Profile.", "source": "UI concepts, finish"}, {"type": "single", "q": "In the Login sample, which line sends the username to Profile?", "options": ["intent.putExtra(\"username\", username), after the text is read inside the login button's click listener", "tvUsername.text = username, inside LoginActivity", "intent.getStringExtra(\"username\"), before the Intent is created", "setContentView(R.layout.activity_main)"], "answer": ["intent.putExtra(\"username\", username), after the text is read inside the login button's click listener"], "why": {"intent.putExtra(\"username\", username), after the text is read inside the login button's click listener": "The sample reads etUsername, builds an Intent to ProfileActivity, then putExtra(\"username\", username) before startActivity.", "tvUsername.text = username, inside LoginActivity": "tvUsername.text is assigned in ProfileActivity, after the extra is received.", "intent.getStringExtra(\"username\"), before the Intent is created": "getStringExtra reads the extra on the Profile side. Login sends it with putExtra.", "setContentView(R.layout.activity_main)": "setContentView attaches the login layout. It does not carry the username."}, "explain": "Login sends the username with intent.putExtra(\"username\", username) from the button's click listener.", "source": "UI concepts, login send"}, {"type": "single", "q": "In the Profile sample, which line receives the username and shows it?", "options": ["val username = intent.getStringExtra(\"username\"), then tvUsername.text = username", "btnLogin.setOnClickListener, which builds a new Intent", "android:hint on etUsername", "onDestroy(), which clears the TextView"], "answer": ["val username = intent.getStringExtra(\"username\"), then tvUsername.text = username"], "why": {"val username = intent.getStringExtra(\"username\"), then tvUsername.text = username": "ProfileActivity reads that extra and assigns it to the TextView.", "btnLogin.setOnClickListener, which builds a new Intent": "The click listener is on the Login side, where the Intent is created.", "android:hint on etUsername": "android:hint would be placeholder text. Profile reads the extra into tvUsername.", "onDestroy(), which clears the TextView": "onDestroy is final cleanup. The sample displays the extra with getStringExtra and tvUsername.text."}, "explain": "ProfileActivity reads intent.getStringExtra(\"username\") and sets tvUsername.text to that value.", "source": "UI concepts, profile receive"}, {"type": "single", "q": "What does tvUsername.text = username do?", "options": ["Changes or displays text in that TextView", "Declares the XML id @+id/tvUsername", "Creates the Intent", "Chooses Toast.LENGTH_LONG"], "answer": ["Changes or displays text in that TextView"], "why": {"Changes or displays text in that TextView": "The code table says this assignment changes or displays text in a TextView.", "Declares the XML id @+id/tvUsername": "The id is declared in XML with android:id. This line sets the text.", "Creates the Intent": "The Intent is created with the Intent constructor.", "Chooses Toast.LENGTH_LONG": "LENGTH_LONG is a Toast duration. This line sets TextView text."}, "explain": "tvUsername.text = username sets the text shown in that TextView.", "source": "UI concepts, set text"}];
+
+    const shuffle = (arr) => [...arr].sort(() => Math.random() - 0.5);
+    const same = (a, b) => a.length === b.length && a.every((x) => b.includes(x));
+    let deck = [];
+    let i = 0;
+    let correct = 0;
+    let locked = false;
+    let missed = [];
+    let picked = new Set();
+    const panel = document.getElementById("panel");
+    const prog = document.getElementById("prog");
+    const count = document.getElementById("count");
+    const scoreline = document.getElementById("scoreline");
+    function start(pool) {
+      deck = shuffle(pool.map((q) => {
+        if (q.type === "match") return { ...q, items: shuffle(q.items) };
+        return { ...q, options: shuffle(q.options) };
+      }));
+      i = 0; correct = 0; missed = []; locked = false; picked = new Set();
+      render();
+    }
+    function render() {
+      if (i >= deck.length) return results();
+      const q = deck[i];
+      prog.style.width = ((i / deck.length) * 100) + "%";
+      count.textContent = "Question " + (i + 1) + " of " + deck.length;
+      scoreline.textContent = "Score " + correct;
+      locked = false; picked = new Set();
+      if (q.type === "match") {
+        const opts = (q.choices || []).map((c) => `<option value="${c.v}">${esc(c.l)}</option>`).join("");
+        panel.innerHTML = `<p class="q">${esc(q.q)}</p>
+          <p class="hint">${esc(q.hint || "Classify each item.")}</p>
+          <div class="match">${q.items.map((item, idx) => `
+            <div class="row">
+              <span>${esc(item)}</span>
+              <select data-item="${idx}">
+                <option value="">Choose…</option>
+                ${opts}
+              </select>
+            </div>`).join("")}</div>
+          <div class="actions"><button class="btn" id="check" type="button">Check</button></div>
+          <div class="fb" id="fb"></div>`;
+        document.getElementById("check").onclick = checkMatch;
+        return;
+      }
+      const need = q.answer.length;
+      panel.innerHTML = `<p class="q">${esc(q.q)}</p>
+        ${q.type === "multi" ? `<p class="hint">Select ${need}, then check.</p>` : `<p class="hint">Pick one answer.</p>`}
+        <div id="opts">${q.options.map((opt) => `<button class="opt" type="button" data-v="${encodeURIComponent(opt)}">${esc(opt)}</button>`).join("")}</div>
+        <div class="actions">
+          ${q.type === "multi" ? `<button class="btn" id="check" type="button" disabled>Check</button>` : ""}
+        </div>
+        <div class="fb" id="fb"></div>`;
+      panel.querySelectorAll(".opt").forEach((btn) => {
+        btn.onclick = () => {
+          if (locked) return;
+          const v = decodeURIComponent(btn.dataset.v);
+          if (q.type === "single") {
+            picked = new Set([v]);
+            finish(q);
+          } else {
+            if (picked.has(v)) picked.delete(v); else {
+              if (picked.size >= need) return;
+              picked.add(v);
+            }
+            panel.querySelectorAll(".opt").forEach((b) => {
+              b.classList.toggle("sel", picked.has(decodeURIComponent(b.dataset.v)));
+            });
+            document.getElementById("check").disabled = picked.size !== need;
+          }
+        };
+      });
+      const check = document.getElementById("check");
+      if (check) check.onclick = () => finish(q);
+    }
+    function checkMatch() {
+      if (locked) return;
+      const q = deck[i];
+      const selects = [...panel.querySelectorAll("select")];
+      if (selects.some((s) => !s.value)) {
+        const fb = document.getElementById("fb");
+        fb.className = "fb no";
+        fb.textContent = "Choose a category for every row.";
+        return;
+      }
+      locked = true;
+      let ok = true;
+      selects.forEach((s, idx) => {
+        const item = q.items[idx];
+        const good = s.value === q.map[item];
+        if (!good) ok = false;
+        s.classList.add(good ? "ok" : "no");
+      });
+      after(ok, q, q.explain || "Review the classifications.");
+    }
+    function finish(q) {
+      if (locked) return;
+      locked = true;
+      const chosen = [...picked];
+      const ok = same(chosen, q.answer);
+      panel.querySelectorAll(".opt").forEach((b) => {
+        const v = decodeURIComponent(b.dataset.v);
+        b.disabled = true;
+        if (q.answer.includes(v)) b.classList.add("ok");
+        else if (picked.has(v)) b.classList.add("no");
+      });
+      after(ok, q, q.explain || ("Correct: " + q.answer.join(" · ")));
+    }
+    const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+    function reasonBlock(q) {
+      if (q.type === "match") {
+        const labels = {};
+        (q.choices || []).forEach((c) => { labels[c.v] = c.l; });
+        const lines = (q.items || []).map((item) => `<li><b>${esc(item)}</b> — ${esc(labels[q.map[item]] || q.map[item])}</li>`).join("");
+        return `<p class="why-h">WHY THIS IS RIGHT</p><ul class="why">${lines}</ul><p>${esc(q.explain || "")}</p>`;
+      }
+      const why = q.why || {};
+      const right = (q.answer || []).map((a) => `<li><b>${esc(a)}</b> — ${esc(why[a] || q.explain || "")}</li>`).join("");
+      const wrong = (q.options || []).filter((o) => !(q.answer || []).includes(o)).map((o) => `<li><b>${esc(o)}</b> — ${esc(why[o] || "")}</li>`).join("");
+      return `<p class="why-h">WHY THIS IS RIGHT</p><ul class="why">${right}</ul>` +
+        (wrong ? `<p class="why-h">WHY THE OTHERS ARE WRONG</p><ul class="why">${wrong}</ul>` : "");
+    }
+    function after(ok, q, msg) {
+      if (ok) correct++; else missed.push({ q: q.q, msg });
+      const fb = document.getElementById("fb");
+      fb.className = "fb " + (ok ? "ok" : "no");
+      fb.textContent = ok ? "Correct." : "Not quite.";
+      let box = document.getElementById("reasons");
+      if (!box) {
+        box = document.createElement("div");
+        box.id = "reasons";
+        fb.after(box);
+      }
+      box.innerHTML = reasonBlock(q);
+      scoreline.textContent = "Score " + correct;
+      const actions = panel.querySelector(".actions");
+      const next = document.createElement("button");
+      next.className = "btn";
+      next.type = "button";
+      next.id = "next";
+      next.textContent = i + 1 === deck.length ? "See results" : "Next";
+      actions.replaceChildren(next);
+      next.onclick = () => { i++; render(); };
+    }
+    function results() {
+      prog.style.width = "100%";
+      count.textContent = "Round complete";
+      scoreline.textContent = "";
+      const pct = Math.round((correct / deck.length) * 100);
+      panel.innerHTML = `
+        <p class="q">You scored</p>
+        <div class="score">${correct} / ${deck.length}</div>
+        <p class="sub" style="margin:0">${pct}% · ${missed.length ? missed.length + " to review" : "Clean round."}</p>
+        ${missed.length ? `<ul class="miss">${missed.map((m) => `<li><b>${esc(m.q)}</b><br>${esc(m.msg)}</li>`).join("")}</ul>` : ""}
+        <div class="actions">
+          <a class="btn ghost" href="index.html">All modules</a>
+          <button class="btn" id="again" type="button">Play again (shuffle)</button>
+          ${missed.length ? `<button class="btn ghost" id="missed" type="button">Replay missed only</button>` : ""}
+        </div>`;
+      document.getElementById("again").onclick = () => start(BANK);
+      const missBtn = document.getElementById("missed");
+      if (missBtn) {
+        missBtn.onclick = () => {
+          const ids = new Set(missed.map((m) => m.q));
+          start(BANK.filter((q) => ids.has(q.q)));
+        };
+      }
+    }
+    start(BANK);
+
+  </script>
+</body>
+</html>

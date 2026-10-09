@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Introduction to mobile development</title>
+  <link rel="stylesheet" href="../theme.css" />
+  <style>
+    .row { grid-template-columns: 1fr minmax(9.5rem, 15rem); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="exit" href="index.html">All modules</a>
+    <h1>Introduction to mobile development</h1>
+    <p class="sub">What Android is, the founding story, platforms, the version table, and Android Studio. From the ICS26011 reviewer. Questions shuffle. Every answer shows why.</p>
+    <div class="bar"><i id="prog"></i></div>
+    <div class="meta">
+      <span id="count"></span>
+      <span id="scoreline"></span>
+    </div>
+    <div class="card" id="panel"></div>
+  </div>
+  <script>
+    const BANK = [{"type": "single", "q": "What is mobile application development?", "options": ["Developing applications for mobile devices such as PDAs, enterprise digital assistants, and mobile phones", "Writing firmware for network routers", "Designing only the Linux kernel", "Publishing desktop-only programs"], "answer": ["Developing applications for mobile devices such as PDAs, enterprise digital assistants, and mobile phones"], "why": {"Developing applications for mobile devices such as PDAs, enterprise digital assistants, and mobile phones": "The module defines it as that act or process, and it names those devices.", "Writing firmware for network routers": "The definition is about applications for mobile devices, not router firmware.", "Designing only the Linux kernel": "Android is Linux-based, but this definition is about building mobile applications.", "Publishing desktop-only programs": "The definition names mobile devices, not desktop-only programs."}, "explain": "It is the process of building applications for mobile devices such as PDAs, enterprise digital assistants, and phones.", "source": "Module 1, Mobile Application Development"}, {"type": "single", "q": "How does the module present Android?", "options": ["An open-source, Linux-based operating system for smartphones and tablets", "A closed-source desktop operating system", "A programming language that replaced Kotlin", "The Google Play billing service"], "answer": ["An open-source, Linux-based operating system for smartphones and tablets"], "why": {"An open-source, Linux-based operating system for smartphones and tablets": "That is the module's description: open-source, Linux-based, for smartphones and tablet computers.", "A closed-source desktop operating system": "The module calls Android open-source and Linux-based, for phones and tablets.", "A programming language that replaced Kotlin": "Kotlin is a language used to write Android apps. Android is the operating system.", "The Google Play billing service": "Google Play is the distribution ecosystem. Android is the operating system."}, "explain": "Android is an open-source, Linux-based operating system for smartphones and tablets.", "source": "Module 1, What is Android?"}, {"type": "multi", "q": "Android applications are primarily written in which languages? (Select 2)", "options": ["Java", "Kotlin", "XML layouts", "The Layout Editor"], "answer": ["Java", "Kotlin"], "why": {"Java": "The module says Android applications are primarily written in Java.", "Kotlin": "The same point says they are increasingly written in Kotlin.", "XML layouts": "XML defines the visual interface. It is not named as the language apps are primarily written in.", "The Layout Editor": "The Layout Editor is a tool for building the UI, not a language."}, "explain": "The module says Android apps are primarily written in Java and, increasingly, Kotlin.", "source": "Module 1, What is Android?"}, {"type": "single", "q": "Where does the module center Android's app ecosystem?", "options": ["Google Play", "The Apple App Store", "Only files copied between phones, with no store", "Android Market, as the name of the current ecosystem"], "answer": ["Google Play"], "why": {"Google Play": "The introduction says Android is distributed through an ecosystem centered on Google Play.", "The Apple App Store": "The module centers Android distribution on Google Play.", "Only files copied between phones, with no store": "The module describes a store ecosystem centered on Google Play.", "Android Market, as the name of the current ecosystem": "Android Market is listed under Android 1.0. The introduction centers the ecosystem on Google Play."}, "explain": "Distribution is an app ecosystem centered on Google Play.", "source": "Module 1, What is Android?"}, {"type": "single", "q": "Why does the module say Android is worth learning?", "options": ["It has a large number of users and applications, so it is a major platform", "It has the smallest mobile user base", "It runs on only one phone model", "It is the language that replaced Kotlin"], "answer": ["It has a large number of users and applications, so it is a major platform"], "why": {"It has a large number of users and applications, so it is a major platform": "The Why Android section points to that large user and application base.", "It has the smallest mobile user base": "The module uses the large user base as the reason, not a small one.", "It runs on only one phone model": "The module stresses how widely Android is used, including devices beyond phones.", "It is the language that replaced Kotlin": "Kotlin is a way to write Android apps. The reason to learn Android is the size of the platform."}, "explain": "The module points to Android's large number of users and applications.", "source": "Module 1, Why Android?"}, {"type": "single", "q": "When and where was Android Inc. founded?", "options": ["October 2003, in Palo Alto, California", "January 2008, in Mountain View", "October 2005, in Seattle", "March 2010, in Austin"], "answer": ["October 2003, in Palo Alto, California"], "why": {"October 2003, in Palo Alto, California": "The Android Story slides give October 2003 and Palo Alto.", "January 2008, in Mountain View": "The slides place the founding in Palo Alto in October 2003.", "October 2005, in Seattle": "The year in the slides is 2003, and the city is Palo Alto.", "March 2010, in Austin": "The founding in the module is October 2003 in Palo Alto."}, "explain": "Android Inc. was founded in Palo Alto, California, in October 2003.", "source": "Module 1, The Android Story"}, {"type": "single", "q": "Who does the module name as the founders of Android Inc.?", "options": ["Andy Rubin, Rich Miner, Nick Sears, and Chris White", "Andy Rubin alone", "Rich Miner and Nick Sears only", "Chris White only"], "answer": ["Andy Rubin, Rich Miner, Nick Sears, and Chris White"], "why": {"Andy Rubin, Rich Miner, Nick Sears, and Chris White": "The Android Story names those four founders.", "Andy Rubin alone": "Andy Rubin is one founder. The slides also name Rich Miner, Nick Sears, and Chris White.", "Rich Miner and Nick Sears only": "Those two are founders, and the slides also name Andy Rubin and Chris White.", "Chris White only": "Chris White is one of the four. The full list is Rubin, Miner, Sears, and White."}, "explain": "Android Inc. was founded by Andy Rubin, Rich Miner, Nick Sears, and Chris White.", "source": "Module 1, The Android Story"}, {"type": "single", "q": "What original goal does the Android Story give?", "options": ["A smarter mobile device that was more aware of its owner's location and preferences", "A desktop operating system meant to replace Windows", "A closed store that blocked third-party apps", "The tablet-only Honeycomb interface"], "answer": ["A smarter mobile device that was more aware of its owner's location and preferences"], "why": {"A smarter mobile device that was more aware of its owner's location and preferences": "That is the original goal written in the slides.", "A desktop operating system meant to replace Windows": "The goal in the slides is a smarter mobile device, not a desktop OS.", "A closed store that blocked third-party apps": "The slides describe location and preference awareness, not a closed store.", "The tablet-only Honeycomb interface": "Honeycomb is a later tablet release. The original goal was a smarter device aware of location and preferences."}, "explain": "The original goal was a smarter mobile device, more aware of its owner's location and preferences.", "source": "Module 1, The Android Story"}, {"type": "match", "q": "Match each Android platform with what the module says it is for.", "hint": "Choose the platform the description belongs to.", "items": ["Android TV", "Android Auto", "Wear OS / Android Wear", "Android-powered appliances"], "choices": [{"v": "tv", "l": "Digital media players"}, {"v": "auto", "l": "Compatible car displays"}, {"v": "wear", "l": "Smartwatches and wearables"}, {"v": "appliances", "l": "Tablets, cameras, microwaves, washers"}], "map": {"Android TV": "tv", "Android Auto": "auto", "Wear OS / Android Wear": "wear", "Android-powered appliances": "appliances"}, "explain": "TV is for media players, Auto for car displays, Wear OS for wearables, and the module also shows Android on appliances.", "source": "Module 1, Android Beyond Smartphones"}, {"type": "single", "q": "What does the module say Android TV emphasizes?", "options": ["Content discovery and voice search, with Assistant and Cast", "Fingerprint unlock and USB-C", "Picture-in-picture and notification channels", "Watch-face styles and 3G/LTE"], "answer": ["Content discovery and voice search, with Assistant and Cast"], "why": {"Content discovery and voice search, with Assistant and Cast": "The Android TV row names content discovery, voice search, Assistant, and Cast.", "Fingerprint unlock and USB-C": "Fingerprint support and USB-C are Marshmallow points, not the Android TV description.", "Picture-in-picture and notification channels": "Those are Oreo points. Android TV emphasizes content discovery, voice search, Assistant, and Cast.", "Watch-face styles and 3G/LTE": "Watch faces, Bluetooth, Wi-Fi, and 3G/LTE are in the Wear OS row."}, "explain": "Android TV emphasizes content discovery and voice search, and it integrates Assistant and Cast.", "source": "Module 1, Android TV"}, {"type": "single", "q": "Why does the module encourage voice control in Android Auto?", "options": ["For safer operation while using the car display", "So the driver has to watch the screen more closely", "Because Auto is the smartwatch operating system", "To install apps onto an SD card"], "answer": ["For safer operation while using the car display"], "why": {"For safer operation while using the car display": "The Auto row says voice control is encouraged for safer operation.", "So the driver has to watch the screen more closely": "The module encourages voice control for safer operation, not more screen watching.", "Because Auto is the smartwatch operating system": "Smartwatches are Wear OS. Android Auto is for compatible car displays.", "To install apps onto an SD card": "SD-card installation is an Android 2.2 Froyo point, not the reason for Auto voice control."}, "explain": "Voice control in Android Auto is encouraged for safer operation.", "source": "Module 1, Android Auto"}, {"type": "single", "q": "What does the module associate with Wear OS / Android Wear?", "options": ["Smartwatches, notifications, Assistant, Bluetooth, Wi-Fi, 3G/LTE, and watch-face styles", "Car navigation, music, SMS, and telephone", "Content discovery on a digital media player", "Microwaves and washing machines only"], "answer": ["Smartwatches, notifications, Assistant, Bluetooth, Wi-Fi, 3G/LTE, and watch-face styles"], "why": {"Smartwatches, notifications, Assistant, Bluetooth, Wi-Fi, 3G/LTE, and watch-face styles": "That list is the Wear OS row in the slides.", "Car navigation, music, SMS, and telephone": "Those examples belong to Android Auto.", "Content discovery on a digital media player": "That is the Android TV description.", "Microwaves and washing machines only": "Appliances are a separate row. Wear OS is the watch and wearable system."}, "explain": "Wear OS is the Android-based system for smartwatches and other wearables, including notifications, Assistant, radios, and watch faces.", "source": "Module 1, Wear OS"}, {"type": "single", "q": "Which code name does Android 1.0 have in the module?", "options": ["No specific code name", "Cupcake", "Donut", "Eclair"], "answer": ["No specific code name"], "why": {"No specific code name": "The version table leaves 1.0 with no specific code name.", "Cupcake": "Cupcake is Android 1.5.", "Donut": "Donut is Android 1.6.", "Eclair": "Eclair is Android 2.0/2.1."}, "explain": "Android 1.0 is listed with no specific code name.", "source": "Module 1, Android 1.0"}, {"type": "match", "q": "Match each early Android version with its code name.", "hint": "Pick the code name for each version.", "items": ["1.5", "1.6", "2.0/2.1", "2.2", "2.3", "3.0/3.1/3.2", "4.0", "4.1/4.2/4.3", "4.4"], "choices": [{"v": "cupcake", "l": "Cupcake"}, {"v": "donut", "l": "Donut"}, {"v": "eclair", "l": "Eclair"}, {"v": "froyo", "l": "Froyo"}, {"v": "gingerbread", "l": "Gingerbread"}, {"v": "honeycomb", "l": "Honeycomb"}, {"v": "ics", "l": "Ice Cream Sandwich"}, {"v": "jellybean", "l": "Jelly Bean"}, {"v": "kitkat", "l": "KitKat"}], "map": {"1.5": "cupcake", "1.6": "donut", "2.0/2.1": "eclair", "2.2": "froyo", "2.3": "gingerbread", "3.0/3.1/3.2": "honeycomb", "4.0": "ics", "4.1/4.2/4.3": "jellybean", "4.4": "kitkat"}, "explain": "1.5 Cupcake through 4.4 KitKat follow the version table. Android 1.0 has no code name.", "source": "Module 1, versions 1.5–4.4"}, {"type": "match", "q": "Match each later Android version with its code name from the slides.", "hint": "Pick the code name for each version.", "items": ["5.0/5.1", "6.0", "7.0", "8.0", "9.0", "10", "11", "12/12L", "14", "15"], "choices": [{"v": "lollipop", "l": "Lollipop"}, {"v": "marshmallow", "l": "Marshmallow"}, {"v": "nougat", "l": "Nougat"}, {"v": "oreo", "l": "Oreo"}, {"v": "pie", "l": "Pie"}, {"v": "quince", "l": "Quince Tart"}, {"v": "redvelvet", "l": "Red Velvet Cake"}, {"v": "snow", "l": "Snow Cone"}, {"v": "upside", "l": "Upside Down Cake"}, {"v": "vanilla", "l": "Vanilla Ice Cream"}], "map": {"5.0/5.1": "lollipop", "6.0": "marshmallow", "7.0": "nougat", "8.0": "oreo", "9.0": "pie", "10": "quince", "11": "redvelvet", "12/12L": "snow", "14": "upside", "15": "vanilla"}, "explain": "The later table runs from Lollipop through Vanilla Ice Cream. The slides do not list a version 13.", "source": "Module 1, versions 5–15"}, {"type": "match", "q": "Match each early feature set with the version that presents it.", "hint": "Pick the version for each feature set.", "items": ["Gmail, Calendar, Maps, pull-down notifications, and Android Market", "Animated transitions, YouTube uploads, widgets, and the on-screen keyboard", "Voice search, handwriting gestures, and 800×480 support", "Speech-to-text, multiple accounts, and pinch-to-zoom", "SD-card app installation, USB tethering, and Wi-Fi hotspot", "NFC and Google Wallet on the Nexus S 4G", "Tablet-focused release with hardware acceleration", "Face Unlock and virtual buttons", "Native emoji, group messaging, and a smoother UI", "“Ok, Google”, a printing framework, and translucent UI"], "choices": [{"v": "v10", "l": "1.0"}, {"v": "cupcake", "l": "Cupcake"}, {"v": "donut", "l": "Donut"}, {"v": "eclair", "l": "Eclair"}, {"v": "froyo", "l": "Froyo"}, {"v": "ginger", "l": "Gingerbread"}, {"v": "honey", "l": "Honeycomb"}, {"v": "ics", "l": "Ice Cream Sandwich"}, {"v": "jelly", "l": "Jelly Bean"}, {"v": "kitkat", "l": "KitKat"}], "map": {"Gmail, Calendar, Maps, pull-down notifications, and Android Market": "v10", "Animated transitions, YouTube uploads, widgets, and the on-screen keyboard": "cupcake", "Voice search, handwriting gestures, and 800×480 support": "donut", "Speech-to-text, multiple accounts, and pinch-to-zoom": "eclair", "SD-card app installation, USB tethering, and Wi-Fi hotspot": "froyo", "NFC and Google Wallet on the Nexus S 4G": "ginger", "Tablet-focused release with hardware acceleration": "honey", "Face Unlock and virtual buttons": "ics", "Native emoji, group messaging, and a smoother UI": "jelly", "“Ok, Google”, a printing framework, and translucent UI": "kitkat"}, "explain": "Each row is the major-points cell for that version in the Module 1 table.", "source": "Module 1, features 1.0–KitKat"}, {"type": "match", "q": "Match each later feature set with the version that presents it.", "hint": "Pick the version for each feature set.", "items": ["High-performance graphics, screen capture and sharing, and a card-based concept", "Fingerprint support and USB-C", "Multi-window, Direct Boot, Data Saver, and Google Assistant", "Picture-in-picture, notification channels, and background execution limits", "Digital Wellbeing and hybrid gesture/button navigation", "System-wide dark theme, Focus Mode, Live Caption, and granular location permissions", "Limited single-use permissions for location, camera, and microphone", "Material You and dynamic theming from wallpaper colors", "Cross-app text drag and drop, lock-screen customization, and AI-generated wallpaper", "Listed in the module as Android 15.0"], "choices": [{"v": "lollipop", "l": "Lollipop"}, {"v": "marsh", "l": "Marshmallow"}, {"v": "nougat", "l": "Nougat"}, {"v": "oreo", "l": "Oreo"}, {"v": "pie", "l": "Pie"}, {"v": "ten", "l": "Android 10"}, {"v": "eleven", "l": "Android 11"}, {"v": "twelve", "l": "Android 12"}, {"v": "fourteen", "l": "Android 14"}, {"v": "fifteen", "l": "Android 15"}], "map": {"High-performance graphics, screen capture and sharing, and a card-based concept": "lollipop", "Fingerprint support and USB-C": "marsh", "Multi-window, Direct Boot, Data Saver, and Google Assistant": "nougat", "Picture-in-picture, notification channels, and background execution limits": "oreo", "Digital Wellbeing and hybrid gesture/button navigation": "pie", "System-wide dark theme, Focus Mode, Live Caption, and granular location permissions": "ten", "Limited single-use permissions for location, camera, and microphone": "eleven", "Material You and dynamic theming from wallpaper colors": "twelve", "Cross-app text drag and drop, lock-screen customization, and AI-generated wallpaper": "fourteen", "Listed in the module as Android 15.0": "fifteen"}, "explain": "These are the major points in the later version table, including the Android 15.0 line.", "source": "Module 1, features Lollipop–15"}, {"type": "single", "q": "Which version is presented as the first without a dessert-themed public name?", "options": ["Android 10", "Android 9 Pie", "Android 4.4 KitKat", "Android 15 Vanilla Ice Cream"], "answer": ["Android 10"], "why": {"Android 10": "The Android 10 row says it is the first version presented without a dessert-themed public name. The table still lists Quince Tart in the code-name column.", "Android 9 Pie": "Pie is the dessert name on Android 9.0.", "Android 4.4 KitKat": "KitKat is the dessert name for Android 4.4.", "Android 15 Vanilla Ice Cream": "Android 15 is listed as Vanilla Ice Cream. The no-public-dessert-name point is made about Android 10."}, "explain": "Android 10 is called the first version without a dessert-themed public name, even though the table lists Quince Tart.", "source": "Module 1, Android 10"}, {"type": "single", "q": "Which development environment does the module use for Android apps?", "options": ["Android Studio", "Google Play", "The Layout Editor alone, treated as the whole IDE", "The phone Settings screen"], "answer": ["Android Studio"], "why": {"Android Studio": "Getting Started names Android Studio as the development environment.", "Google Play": "Google Play distributes apps. Android Studio is where the module builds them.", "The Layout Editor alone, treated as the whole IDE": "The Layout Editor is one part of Android Studio. The module names Android Studio as the environment.", "The phone Settings screen": "A test device runs the app. The development environment is Android Studio."}, "explain": "Android Studio is the development environment used in the module.", "source": "Module 1, Getting Started"}, {"type": "single", "q": "Where does the module send students to install Android Studio?", "options": ["The official Android Studio site", "The Android 1.0 Market download list", "A Wear OS watch face", "The Status bar inside a project that is already open"], "answer": ["The official Android Studio site"], "why": {"The official Android Studio site": "The module directs students to the official Android Studio site for installation and setup.", "The Android 1.0 Market download list": "Android Market is a 1.0 feature. Installation is directed to the official Android Studio site.", "A Wear OS watch face": "Watch faces are a Wear OS topic. Studio is installed from its official site.", "The Status bar inside a project that is already open": "The Status bar reports IDE status. It is not the installation source."}, "explain": "Installation and setup are directed to the official Android Studio site.", "source": "Module 1, Getting Started"}, {"type": "single", "q": "What does the module use to run and test an application?", "options": ["A test device or a simulator/emulator", "Only the version-control tool window", "Google Play, before the project exists", "The printing framework from KitKat"], "answer": ["A test device or a simulator/emulator"], "why": {"A test device or a simulator/emulator": "Getting Started says a test device or simulator/emulator is used to run and test applications.", "Only the version-control tool window": "Version control is one tool window. Running the app uses a test device or emulator.", "Google Play, before the project exists": "The workflow runs the app on a test device. Play is the distribution ecosystem.", "The printing framework from KitKat": "Printing is a KitKat feature, not how this module runs a student project."}, "explain": "Apps are run and tested on a test device or a simulator/emulator.", "source": "Module 1, Getting Started"}, {"type": "single", "q": "Which development workflow does the module introduce?", "options": ["Create an Android project, edit the UI and Kotlin, then run it on a test device", "Publish on Google Play, then create the project", "Write only XML, skip Kotlin, and never run the app", "Call onDestroy, then create the project"], "answer": ["Create an Android project, edit the UI and Kotlin, then run it on a test device"], "why": {"Create an Android project, edit the UI and Kotlin, then run it on a test device": "That is the workflow order in Getting Started.", "Publish on Google Play, then create the project": "The module starts by creating the project, then editing, then running on a test device.", "Write only XML, skip Kotlin, and never run the app": "The workflow includes editing both the UI and the Kotlin code, then running the app.", "Call onDestroy, then create the project": "onDestroy is a lifecycle callback. It is not the start of the development workflow."}, "explain": "The workflow is: create a project, edit the UI and Kotlin, then run the app on a test device.", "source": "Module 1, Getting Started"}, {"type": "match", "q": "Match each Android Studio area with its job.", "hint": "Pick the job of each area.", "items": ["Toolbar", "Navigation bar", "Editor window", "Tool window bar", "Tool windows", "Status bar"], "choices": [{"v": "toolbar", "l": "Run the app and launch tools"}, {"v": "nav", "l": "Open files; compact project view"}, {"v": "editor", "l": "Create and modify code"}, {"v": "bar", "l": "Expand or collapse tool windows"}, {"v": "tools", "l": "Project, search, version control"}, {"v": "status", "l": "Status, warnings, and messages"}], "map": {"Toolbar": "toolbar", "Navigation bar": "nav", "Editor window": "editor", "Tool window bar": "bar", "Tool windows": "tools", "Status bar": "status"}, "explain": "Toolbar runs the app, the navigation bar opens files, the editor edits, tool windows hold tasks, and the status bar shows warnings.", "source": "Module 1, Android Studio User Interface"}];
+
+    const shuffle = (arr) => [...arr].sort(() => Math.random() - 0.5);
+    const same = (a, b) => a.length === b.length && a.every((x) => b.includes(x));
+    let deck = [];
+    let i = 0;
+    let correct = 0;
+    let locked = false;
+    let missed = [];
+    let picked = new Set();
+    const panel = document.getElementById("panel");
+    const prog = document.getElementById("prog");
+    const count = document.getElementById("count");
+    const scoreline = document.getElementById("scoreline");
+    function start(pool) {
+      deck = shuffle(pool.map((q) => {
+        if (q.type === "match") return { ...q, items: shuffle(q.items) };
+        return { ...q, options: shuffle(q.options) };
+      }));
+      i = 0; correct = 0; missed = []; locked = false; picked = new Set();
+      render();
+    }
+    function render() {
+      if (i >= deck.length) return results();
+      const q = deck[i];
+      prog.style.width = ((i / deck.length) * 100) + "%";
+      count.textContent = "Question " + (i + 1) + " of " + deck.length;
+      scoreline.textContent = "Score " + correct;
+      locked = false; picked = new Set();
+      if (q.type === "match") {
+        const opts = (q.choices || []).map((c) => `<option value="${c.v}">${esc(c.l)}</option>`).join("");
+        panel.innerHTML = `<p class="q">${esc(q.q)}</p>
+          <p class="hint">${esc(q.hint || "Classify each item.")}</p>
+          <div class="match">${q.items.map((item, idx) => `
+            <div class="row">
+              <span>${esc(item)}</span>
+              <select data-item="${idx}">
+                <option value="">Choose…</option>
+                ${opts}
+              </select>
+            </div>`).join("")}</div>
+          <div class="actions"><button class="btn" id="check" type="button">Check</button></div>
+          <div class="fb" id="fb"></div>`;
+        document.getElementById("check").onclick = checkMatch;
+        return;
+      }
+      const need = q.answer.length;
+      panel.innerHTML = `<p class="q">${esc(q.q)}</p>
+        ${q.type === "multi" ? `<p class="hint">Select ${need}, then check.</p>` : `<p class="hint">Pick one answer.</p>`}
+        <div id="opts">${q.options.map((opt) => `<button class="opt" type="button" data-v="${encodeURIComponent(opt)}">${esc(opt)}</button>`).join("")}</div>
+        <div class="actions">
+          ${q.type === "multi" ? `<button class="btn" id="check" type="button" disabled>Check</button>` : ""}
+        </div>
+        <div class="fb" id="fb"></div>`;
+      panel.querySelectorAll(".opt").forEach((btn) => {
+        btn.onclick = () => {
+          if (locked) return;
+          const v = decodeURIComponent(btn.dataset.v);
+          if (q.type === "single") {
+            picked = new Set([v]);
+            finish(q);
+          } else {
+            if (picked.has(v)) picked.delete(v); else {
+              if (picked.size >= need) return;
+              picked.add(v);
+            }
+            panel.querySelectorAll(".opt").forEach((b) => {
+              b.classList.toggle("sel", picked.has(decodeURIComponent(b.dataset.v)));
+            });
+            document.getElementById("check").disabled = picked.size !== need;
+          }
+        };
+      });
+      const check = document.getElementById("check");
+      if (check) check.onclick = () => finish(q);
+    }
+    function checkMatch() {
+      if (locked) return;
+      const q = deck[i];
+      const selects = [...panel.querySelectorAll("select")];
+      if (selects.some((s) => !s.value)) {
+        const fb = document.getElementById("fb");
+        fb.className = "fb no";
+        fb.textContent = "Choose a category for every row.";
+        return;
+      }
+      locked = true;
+      let ok = true;
+      selects.forEach((s, idx) => {
+        const item = q.items[idx];
+        const good = s.value === q.map[item];
+        if (!good) ok = false;
+        s.classList.add(good ? "ok" : "no");
+      });
+      after(ok, q, q.explain || "Review the classifications.");
+    }
+    function finish(q) {
+      if (locked) return;
+      locked = true;
+      const chosen = [...picked];
+      const ok = same(chosen, q.answer);
+      panel.querySelectorAll(".opt").forEach((b) => {
+        const v = decodeURIComponent(b.dataset.v);
+        b.disabled = true;
+        if (q.answer.includes(v)) b.classList.add("ok");
+        else if (picked.has(v)) b.classList.add("no");
+      });
+      after(ok, q, q.explain || ("Correct: " + q.answer.join(" · ")));
+    }
+    const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+    function reasonBlock(q) {
+      if (q.type === "match") {
+        const labels = {};
+        (q.choices || []).forEach((c) => { labels[c.v] = c.l; });
+        const lines = (q.items || []).map((item) => `<li><b>${esc(item)}</b> — ${esc(labels[q.map[item]] || q.map[item])}</li>`).join("");
+        return `<p class="why-h">WHY THIS IS RIGHT</p><ul class="why">${lines}</ul><p>${esc(q.explain || "")}</p>`;
+      }
+      const why = q.why || {};
+      const right = (q.answer || []).map((a) => `<li><b>${esc(a)}</b> — ${esc(why[a] || q.explain || "")}</li>`).join("");
+      const wrong = (q.options || []).filter((o) => !(q.answer || []).includes(o)).map((o) => `<li><b>${esc(o)}</b> — ${esc(why[o] || "")}</li>`).join("");
+      return `<p class="why-h">WHY THIS IS RIGHT</p><ul class="why">${right}</ul>` +
+        (wrong ? `<p class="why-h">WHY THE OTHERS ARE WRONG</p><ul class="why">${wrong}</ul>` : "");
+    }
+    function after(ok, q, msg) {
+      if (ok) correct++; else missed.push({ q: q.q, msg });
+      const fb = document.getElementById("fb");
+      fb.className = "fb " + (ok ? "ok" : "no");
+      fb.textContent = ok ? "Correct." : "Not quite.";
+      let box = document.getElementById("reasons");
+      if (!box) {
+        box = document.createElement("div");
+        box.id = "reasons";
+        fb.after(box);
+      }
+      box.innerHTML = reasonBlock(q);
+      scoreline.textContent = "Score " + correct;
+      const actions = panel.querySelector(".actions");
+      const next = document.createElement("button");
+      next.className = "btn";
+      next.type = "button";
+      next.id = "next";
+      next.textContent = i + 1 === deck.length ? "See results" : "Next";
+      actions.replaceChildren(next);
+      next.onclick = () => { i++; render(); };
+    }
+    function results() {
+      prog.style.width = "100%";
+      count.textContent = "Round complete";
+      scoreline.textContent = "";
+      const pct = Math.round((correct / deck.length) * 100);
+      panel.innerHTML = `
+        <p class="q">You scored</p>
+        <div class="score">${correct} / ${deck.length}</div>
+        <p class="sub" style="margin:0">${pct}% · ${missed.length ? missed.length + " to review" : "Clean round."}</p>
+        ${missed.length ? `<ul class="miss">${missed.map((m) => `<li><b>${esc(m.q)}</b><br>${esc(m.msg)}</li>`).join("")}</ul>` : ""}
+        <div class="actions">
+          <a class="btn ghost" href="index.html">All modules</a>
+          <button class="btn" id="again" type="button">Play again (shuffle)</button>
+          ${missed.length ? `<button class="btn ghost" id="missed" type="button">Replay missed only</button>` : ""}
+        </div>`;
+      document.getElementById("again").onclick = () => start(BANK);
+      const missBtn = document.getElementById("missed");
+      if (missBtn) {
+        missBtn.onclick = () => {
+          const ids = new Set(missed.map((m) => m.q));
+          start(BANK.filter((q) => ids.has(q.q)));
+        };
+      }
+    }
+    start(BANK);
+
+  </script>
+</body>
+</html>
