@@ -13,6 +13,7 @@ from __future__ import annotations
 import html
 import json
 import re
+import shutil
 import threading
 import time
 import urllib.error
@@ -564,6 +565,28 @@ def update_description(slug: str, file_id: str, text: str) -> dict:
     return {"entry": entry}
 
 
+def delete_description(slug: str, file_id: str) -> dict:
+    if not re.fullmatch(r"(?:description|description-\d+|web-\d+)\.txt", file_id or ""):
+        raise PracticeError("That description was not found.", 404)
+    with WRITE_LOCK:
+        path = command_dir(slug)
+        target = (path / file_id).resolve()
+        if target.parent != path or not target.is_file() or target.is_symlink():
+            raise PracticeError("That description was not found.", 404)
+        target.unlink()
+        entry = read_entry(path)
+    return {"entry": entry}
+
+
+def delete_folder(slug: str) -> dict:
+    with WRITE_LOCK:
+        path = command_dir(slug)
+        if path.is_symlink() or path.parent != COMMANDS.resolve():
+            raise PracticeError("That folder was not found.", 404)
+        shutil.rmtree(path)
+    return {"deleted": True, "slug": slug}
+
+
 def add_web_descriptions(slug: str) -> dict:
     path = command_dir(slug)
     command = (path / "command.txt").read_text(encoding="utf-8").strip()
@@ -634,6 +657,14 @@ class Handler(SimpleHTTPRequestHandler):
                 return
             if parsed.path == "/api/commands/command":
                 result = update_command(str(payload.get("slug", "")), str(payload.get("command", "")))
+                self.respond(200, result)
+                return
+            if parsed.path == "/api/commands/description/delete":
+                result = delete_description(str(payload.get("slug", "")), str(payload.get("id", "")))
+                self.respond(200, result)
+                return
+            if parsed.path == "/api/commands/folder/delete":
+                result = delete_folder(str(payload.get("slug", "")))
                 self.respond(200, result)
                 return
             self.respond(404, {"error": "That action was not found."})

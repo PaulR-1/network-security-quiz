@@ -29,4 +29,6 @@ The page lives in `cisco Command Practice/`.
 
 Entering a command that already has a folder adds another description file there.
 
+Delete removes one description and leaves the folder. Delete folder removes that command and every description in it. On disk, that deletes the description file or the whole command folder.
+
 The quiz pages are static HTML. A folder on disk is written only while `server.py` is running. The published page keeps the same notes in the browser.

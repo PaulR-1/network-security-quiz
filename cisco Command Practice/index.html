@@ -33,7 +33,11 @@
     .note-text { margin: 0 0 8px; }
     .notes a { color: var(--ink); }
     .notes textarea.cmd { min-height: 4.4rem; margin-bottom: 8px; }
-    button.edit { display: inline-block; margin-top: 8px; padding: 4px 10px; font-size: 0.85rem; box-shadow: 2px 2px 0 var(--ink); }
+    button.edit { display: inline-block; margin-top: 0; padding: 4px 10px; font-size: 0.85rem; box-shadow: 2px 2px 0 var(--ink); }
+    .command-actions, .note-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .command-actions { flex: none; justify-content: flex-end; }
+    .note-actions { margin-top: 8px; }
+    .note-actions .hint, .command-actions .hint { margin: 0; font-weight: 700; }
     .tag {
       display: inline-block;
       background: var(--red);
@@ -262,13 +266,87 @@
         link.textContent = item.source || "Source";
         li.appendChild(link);
       }
+      const actions = document.createElement("div");
+      actions.className = "note-actions";
       const edit = document.createElement("button");
       edit.type = "button";
       edit.className = "btn ghost edit";
       edit.textContent = "Edit";
       edit.addEventListener("click", () => startEdit(li, entry, item, index));
-      li.appendChild(edit);
+      const remove = document.createElement("button");
+      remove.type = "button";
+      remove.className = "btn ghost edit";
+      remove.textContent = "Delete";
+      remove.addEventListener("click", () => {
+        confirmDelete(actions, "Delete this description?", "Delete description", (button) => {
+          deleteDescription(entry, item, index, button);
+        });
+      });
+      actions.append(edit, remove);
+      li.appendChild(actions);
       return li;
+    }
+
+    function confirmDelete(host, message, yesLabel, onYes) {
+      const prompt = document.createElement("p");
+      prompt.className = "hint";
+      prompt.textContent = message;
+      const row = document.createElement("div");
+      row.className = "actions";
+      const yes = document.createElement("button");
+      yes.className = "btn";
+      yes.type = "button";
+      yes.textContent = yesLabel;
+      const no = document.createElement("button");
+      no.className = "btn ghost";
+      no.type = "button";
+      no.textContent = "Cancel";
+      yes.addEventListener("click", () => onYes(yes));
+      no.addEventListener("click", () => render());
+      row.append(yes, no);
+      host.replaceChildren(prompt, row);
+    }
+
+    async function deleteDescription(entry, item, index, button) {
+      button.disabled = true;
+      try {
+        if (useServer) {
+          const result = await api("/api/commands/description/delete", {
+            method: "POST",
+            body: JSON.stringify({ slug: entry.slug, id: item.id }),
+          });
+          replaceEntry(result.entry);
+        } else {
+          const current = saved.find((row) => row.slug === entry.slug);
+          if (!current || !current.descriptions[index]) throw new Error("That description was not found.");
+          current.descriptions.splice(index, 1);
+          writeStored();
+          render();
+        }
+        setStatus("Description deleted.");
+      } catch (error) {
+        setStatus(error.message, true);
+        button.disabled = false;
+      }
+    }
+
+    async function deleteFolder(entry, button) {
+      button.disabled = true;
+      try {
+        if (useServer) {
+          await api("/api/commands/folder/delete", {
+            method: "POST",
+            body: JSON.stringify({ slug: entry.slug }),
+          });
+        }
+        saved = saved.filter((row) => row.slug !== entry.slug);
+        if (!useServer) writeStored();
+        render();
+        setStatus("Folder deleted.");
+      } catch (error) {
+        setStatus(error.message, true);
+        button.disabled = false;
+      }
     }
 
     function startEdit(li, entry, item, index) {
@@ -342,12 +420,24 @@
       heading.className = "command-row";
       const title = document.createElement("h2");
       title.textContent = entry.command;
+      const commandActions = document.createElement("div");
+      commandActions.className = "command-actions";
       const editCommand = document.createElement("button");
       editCommand.type = "button";
       editCommand.className = "btn ghost edit";
       editCommand.textContent = "Edit command";
       editCommand.addEventListener("click", () => startCommandEdit(heading, entry));
-      heading.append(title, editCommand);
+      const removeFolder = document.createElement("button");
+      removeFolder.type = "button";
+      removeFolder.className = "btn ghost edit";
+      removeFolder.textContent = "Delete folder";
+      removeFolder.addEventListener("click", () => {
+        confirmDelete(commandActions, "Delete this folder and every description in it?", "Delete this folder", (button) => {
+          deleteFolder(entry, button);
+        });
+      });
+      commandActions.append(editCommand, removeFolder);
+      heading.append(title, commandActions);
       card.appendChild(heading);
 
       if (useServer) {
