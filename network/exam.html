@@ -9,13 +9,16 @@
     .note { background: var(--yellow); border: 3px solid var(--ink); padding: 12px 14px; margin: 0 0 18px; line-height: 1.45; }
     .why { margin-top: 12px; padding: 12px 14px; background: var(--card); border-left: 6px solid var(--red); line-height: 1.45; }
     .why strong { color: var(--red); }
+    .part { margin: 0 0 18px; }
+    .part:last-child { margin-bottom: 0; }
+    .part-q { font-weight: 700; line-height: 1.4; margin: 0 0 8px; }
   </style>
 </head>
 <body>
   <div class="wrap">
     <a href="index.html">Back to network reviewers</a>
     <h1>Networking exam review</h1>
-    <p class="sub">Practice set built from the verified answer key. Every answer includes the exam point to remember.</p>
+    <p class="sub">Exactly eight question groups from the verified answer key. Grouped sub-prompts stay together as they appeared in the source.</p>
     <div class="note"><strong>High-value correction:</strong> In GRE over IPsec, IPv6 or routing updates are the passenger, GRE is the carrier, and the outer IP delivery mechanism is the transport.</div>
     <div class="bar"><i id="prog"></i></div>
     <div class="meta"><span id="count"></span><span id="scoreline"></span></div>
@@ -23,48 +26,63 @@
   </div>
   <script>
     const BANK = [
-      { id: 9, q: "A two-tier campus design combines the distribution and core layers. What is this called?", options: ["Collapsed core", "Three-tier core", "Access-only design", "Spine-leaf"], answer: "Collapsed core", why: "A collapsed core combines core and distribution functions, which is common in smaller campus networks." },
-      { id: 13, q: "Which Cisco configuration-register value makes a typical IOS router ignore startup-config on the next boot?", options: ["0x2102", "0x2142", "0x2012", "0x2101"], answer: "0x2142", why: "0x2142 bypasses the saved configuration for password recovery. Restore the normal register, commonly 0x2102, afterward." },
-      { id: 15, q: "Which switch type uses field-replaceable line cards in a chassis?", options: ["Modular", "Fixed-configuration", "Stackable", "Cloud-managed"], answer: "Modular", why: "A modular chassis accepts line cards, allowing port expansion and hardware replacement without replacing the whole switch." },
-      { id: 15, q: "Which switch type uses stacking cables so multiple physical switches operate as one logical switch?", options: ["Modular", "Fixed-configuration", "Stackable", "Cloud-managed"], answer: "Stackable", why: "Physical stacking links and control-plane features let compatible switches be managed as one logical unit." },
-      { id: 15, q: "Which option best describes Cisco Meraki access switches in the PDF?", options: ["Cloud-managed switches with virtual stacking", "Chassis switches with line cards", "Standalone switches with fixed ports", "Routers operating as a switch stack"], answer: "Cloud-managed switches with virtual stacking", why: "Cloud management provides centralized visibility and administration; virtual stacking is a management abstraction, not physical stacking." },
-      { id: 20, q: "Which exchange establishes shared key material across an insecure network without sending the secret itself?", options: ["Diffie-Hellman key exchange", "HMAC", "AES encryption", "Origin authentication"], answer: "Diffie-Hellman key exchange", why: "DH lets peers derive shared key material over a public channel." },
-      { id: 20, q: "Which IPsec function verifies that a VPN peer is who it claims to be?", options: ["Confidentiality", "Origin authentication", "Data integrity", "Traffic shaping"], answer: "Origin authentication", why: "Authentication verifies peer identity using mechanisms such as pre-shared keys or certificates." },
-      { id: 20, q: "Which IPsec function uses encryption so intercepted payloads cannot be read?", options: ["Confidentiality", "Data integrity", "Origin authentication", "Availability"], answer: "Confidentiality", why: "Confidentiality protects the contents of data from unauthorized reading." },
-      { id: 20, q: "Which IPsec function detects packets modified in transit with an integrity check such as HMAC?", options: ["Data integrity", "Confidentiality", "Origin authentication", "Compression"], answer: "Data integrity", why: "Integrity checks detect unauthorized modification of protected messages." },
-      { id: 24, q: "In GRE over IPsec, what does GRE represent when it wraps an IPv6 or routing-update packet?", options: ["Passenger protocol", "Carrier protocol", "Transport protocol", "Authentication protocol"], answer: "Carrier protocol", why: "The original IPv6 or routing-update packet is the passenger. GRE wraps it as the carrier; IPsec then protects the GRE traffic." },
-      { id: 25, q: "Which QoS model combines CBWFQ with strict-priority treatment for delay-sensitive voice traffic?", options: ["LLQ", "Tail drop", "Best-effort forwarding", "IntServ"], answer: "LLQ", why: "Low Latency Queuing adds a strict-priority queue to CBWFQ. Priority traffic is normally policed to avoid starving other classes." },
-      { id: 25, q: "What does tail drop do when a queue is full?", options: ["Drops packets arriving after the queue fills", "Moves every packet to the priority queue", "Reserves bandwidth for voice", "Signals RSVP for more capacity"], answer: "Drops packets arriving after the queue fills", why: "Tail drop is a queue-full behavior; it does not discard all incoming traffic across every class." },
-      { id: 28, q: "Which QoS model scales through aggregate traffic classes and per-hop behavior?", options: ["DiffServ", "IntServ", "RSVP", "Best-Effort Model"], answer: "DiffServ", why: "Differentiated Services classifies and marks traffic, then applies per-hop behavior without per-flow reservations across the network." },
-      { id: 28, q: "Which six-bit field provides up to 64 differentiated-services codepoints?", options: ["DSCP", "RSVP", "OID", "HMAC"], answer: "DSCP", why: "DSCP occupies six bits in the IPv4 differentiated-services field or IPv6 traffic-class field." },
-      { id: 28, q: "Which QoS model forwards traffic without reserved bandwidth or guaranteed delay?", options: ["Best-Effort Model", "IntServ", "DiffServ", "LLQ"], answer: "Best-Effort Model", why: "Best effort forwards packets as resources permit, with no explicit service guarantees." },
-      { id: 28, q: "Which model maintains stateful, end-to-end reservations for individual flows?", options: ["IntServ", "DiffServ", "Best-Effort Model", "CBWFQ"], answer: "IntServ", why: "Integrated Services maintains reservation state along the path for flows needing specific guarantees." },
-      { id: 28, q: "Which protocol signals resource reservations for IntServ?", options: ["RSVP", "DSCP", "SNMP", "GRE"], answer: "RSVP", why: "Resource Reservation Protocol signals reservation requests to routers along the path." },
-      { id: 32, q: "What is an unsolicited alert sent by an SNMP agent when an interface fails?", options: ["SNMP Trap", "Set-request", "OID", "GetBulkRequest"], answer: "SNMP Trap", why: "A trap is an asynchronous device notification, commonly received by a manager on UDP 162." },
-      { id: 32, q: "Which SNMP operation does a manager use to change a writable device variable?", options: ["Set-request", "SNMP Trap", "GetBulkRequest", "OID"], answer: "Set-request", why: "SET is manager-initiated and modifies a writable managed object, subject to device support and permissions." },
-      { id: 32, q: "What numeric identifier locates a managed variable in the SNMP MIB tree?", options: ["OID", "DSCP", "RSVP", "GRE"], answer: "OID", why: "An Object Identifier identifies a managed object within the hierarchical Management Information Base." },
-      { id: 32, q: "Which SNMP operation efficiently retrieves large tables in SNMPv2c or SNMPv3?", options: ["GetBulkRequest", "Set-request", "SNMP Trap", "GetSingleRequest"], answer: "GetBulkRequest", why: "GETBULK retrieves multiple sequential values in fewer requests than repeated GETNEXT operations." }
+      { id: 9, title: "Campus network design", parts: [{ prompt: "Two-tier design combining distribution and core layers", options: ["Collapsed core", "Three-tier core", "Access-only design", "Spine-leaf"], answer: "Collapsed core", why: "A collapsed-core design combines the core and distribution functions into one layer." }] },
+      { id: 13, title: "Cisco router password recovery", parts: [{ prompt: "ROMMON configuration-register setting used to bypass startup-config on the next boot", options: ["0x2102", "0x2142", "0x2012", "0x2101"], answer: "0x2142", why: "0x2142 tells a typical Cisco IOS router to ignore startup-config for password recovery. The normal setting is commonly 0x2102." }] },
+      { id: 15, title: "Switch hardware types", parts: [
+        { prompt: "Expand port density using field-replaceable line cards in a chassis", options: ["Modular switches", "Fixed-configuration switches", "Stackable switches", "Cisco Meraki cloud-managed access switches"], answer: "Modular switches", why: "A modular chassis accepts line cards for expansion and hardware replacement." },
+        { prompt: "Standalone switches with hardware capabilities fixed at manufacture", options: ["Modular switches", "Fixed-configuration switches", "Stackable switches", "Cisco Meraki cloud-managed access switches"], answer: "Fixed-configuration switches", why: "Their port counts and core capabilities are fixed rather than expanded through chassis line cards." },
+        { prompt: "Connect switches using special stacking cables so they behave as one logical switch", options: ["Modular switches", "Fixed-configuration switches", "Stackable switches", "Cisco Meraki cloud-managed access switches"], answer: "Stackable switches", why: "Stacking links and control-plane features allow compatible switches to be managed as one logical unit." },
+        { prompt: "Manage many remote switch ports over the web using cloud-based virtual stacking", options: ["Modular switches", "Fixed-configuration switches", "Stackable switches", "Cisco Meraki cloud-managed access switches"], answer: "Cisco Meraki cloud-managed access switches", why: "Cloud management provides centralized visibility, policy, and administration; virtual stacking is not physical stacking." }
+      ] },
+      { id: 20, title: "IPsec security functions", parts: [
+        { prompt: "Establish a shared secret across an insecure network without sending the secret itself", options: ["Diffie-Hellman (DH) key exchange", "Origin authentication", "Confidentiality", "Data integrity"], answer: "Diffie-Hellman (DH) key exchange", why: "DH lets peers derive shared key material over a public channel." },
+        { prompt: "Verify peer identity using IKE with pre-shared keys or certificates", options: ["Diffie-Hellman (DH) key exchange", "Origin authentication", "Confidentiality", "Data integrity"], answer: "Origin authentication", why: "Authentication checks that the remote VPN peer is who it claims to be." },
+        { prompt: "Encrypt intercepted payloads so outsiders cannot read them", options: ["Diffie-Hellman (DH) key exchange", "Origin authentication", "Confidentiality", "Data integrity"], answer: "Confidentiality", why: "Encryption protects the contents of data from unauthorized reading." },
+        { prompt: "Use HMAC to detect packets modified in transit", options: ["Diffie-Hellman (DH) key exchange", "Origin authentication", "Confidentiality", "Data integrity"], answer: "Data integrity", why: "An integrity check detects unauthorized modification of protected messages." }
+      ] },
+      { id: 24, title: "GRE over IPsec encapsulation", parts: [{ prompt: "GRE encapsulates IPv6 or routing-update packets before IPsec protects the GRE packet", options: ["Passenger protocol", "Carrier protocol", "Transport protocol", "Authentication protocol"], answer: "Carrier protocol", why: "The original IPv6 or routing-update packet is the passenger; GRE wraps it as the carrier." }] },
+      { id: 25, title: "QoS congestion management", parts: [
+        { prompt: "CBWFQ combined with strict-priority treatment for delay-sensitive voice traffic", options: ["Low Latency Queuing (LLQ)", "Tail drop", "Best-Effort Model", "Integrated Services (IntServ)"], answer: "Low Latency Queuing (LLQ)", why: "LLQ adds a strict-priority queue to CBWFQ for delay-sensitive traffic." },
+        { prompt: "Packets arriving after a queue is full", options: ["Low Latency Queuing (LLQ)", "Tail drop", "Best-Effort Model", "Integrated Services (IntServ)"], answer: "Tail drop", why: "Tail drop means packets arriving after a queue is full are dropped." }
+      ] },
+      { id: 28, title: "QoS implementation models and fields", parts: [
+        { prompt: "Scalable aggregate traffic classes with per-hop policies", options: ["Differentiated Services (DiffServ)", "Differentiated Services Code Point (DSCP)", "Best-Effort Model", "Integrated Services (IntServ)", "Resource Reservation Protocol (RSVP)"], answer: "Differentiated Services (DiffServ)", why: "DiffServ classifies and marks traffic, then applies per-hop behavior without per-flow reservations." },
+        { prompt: "Six-bit IP header field supporting up to 64 codepoints", options: ["Differentiated Services (DiffServ)", "Differentiated Services Code Point (DSCP)", "Best-Effort Model", "Integrated Services (IntServ)", "Resource Reservation Protocol (RSVP)"], answer: "Differentiated Services Code Point (DSCP)", why: "DSCP occupies six bits, giving 64 possible codepoint values." },
+        { prompt: "Default forwarding without explicit service guarantees", options: ["Differentiated Services (DiffServ)", "Differentiated Services Code Point (DSCP)", "Best-Effort Model", "Integrated Services (IntServ)", "Resource Reservation Protocol (RSVP)"], answer: "Best-Effort Model", why: "Best effort forwards packets as resources permit, without reserved bandwidth or guaranteed delay." },
+        { prompt: "Stateful end-to-end resource reservation for individual flows", options: ["Differentiated Services (DiffServ)", "Differentiated Services Code Point (DSCP)", "Best-Effort Model", "Integrated Services (IntServ)", "Resource Reservation Protocol (RSVP)"], answer: "Integrated Services (IntServ)", why: "IntServ maintains reservation state along the path for flows requiring specific guarantees." },
+        { prompt: "Signaling used to request resources for IntServ", options: ["Differentiated Services (DiffServ)", "Differentiated Services Code Point (DSCP)", "Best-Effort Model", "Integrated Services (IntServ)", "Resource Reservation Protocol (RSVP)"], answer: "Resource Reservation Protocol (RSVP)", why: "RSVP signals resource reservations to routers along the path." }
+      ] },
+      { id: 32, title: "SNMP operations and structure", parts: [
+        { prompt: "Unsolicited alert from an agent when an interface fails", options: ["SNMP Trap", "Set-request", "Object Identifier (OID)", "GetBulkRequest"], answer: "SNMP Trap", why: "A trap is sent asynchronously by the managed device to notify the manager of an event." },
+        { prompt: "Manager request to change a device variable", options: ["SNMP Trap", "Set-request", "Object Identifier (OID)", "GetBulkRequest"], answer: "Set-request", why: "The SNMP manager uses SET to modify a writable managed object." },
+        { prompt: "Numeric identifier locating a managed variable in the MIB tree", options: ["SNMP Trap", "Set-request", "Object Identifier (OID)", "GetBulkRequest"], answer: "Object Identifier (OID)", why: "An OID identifies a managed object within the hierarchical MIB." },
+        { prompt: "Efficient retrieval of large tables using SNMPv2c/v3", options: ["SNMP Trap", "Set-request", "Object Identifier (OID)", "GetBulkRequest"], answer: "GetBulkRequest", why: "GETBULK retrieves multiple sequential object values in fewer requests than repeated GETNEXT operations." }
+      ] }
     ];
 
     const shuffle = (arr) => [...arr].sort(() => Math.random() - 0.5);
     let deck = [], i = 0, correct = 0, locked = false;
     const panel = document.getElementById("panel"), prog = document.getElementById("prog"), count = document.getElementById("count"), scoreline = document.getElementById("scoreline");
-    function start() { deck = shuffle(BANK).map(q => ({ ...q, options: shuffle(q.options) })); i = 0; correct = 0; render(); }
+    function start() { deck = shuffle(BANK).map(group => ({ ...group, parts: group.parts.map(part => ({ ...part, options: shuffle(part.options) })) })); i = 0; correct = 0; render(); }
     function render() {
       if (i >= deck.length) return results();
-      const q = deck[i]; locked = false; prog.style.width = (i / deck.length * 100) + "%"; count.textContent = `Question ${i + 1} of ${deck.length} · PDF Q${q.id}`; scoreline.textContent = `Score ${correct}`;
-      panel.innerHTML = `<p class="q">${q.q}</p><div id="opts">${q.options.map(o => `<button class="opt" data-v="${encodeURIComponent(o)}">${o}</button>`).join("")}</div><div class="fb" id="fb"></div>`;
-      panel.querySelectorAll(".opt").forEach(btn => btn.onclick = () => finish(q, btn));
+      const group = deck[i]; locked = false; prog.style.width = (i / deck.length * 100) + "%"; count.textContent = `Question ${i + 1} of ${deck.length} · PDF Q${group.id}`; scoreline.textContent = `Score ${correct}`;
+      panel.innerHTML = `<h2>${group.title}</h2>${group.parts.map((part, p) => `<div class="part"><p class="part-q">${part.prompt}</p><div class="opts" data-part="${p}">${part.options.map(o => `<button class="opt" data-v="${encodeURIComponent(o)}">${o}</button>`).join("")}</div></div>`).join("")}<div class="actions"><button class="btn" id="check">Check question</button></div><div class="fb" id="fb"></div>`;
+      panel.querySelectorAll(".opt").forEach(btn => btn.onclick = () => { if (locked) return; const groupEl = btn.parentElement; groupEl.querySelectorAll(".opt").forEach(b => b.classList.remove("sel")); btn.classList.add("sel"); });
+      document.getElementById("check").onclick = () => finish(group);
     }
-    function finish(q, btn) {
-      if (locked) return; locked = true;
-      const selected = decodeURIComponent(btn.dataset.v), ok = selected === q.answer;
-      panel.querySelectorAll(".opt").forEach(b => { const value = decodeURIComponent(b.dataset.v); b.disabled = true; if (value === q.answer) b.classList.add("ok"); else if (value === selected) b.classList.add("no"); });
-      if (ok) correct++;
-      const fb = document.getElementById("fb"); fb.className = "fb " + (ok ? "ok" : "no"); fb.innerHTML = `${ok ? "Correct." : "Not quite."} <strong>${q.answer}</strong><div class="why"><strong>Why:</strong> ${q.why}</div><div class="actions"><button class="btn" id="next">${i + 1 === deck.length ? "See results" : "Next"}</button></div>`;
+    function finish(group) {
+      if (locked) return;
+      const choices = [...panel.querySelectorAll(".opts")].map(el => el.querySelector(".sel"));
+      if (choices.some(choice => !choice)) return;
+      locked = true; let groupCorrect = 0;
+      group.parts.forEach((part, p) => { const selected = decodeURIComponent(choices[p].dataset.v); const ok = selected === part.answer; if (ok) groupCorrect++; panel.querySelectorAll(`.opts[data-part="${p}"] .opt`).forEach(btn => { const value = decodeURIComponent(btn.dataset.v); btn.disabled = true; if (value === part.answer) btn.classList.add("ok"); else if (value === selected) btn.classList.add("no"); }); });
+      const ok = groupCorrect === group.parts.length; if (ok) correct++;
+      const details = group.parts.map(part => `<div class="why"><strong>Answer:</strong> ${part.answer}<br><strong>Why:</strong> ${part.why}</div>`).join("");
+      const fb = document.getElementById("fb"); fb.className = "fb " + (ok ? "ok" : "no"); fb.innerHTML = `${ok ? "Correct." : `${groupCorrect} of ${group.parts.length} sub-prompts correct.`}${details}<div class="actions"><button class="btn" id="next">${i + 1 === deck.length ? "See results" : "Next"}</button></div>`;
       scoreline.textContent = `Score ${correct}`; document.getElementById("next").onclick = () => { i++; render(); };
     }
-    function results() { prog.style.width = "100%"; count.textContent = "Round complete"; scoreline.textContent = ""; const pct = Math.round(correct / deck.length * 100); panel.innerHTML = `<p class="q">You scored</p><div class="score">${correct} / ${deck.length}</div><p class="sub" style="margin:0">${pct}% · Review the explanations and play again to reshuffle.</p><div class="actions"><button class="btn" id="again">Play again</button></div>`; document.getElementById("again").onclick = start; }
+    function results() { prog.style.width = "100%"; count.textContent = "Round complete"; scoreline.textContent = ""; const pct = Math.round(correct / deck.length * 100); panel.innerHTML = `<p class="q">You scored</p><div class="score">${correct} / ${deck.length}</div><p class="sub" style="margin:0">${pct}% · Eight PDF question groups reviewed.</p><div class="actions"><button class="btn" id="again">Play again</button></div>`; document.getElementById("again").onclick = start; }
     start();
   </script>
 </body>
