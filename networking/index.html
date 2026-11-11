@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Networking quiz</title>
+  <link rel="stylesheet" href="../theme.css" />
+</head>
+<body>
+  <div class="wrap">
+    <a class="exit" href="../index.html">All reviewers</a>
+    <h1>Networking quiz</h1>
+    <p class="sub">Eight screenshot questions from the verified answer key. Campus design, password recovery, switching, IPsec, GRE, QoS, and SNMP. A miss shows why. Question 24 uses the corrected answer: GRE is the carrier.</p>
+    <div class="bar"><i id="prog"></i></div>
+    <div class="meta">
+      <span id="count"></span>
+      <span id="scoreline"></span>
+    </div>
+    <div class="card" id="panel"></div>
+  </div>
+  <script>
+    const BANK = [{"exam": 9, "type": "single", "q": "Campus network design: which two-tier design combines the distribution and core layers?", "options": ["Collapsed core", "Three-tier hierarchical", "Spine-leaf only", "Access-only flat design"], "answer": ["Collapsed core"], "why": {"Collapsed core": "A collapsed-core design combines the core and distribution functions into one layer. It is common for smaller campus networks where a separate core would add unnecessary complexity and cost.", "Three-tier hierarchical": "Three-tier keeps access, distribution, and core as separate layers. It does not combine distribution and core.", "Spine-leaf only": "Spine-leaf is a data-center fabric pattern, not the campus design that merges distribution and core.", "Access-only flat design": "A flat access design has no collapsed core layer."}, "explain": "A collapsed-core design combines the core and distribution functions into one layer. It is common for smaller campus networks where a separate core would add unnecessary complexity and cost."}, {"exam": 13, "type": "single", "q": "Cisco router password recovery: which ROMMON configuration-register setting is used to bypass startup-config on the next boot?", "options": ["0x2102", "0x2142", "0x2101", "0x2120"], "answer": ["0x2142"], "why": {"0x2142": "0x2142 tells a typical Cisco IOS router to ignore the startup configuration during boot so password recovery can proceed. After resetting the password, restore the normal register (commonly 0x2102) and save.", "0x2102": "0x2102 is the normal setting that loads startup-config. Password recovery needs the ignore setting first.", "0x2101": "0x2101 is not the classic ROMMON value used to ignore startup-config for this recovery procedure.", "0x2120": "0x2120 is not the value shown for bypassing startup-config in this recovery flow."}, "explain": "0x2142 tells a typical Cisco IOS router to ignore the startup configuration during boot so password recovery can proceed. After resetting the password, restore the normal register (commonly 0x2102) and save."}, {"exam": 15, "type": "match", "q": "Match each switch hardware type to its description.", "hint": "Match every prompt.", "items": ["Expand port density using field-replaceable line cards in a chassis", "Standalone switches with hardware capabilities fixed at manufacture", "Connect switches using special stacking cables so they behave as one logical switch", "Manage many remote switch ports over the web using cloud-based virtual stacking"], "choices": [{"v": "modular", "l": "Modular switches (e.g., Catalyst 9400)"}, {"v": "fixed", "l": "Fixed-configuration switches"}, {"v": "stackable", "l": "Stackable switches"}, {"v": "meraki", "l": "Cisco Meraki cloud-managed access switches"}], "map": {"Expand port density using field-replaceable line cards in a chassis": "modular", "Standalone switches with hardware capabilities fixed at manufacture": "fixed", "Connect switches using special stacking cables so they behave as one logical switch": "stackable", "Manage many remote switch ports over the web using cloud-based virtual stacking": "meraki"}, "explain": "Modular chassis switches expand with line cards. Fixed switches ship with a set hardware layout. Stackable switches join over stacking cables as one logical unit. Meraki uses cloud management and virtual stacking, which is not the same as physical stacking."}, {"exam": 20, "type": "match", "q": "Match each IPsec security function to its description.", "hint": "Match every prompt.", "items": ["Establish a shared secret across an insecure network without sending the secret itself", "Verify peer identity using IKE with pre-shared keys or certificates", "Encrypt intercepted payloads so outsiders cannot read them", "Use HMAC to detect packets modified in transit"], "choices": [{"v": "dh", "l": "Diffie-Hellman (DH) key exchange"}, {"v": "auth", "l": "Origin authentication"}, {"v": "conf", "l": "Confidentiality"}, {"v": "int", "l": "Data integrity"}], "map": {"Establish a shared secret across an insecure network without sending the secret itself": "dh", "Verify peer identity using IKE with pre-shared keys or certificates": "auth", "Encrypt intercepted payloads so outsiders cannot read them": "conf", "Use HMAC to detect packets modified in transit": "int"}, "explain": "DH derives shared key material without sending the secret. Origin authentication proves the peer’s identity. Confidentiality is encryption. Data integrity detects modification, often with HMAC."}, {"exam": 24, "type": "single", "q": "GRE over IPsec: GRE encapsulates IPv6 or routing-update packets before IPsec protects the GRE packet. In passenger / carrier / transport terminology, GRE is the:", "options": ["Passenger protocol", "Carrier protocol", "Transport protocol", "Routing protocol"], "answer": ["Carrier protocol"], "why": {"Carrier protocol": "The original payload (such as IPv6) is the passenger. GRE is the carrier that wraps the passenger. The outer IP delivery path is the transport. IPsec then secures the GRE traffic.", "Passenger protocol": "The passenger is the original IPv6 or routing-update packet. GRE wraps that payload, so GRE is the carrier, not the passenger.", "Transport protocol": "Transport is the outer IP delivery mechanism that carries the GRE packet, not GRE itself.", "Routing protocol": "GRE is an encapsulation protocol. It is not the routing protocol being tunneled."}, "explain": "The original payload (such as IPv6) is the passenger. GRE is the carrier that wraps the passenger. The outer IP delivery path is the transport. IPsec then secures the GRE traffic."}, {"exam": 25, "type": "single", "q": "QoS congestion management: which mechanism is CBWFQ combined with strict-priority treatment for delay-sensitive voice traffic?", "options": ["Tail drop", "Low Latency Queuing (LLQ)", "Weighted Random Early Detection (WRED)", "Best-Effort Model"], "answer": ["Low Latency Queuing (LLQ)"], "why": {"Low Latency Queuing (LLQ)": "LLQ adds a strict-priority queue to Class-Based Weighted Fair Queuing so delay-sensitive voice can be served before ordinary class queues. Priority traffic is normally policed so it does not starve other classes.", "Tail drop": "Tail drop means packets arriving after a queue is full are dropped. It is not CBWFQ plus a priority queue for voice.", "Weighted Random Early Detection (WRED)": "WRED is a congestion-avoidance drop policy, not CBWFQ with a strict-priority voice queue.", "Best-Effort Model": "Best-effort is the default forwarding model with no explicit QoS guarantees."}, "explain": "LLQ adds a strict-priority queue to Class-Based Weighted Fair Queuing so delay-sensitive voice can be served before ordinary class queues. Priority traffic is normally policed so it does not starve other classes."}, {"exam": 28, "type": "match", "q": "Match each QoS model or field to its description.", "hint": "Match every prompt.", "items": ["Scalable aggregate traffic classes with per-hop policies", "Six-bit IP header field supporting up to 64 codepoints", "Default forwarding without explicit service guarantees", "Stateful end-to-end resource reservation for individual flows", "Signaling used to request resources for IntServ"], "choices": [{"v": "diffserv", "l": "Differentiated Services (DiffServ)"}, {"v": "dscp", "l": "Differentiated Services Code Point (DSCP)"}, {"v": "be", "l": "Best-Effort Model"}, {"v": "intserv", "l": "Integrated Services (IntServ)"}, {"v": "rsvp", "l": "Resource Reservation Protocol (RSVP)"}], "map": {"Scalable aggregate traffic classes with per-hop policies": "diffserv", "Six-bit IP header field supporting up to 64 codepoints": "dscp", "Default forwarding without explicit service guarantees": "be", "Stateful end-to-end resource reservation for individual flows": "intserv", "Signaling used to request resources for IntServ": "rsvp"}, "explain": "DiffServ scales with aggregate classes and per-hop behavior. DSCP is the six-bit codepoint field (64 values). Best-effort has no guarantees. IntServ reserves state per flow. RSVP signals those reservations."}, {"exam": 32, "type": "match", "q": "Match each SNMP operation or structure to its description.", "hint": "Match every prompt.", "items": ["Unsolicited alert from an agent when an interface fails", "Manager request to change a device variable", "Numeric identifier locating a managed variable in the MIB tree", "Efficient retrieval of large tables using SNMPv2c/v3"], "choices": [{"v": "trap", "l": "SNMP Trap"}, {"v": "set", "l": "Set-request"}, {"v": "oid", "l": "Object Identifier (OID)"}, {"v": "bulk", "l": "GetBulkRequest (get-bulk-request)"}], "map": {"Unsolicited alert from an agent when an interface fails": "trap", "Manager request to change a device variable": "set", "Numeric identifier locating a managed variable in the MIB tree": "oid", "Efficient retrieval of large tables using SNMPv2c/v3": "bulk"}, "explain": "A trap is an unsolicited agent alert (often UDP 162). SET changes a writable object. An OID names a MIB object. GETBULK retrieves large tables efficiently. Queries usually use UDP 161."}];
+    const shuffle = (arr) => [...arr].sort(() => Math.random() - 0.5);
+    const same = (a, b) => a.length === b.length && a.every((x) => b.includes(x));
+    const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+    const tag = (q) => "#" + q.exam;
+
+    let deck = [], i = 0, correct = 0, locked = false, missed = [], picked = new Set();
+    const panel = document.getElementById("panel");
+    const prog = document.getElementById("prog");
+    const count = document.getElementById("count");
+    const scoreline = document.getElementById("scoreline");
+
+    function start(pool) {
+      deck = shuffle(pool.map((q) => {
+        if (q.type === "match") return { ...q, items: shuffle(q.items) };
+        return { ...q, options: shuffle(q.options) };
+      }));
+      i = 0; correct = 0; missed = []; locked = false; picked = new Set();
+      render();
+    }
+
+    function render() {
+      if (i >= deck.length) return results();
+      const q = deck[i];
+      prog.style.width = ((i / deck.length) * 100) + "%";
+      count.textContent = "Question " + (i + 1) + " of " + deck.length + "  ·  " + tag(q);
+      scoreline.textContent = "Score " + correct;
+      locked = false; picked = new Set();
+
+      if (q.type === "match") {
+        const opts = (q.choices || []).map((c) => `<option value="${c.v}">${esc(c.l)}</option>`).join("");
+        panel.innerHTML = `<p class="q">${esc(q.q)}</p>
+          <p class="hint">${esc(q.hint || "Match each item.")}</p>
+          <div class="match">${q.items.map((item, idx) => `
+            <div class="row">
+              <span>${esc(item)}</span>
+              <select data-item="${idx}"><option value="">Choose…</option>${opts}</select>
+            </div>`).join("")}</div>
+          <div class="actions"><button class="btn" id="check">Check</button></div>
+          <div class="fb" id="fb"></div>`;
+        document.getElementById("check").onclick = checkMatch;
+        return;
+      }
+
+      panel.innerHTML = `<p class="q">${esc(q.q)}</p>
+        <div id="opts">${q.options.map((opt) => `<button class="opt" data-v="${encodeURIComponent(opt)}">${esc(opt)}</button>`).join("")}</div>
+        <div class="actions"></div>
+        <div class="fb" id="fb"></div>`;
+      panel.querySelectorAll(".opt").forEach((btn) => {
+        btn.onclick = () => {
+          if (locked) return;
+          picked = new Set([decodeURIComponent(btn.dataset.v)]);
+          finish(q);
+        };
+      });
+    }
+
+    function checkMatch() {
+      if (locked) return;
+      const q = deck[i];
+      const selects = [...panel.querySelectorAll("select")];
+      if (selects.some((s) => !s.value)) return;
+      locked = true;
+      let ok = true;
+      selects.forEach((s, idx) => {
+        const good = s.value === q.map[q.items[idx]];
+        if (!good) ok = false;
+        s.classList.add(good ? "ok" : "no");
+      });
+      after(ok, q, q.explain || "Review the matches.");
+    }
+
+    function finish(q) {
+      if (locked) return;
+      locked = true;
+      const chosen = [...picked];
+      const ok = same(chosen, q.answer);
+      panel.querySelectorAll(".opt").forEach((b) => {
+        const v = decodeURIComponent(b.dataset.v);
+        b.disabled = true;
+        if (q.answer.includes(v)) b.classList.add("ok");
+        else if (picked.has(v)) b.classList.add("no");
+      });
+      after(ok, q, q.explain || ("Correct: " + q.answer.join(" · ")));
+    }
+
+    function reasonBlock(q) {
+      if (q.type === "match") {
+        const labels = {};
+        (q.choices || []).forEach((c) => { labels[c.v] = c.l; });
+        const lines = (q.items || []).map((item) => `<li><b>${esc(item)}</b> — ${esc(labels[q.map[item]] || q.map[item])}</li>`).join("");
+        return `<p class="why-h">WHY THIS IS RIGHT</p><ul class="why">${lines}</ul><p>${esc(q.explain || "")}</p>`;
+      }
+      const why = q.why || {};
+      const right = (q.answer || []).map((a) => `<li><b>${esc(a)}</b> — ${esc(why[a] || q.explain || "")}</li>`).join("");
+      const wrong = (q.options || []).filter((o) => !(q.answer || []).includes(o)).map((o) => `<li><b>${esc(o)}</b> — ${esc(why[o] || "")}</li>`).join("");
+      return `<p class="why-h">WHY THIS IS RIGHT</p><ul class="why">${right}</ul>` +
+        (wrong ? `<p class="why-h">WHY THE OTHERS ARE WRONG</p><ul class="why">${wrong}</ul>` : "");
+    }
+
+    function after(ok, q, msg) {
+      if (ok) correct++; else missed.push({ q: q.q, label: tag(q), msg });
+      const fb = document.getElementById("fb");
+      fb.className = "fb " + (ok ? "ok" : "no");
+      fb.textContent = ok ? "Correct." : "Not quite.";
+      let box = document.getElementById("reasons");
+      if (!box) { box = document.createElement("div"); box.id = "reasons"; fb.after(box); }
+      box.innerHTML = reasonBlock(q);
+      scoreline.textContent = "Score " + correct;
+      panel.querySelector(".actions").innerHTML = `<button class="btn" id="next">${i + 1 === deck.length ? "See results" : "Next"}</button>`;
+      document.getElementById("next").onclick = () => { i++; render(); };
+    }
+
+    function results() {
+      prog.style.width = "100%";
+      count.textContent = "Round complete";
+      scoreline.textContent = "";
+      const pct = Math.round((correct / deck.length) * 100);
+      panel.innerHTML = `<p class="q">You scored</p>
+        <div class="score">${correct} / ${deck.length}</div>
+        <p class="sub" style="margin:0">${pct}% · ${missed.length ? missed.length + " to review" : "Clean round."}</p>
+        ${missed.length ? `<ul class="miss">${missed.map((m) => `<li><b>${esc(m.label)} ${esc(m.q)}</b><br>${esc(m.msg)}</li>`).join("")}</ul>` : ""}
+        <div class="actions">
+          <a class="btn ghost" href="../index.html">All reviewers</a>
+          <button class="btn" id="again">Play again (shuffle)</button>
+          ${missed.length ? `<button class="btn ghost" id="missed">Replay missed only</button>` : ""}
+        </div>`;
+      document.getElementById("again").onclick = () => start(BANK);
+      const missBtn = document.getElementById("missed");
+      if (missBtn) missBtn.onclick = () => {
+        const ids = new Set(missed.map((m) => m.q));
+        start(BANK.filter((q) => ids.has(q.q)));
+      };
+    }
+
+    start(BANK);
+  </script>
+</body>
+</html>
